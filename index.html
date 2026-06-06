@@ -1,1 +1,296 @@
-s
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İmanPowerGame - NSS Tarzı Futbol Simülasyonu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 { color: #4CAF50; margin-bottom: 20px; }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            border-radius: 6px;
+            background-color: #2a2a2a;
+            color: white;
+        }
+        button {
+            width: 95%;
+            padding: 12px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #45a049; }
+        .hidden { display: none; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+            text-align: left;
+            background: #252525;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .log-box {
+            background: #000;
+            padding: 10px;
+            height: 100px;
+            overflow-y: auto;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #00ff00;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>İmanPowerGame</h1>
+
+    <div id="auth-screen">
+        <h3>Futbolcu Girişi / Kayıt</h3>
+        <input type="text" id="username" placeholder="Kullanıcı Adı (Benzersiz olmalı)" required>
+        <input type="password" id="password" placeholder="Şifre" required>
+        <button id="btn-login">Giriş Yap</button>
+        <button id="btn-register" style="background-color: #2196F3;">Yeni Kariyer Aç (Kayıt Ol)</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <h2>Hoş geldin, <span id="player-name-display">Oyuncu</span>!</h2>
+        
+        <div class="stats-grid">
+            <div>🔋 Enerji: <span id="stat-energy">100</span>/100</div>
+            <div>💰 Para: <span id="stat-money">0</span> TL</div>
+            <div>⚽ Güç (Şut): <span id="stat-power">10</span></div>
+            <div>👟 Hız: <span id="stat-speed">10</span></div>
+        </div>
+
+        <button id="btn-train">🏋️ Antrenman Yap (-20 Enerji, +2 Güç)</button>
+        <button id="btn-match" style="background-color: #ff9800;">⚽ Maça Çık (-40 Enerji, +Para Kazan)</button>
+        <button id="btn-rest" style="background-color: #9c27b0;">🛏️ Dinlen (+30 Enerji)</button>
+        <button id="btn-logout" style="background-color: #f44336; margin-top: 30px;">Oyundan Çık (Kaydet)</button>
+
+        <div class="log-box" id="game-log">
+            Kariyerine hoş geldin! Antrenman yap, maçlara çık ve en iyisi ol!
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Attığın fotoğraftaki Firebase Yapılandırma Bilgileri
+    const firebaseConfig = {
+        apiKey: "AIzaSyDEbenlp7KcVZ2oE9OiEHTT12oEuGFVGWKs",
+        authDomain: "kartalhaber-44ae6.firebaseapp.com",
+        databaseURL: "https://kartalhaber-44ae6-default-rtdb.firebaseio.com",
+        projectId: "kartalhaber-44ae6",
+        storageBucket: "kartalhaber-44ae6.firebasestorage.app",
+        messagingSenderId: "804745909398",
+        appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
+        measurementId: "G-TV8NLXQTNP"
+    };
+
+    // Firebase'i Başlat
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Global Oyuncu Verisi Tutan Değişken
+    let currentPlayer = null;
+    let playerData = {
+        username: "",
+        password: "",
+        energy: 100,
+        money: 0,
+        power: 10,
+        speed: 10
+    };
+
+    // DOM Elementleri
+    const authScreen = document.getElementById("auth-screen");
+    const gameScreen = document.getElementById("game-screen");
+    const logBox = document.getElementById("game-log");
+
+    function addLog(message) {
+        logBox.innerHTML += `<br>> ${message}`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function updateUI() {
+        document.getElementById("player-name-display").innerText = playerData.username;
+        document.getElementById("stat-energy").innerText = playerData.energy;
+        document.getElementById("stat-money").innerText = playerData.money;
+        document.getElementById("stat-power").innerText = playerData.power;
+        document.getElementById("stat-speed").innerText = playerData.speed;
+    }
+
+    // VERİTABANINA KAYDETME FONKSİYONU
+    async function savePlayerData() {
+        if (!currentPlayer) return;
+        try {
+            await set(ref(db, 'players/' + currentPlayer), playerData);
+            console.log("Veriler Firebase'e kaydedildi.");
+        } catch (error) {
+            console.error("Kayıt hatası: ", error);
+        }
+    }
+
+    // KAYIT OLMA (YENİ KARİYER)
+    document.getElementById("btn-register").addEventListener("click", async () => {
+        const user = document.getElementById("username").value.trim();
+        const pass = document.getElementById("password").value.trim();
+
+        if(!user || !pass) { alert("Lütfen kullanıcı adı ve şifre girin!"); return; }
+
+        const dbRef = ref(db);
+        const snapshot = await get(child(dbRef, `players/${user}`));
+
+        if (snapshot.exists()) {
+            alert("Bu kullanıcı adı zaten alınmış! Başka bir isim seç.");
+        } else {
+            // Yeni oyuncu şablonu oluştur
+            playerData = {
+                username: user,
+                password: pass,
+                energy: 100,
+                money: 100,
+                power: 10,
+                speed: 10
+            };
+            currentPlayer = user;
+            await savePlayerData();
+            alert("Kariyer başarıyla oluşturuldu!");
+            authScreen.classList.add("hidden");
+            gameScreen.classList.remove("hidden");
+            updateUI();
+        }
+    });
+
+    // GİRİŞ YAPMA (ESKİ KARİYERİ YÜKLEME)
+    document.getElementById("btn-login").addEventListener("click", async () => {
+        const user = document.getElementById("username").value.trim();
+        const pass = document.getElementById("password").value.trim();
+
+        if(!user || !pass) { alert("Lütfen alanları doldurun!"); return; }
+
+        const dbRef = ref(db);
+        const snapshot = await get(child(dbRef, `players/${user}`));
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            if(data.password === pass) {
+                playerData = data;
+                currentPlayer = user;
+                authScreen.classList.add("hidden");
+                gameScreen.classList.remove("hidden");
+                updateUI();
+                addLog("Kariyer dosyası başarıyla yüklendi.");
+            } else {
+                alert("Hatalı şifre!");
+            }
+        } else {
+            alert("Böyle bir futbolcu bulunamadı. Yeni Kariyer Aç butonunu kullanın.");
+        }
+    });
+
+    // --- OYUN MEKANİKLERİ ---
+
+    // Antrenman Yap
+    document.getElementById("btn-train").addEventListener("click", () => {
+        if (playerData.energy >= 20) {
+            playerData.energy -= 20;
+            playerData.power += 2;
+            playerData.speed += 1;
+            addLog("Sıkı çalıştın! Güç +2, Hız +1 kazandın.");
+            updateUI();
+            savePlayerData();
+        } else {
+            addLog("Çok yorgunsun! Önce dinlenmelisin.");
+        }
+    });
+
+    // Maça Çık
+    document.getElementById("btn-match").addEventListener("click", () => {
+        if (playerData.energy >= 40) {
+            playerData.energy -= 40;
+            
+            // NSS tarzı şansa ve güce dayalı basit bir maç algoritması
+            let sans = Math.floor(Math.random() * 20) + playerData.power;
+            let kazanilanPara = 0;
+
+            if (sans > 25) {
+                kazanilanPara = 150;
+                playerData.money += kazanilanPara;
+                addLog(`Muhteşem performans! Maçta gol attın ve galip geldiniz. (+${kazanilanPara} TL)`);
+            } else if (sans > 15) {
+                kazanilanPara = 50;
+                playerData.money += kazanilanPara;
+                addLog(`Berabere kaldınız, fena oynamadın. (+${kazanilanPara} TL)`);
+            } else {
+                addLog("Maçı kaybettiniz, taraftarlar seni yuhalıyor...");
+            }
+            
+            updateUI();
+            savePlayerData();
+        } else {
+            addLog("Maça çıkacak enerjin yok! Dinlen yoksa sakatlanırsın.");
+        }
+    });
+
+    // Dinlen
+    document.getElementById("btn-rest").addEventListener("click", () => {
+        if(playerData.energy < 100) {
+            playerData.energy = Math.min(100, playerData.energy + 30);
+            addLog("Güzelce uyudun ve dinlendin. Enerjin yenilendi.");
+            updateUI();
+            savePlayerData();
+        } else {
+            addLog("Enerjin zaten tamamen dolu!");
+        }
+    });
+
+    // Oyundan Çıkış
+    document.getElementById("btn-logout").addEventListener("click", async () => {
+        await savePlayerData();
+        currentPlayer = null;
+        gameScreen.classList.add("hidden");
+        authScreen.classList.remove("hidden");
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        alert("Oyun kaydedildi ve çıkış yapıldı!");
+    });
+
+</script>
+</body>
+</html>
