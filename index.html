@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <!-- CANLI MAÇ EKRANI (DEVRELİ SİSTEM) -->
+        <!-- CANLI MAÇ EKRANI -->
         <div id="match-screen" class="match-overlay hidden">
             <div class="match-header">
                 <div>🏟️ <span id="m-team-vs">-</span></div>
@@ -334,7 +334,7 @@
 
     const lig3Takimlari = ["Göztepe", "Sakaryaspor", "Kocaelispor", "Erzurumspor", "Gençlerbirliği"];
     const lig2Takimlari = ["Samsunspor", "Antalyaspor", "Konyaspor", "Gaziantep FK", "Sivasspor"];
-    const lig1Takimlari = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor"];
+    const lig1Takimlari = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabatalar"];
 
     db.ref(".info/connected").on("value", (s) => {
         document.getElementById("connection-status").innerText = s.val() ? "🟢 Sunucu Aktif" : "🔴 Bağlantı Yok";
@@ -363,14 +363,14 @@
         event.currentTarget.classList.add('active');
     }
 
-    // REALTIME (ANLIK) LİDERLİK TABLOSU DİNLEYİCİSİ
+    // REALTIME LİDERLİK TABLOSU
     function listenLeaderboard() {
         db.ref('players').orderByChild('marketValue').on('value', (snapshot) => {
             const list = [];
             snapshot.forEach((child) => {
                 list.push(child.val());
             });
-            list.reverse(); // Pahalıdan ucuza
+            list.reverse(); 
 
             const tbody = document.getElementById("leaderboard-body");
             tbody.innerHTML = "";
@@ -388,6 +388,12 @@
                 tbody.appendChild(tr);
             });
         });
+    }
+
+    function save() { 
+        if(currentPlayer) {
+            db.ref('players/' + currentPlayer).set(playerData); 
+        }
     }
 
     function updateUI() {
@@ -409,9 +415,10 @@
         document.getElementById("m-team").innerText = playerData.teamMoral;
         document.getElementById("m-spon").innerText = playerData.hasSponsor ? "Aktif (2x Para)" : "Pasif";
         if(playerData.hasSponsor) document.getElementById("sponsor-box").style.display = "none";
+        
+        // Arayüz her güncellendiğinde Firebase'e en taze veriyi anında basıyoruz!
+        save(); 
     }
-
-    function save() { if(currentPlayer) db.ref('players/' + currentPlayer).set(playerData); }
 
     // GİRİŞ / KAYIT
     document.getElementById("btn-register").addEventListener("click", () => {
@@ -421,15 +428,23 @@
 
         db.ref(`players/${user}`).once("value", (snap) => {
             if (snap.exists()) return alert("Bu isim alınmış!");
+            
+            const randomTeam = lig3Takimlari[Math.floor(Math.random() * lig3Takimlari.length)];
             playerData = {
                 username: user, password: pass, energy: 100, money: 300, power: 10, speed: 10,
-                league: 3, currentTeam: lig3Takimlari[Math.floor(Math.random() * lig3Takimlari.length)],
+                league: 3, currentTeam: randomTeam,
                 marketValue: 5000, tdMoral: 80, teamMoral: 80, hasSponsor: false, inventory: []
             };
-            currentPlayer = user; save();
-            authScreen.classList.add("hidden"); gameScreen.classList.remove("hidden");
-            updateUI(); listenLeaderboard();
-            addLog(`${playerData.currentTeam} kulübüne hoş geldin!`);
+            currentPlayer = user; 
+            
+            // UI güncellemeden önce ilk kaydı zorla yapıyoruz ki takımsız kalmasın
+            db.ref('players/' + currentPlayer).set(playerData, () => {
+                authScreen.classList.add("hidden"); 
+                gameScreen.classList.remove("hidden");
+                updateUI(); 
+                listenLeaderboard();
+                addLog(`${playerData.currentTeam} kulübüne hoş geldin!`);
+            });
         });
     });
 
@@ -440,9 +455,13 @@
         db.ref(`players/${user}`).once("value", (snap) => {
             if (!snap.exists()) return alert("Kullanıcı yok!");
             if(snap.val().password !== pass) return alert("Şifre yanlış!");
-            playerData = snap.val(); currentPlayer = user;
-            authScreen.classList.add("hidden"); gameScreen.classList.remove("hidden");
-            updateUI(); listenLeaderboard(); addLog("Başarıyla giriş yapıldı.");
+            playerData = snap.val(); 
+            currentPlayer = user;
+            authScreen.classList.add("hidden"); 
+            gameScreen.classList.remove("hidden");
+            updateUI(); 
+            listenLeaderboard(); 
+            addLog("Başarıyla giriş yapıldı.");
         });
     });
 
@@ -450,24 +469,24 @@
     document.getElementById("btn-train").addEventListener("click", () => {
         if(playerData.energy < 20) return alert("Yetersiz enerji!");
         playerData.energy -= 20; playerData.power += 2; playerData.speed += 1;
-        updateUI(); save(); addLog("Antrenman tamamlandı. Değerin canlı tabloda yükseldi!");
+        updateUI(); addLog("Antrenman tamamlandı. Değerin canlı tabloda yükseldi!");
     });
 
     document.getElementById("btn-rest").addEventListener("click", () => {
         playerData.energy = Math.min(100, playerData.energy + 25);
-        updateUI(); save(); addLog("Dinlendiniz.");
+        updateUI(); addLog("Dinlendiniz.");
     });
 
     window.buyEnergy = function(id, eAmt, cost) {
         if(playerData.money < cost) return alert("Paran yetersiz!");
         playerData.money -= cost; playerData.energy = Math.min(100, playerData.energy + eAmt);
-        updateUI(); save(); addLog(`İçecek tüketildi (+${eAmt} Enerji)`);
+        updateUI(); addLog(`İçecek tüketildi (+${eAmt} Enerji)`);
     };
 
     window.buySponsor = function() {
         if(playerData.money < 10000) return alert("Paran yetersiz!");
         playerData.money -= 10000; playerData.hasSponsor = true;
-        updateUI(); save(); addLog("Sponsorluk bağlandı!");
+        updateUI(); addLog("Sponsorluk bağlandı!");
     };
 
     window.buyItem = function(id, cost, name, valueAdd) {
@@ -475,10 +494,10 @@
         if(!playerData.inventory) playerData.inventory = [];
         if(playerData.inventory.includes(name)) return alert("Zaten var!");
         playerData.money -= cost; playerData.inventory.push(name);
-        updateUI(); save(); addLog(`${name} satın alındı. Değerin arttı!`);
+        updateUI(); addLog(`${name} satın alındı. Değerin arttı!`);
     };
 
-    // --- DEVRELİ GELİŞMİŞ MAÇ MOTORU ---
+    // --- DEVRELİ MAÇ MOTORU ---
     let mInterval; let mMin = 0; let mScoreUs = 0; let mScoreThem = 0; let isFirstHalf = true;
     const rakipTakimlar = ["Diyarbekirspor", "Ankaragücü", "Bursaspor", "Adana Demirspor", "Kasımpaşa"];
 
@@ -497,7 +516,6 @@
         mInterval = setInterval(() => {
             mMin += Math.floor(Math.random() * 5) + 3;
             
-            // 1. DEVRE DURDURMA NOKTASI (45. Dakika Kontrolü)
             if(isFirstHalf && mMin >= 45) {
                 mMin = 45;
                 document.getElementById("m-min").innerText = mMin;
@@ -506,7 +524,6 @@
                 return;
             }
 
-            // 2. DEVRE DURDURMA NOKTASI (90. Dakika Kontrolü)
             if(!isFirstHalf && mMin >= 90) {
                 mMin = 90;
                 document.getElementById("m-min").innerText = mMin;
@@ -519,11 +536,9 @@
             let rnd = Math.random();
 
             if (rnd > 0.88) { 
-                // SANA GELEN ÖZEL 4 ŞIKLI ATAK
                 clearInterval(mInterval);
                 matchPlayerAttack();
             } else if (rnd > 0.70 && rnd <= 0.80) {
-                // TAKIM ARKADAŞLARININ ATAĞI
                 if(Math.random() > 0.5) {
                     mScoreUs++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
                     document.getElementById("match-ticker").innerText = `⚽ GOL! Takım arkadaşın ceza sahasında bitirici vuruşu yaptı!`;
@@ -531,7 +546,6 @@
                     document.getElementById("match-ticker").innerText = `❌ Takım arkadaşının şutu direğin hemen yanından dışarı çıkıyor.`;
                 }
             } else if (rnd < 0.15) {
-                // RAKİP TAKIMIN ATAĞI
                 if(Math.random() > 0.4) {
                     mScoreThem++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
                     document.getElementById("match-ticker").innerText = `🚨 GOL! Savunma arkasına sarkan rakip forvet topu ağlarımıza gönderdi.`;
@@ -544,9 +558,8 @@
         }, 1500);
     }
 
-    // DEVRE ARASI EKRANI VE BUTONU
     function showHalfTimeScreen() {
-        document.getElementById("match-ticker").innerText = `⏳ İLK YARI BİTTİ! Soyunma odasına gidiliyor. Skorda denge var mı? Görüşlerinizi alın.`;
+        document.getElementById("match-ticker").innerText = `⏳ İLK YARI BİTTİ! Soyunma odasına gidiliyor. Taktikleri gözden geçirin.`;
         const div = document.getElementById("match-choices"); div.innerHTML = "";
         
         let nextHalfBtn = document.createElement("button");
@@ -562,7 +575,6 @@
         div.appendChild(nextHalfBtn);
     }
 
-    // 4 ŞIKLI SÜPER POZİSYON SİSTEMİ
     function matchPlayerAttack() {
         document.getElementById("match-ticker").innerText = `🔥 KRİTİK POZİSYON! Top ayaklarına geldi, ne yapacaksın?`;
         const div = document.getElementById("match-choices"); div.innerHTML = "";
@@ -617,7 +629,7 @@
         }
 
         addLog(`[MAÇ] ${resText}`);
-        updateUI(); save();
+        updateUI(); 
         
         setTimeout(() => {
             document.getElementById("match-screen").classList.add("hidden");
