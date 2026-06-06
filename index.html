@@ -147,30 +147,30 @@
 </div>
 
 <script>
-    // Firebase Config Bilgilerin
+    // GÖRSELDEKİ RECONFIIG VERİLERİNE GÖRE 49ae6 OLARAK GÜNCELLENDİ
     const firebaseConfig = {
         apiKey: "AIzaSyDEbenlp7KcVZ2oE9OiEHTT12oEuGFVGWKs",
-        authDomain: "kartalhaber-44ae6.firebaseapp.com",
-        databaseURL: "https://kartalhaber-44ae6-default-rtdb.firebaseio.com",
-        projectId: "kartalhaber-44ae6",
-        storageBucket: "kartalhaber-44ae6.firebasestorage.app",
+        authDomain: "kartalhaber-49ae6.firebaseapp.com",
+        databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
+        projectId: "kartalhaber-49ae6",
+        storageBucket: "kartalhaber-49ae6.firebasestorage.app",
         messagingSenderId: "804745909398",
         appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
         measurementId: "G-TV8NLXQTNP"
     };
 
-    // Firebase Başlatma (Hatasız Eski Sürüm Modu Entegrasyonu)
+    // Firebase'i Çalıştırıyoruz
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Bağlantı durumunu ekranda gösterelim
+    // Gerçek zamanlı bağlantı testi denetleyicisi
     const statusText = document.getElementById("connection-status");
     db.ref(".info/connected").on("value", (snap) => {
         if (snap.val() === true) {
             statusText.innerText = "🟢 Veritabanı Bağlantısı Başarılı! Giriş yapabilirsiniz.";
             statusText.style.color = "#4CAF50";
         } else {
-            statusText.innerText = "🔴 Bağlantı kesildi, tekrar deneniyor...";
+            statusText.innerText = "🔴 Bağlantı kesildi, bilgiler kontrol ediliyor...";
             statusText.style.color = "#f44336";
         }
     });
@@ -178,7 +178,6 @@
     let currentPlayer = null;
     let playerData = { username: "", password: "", energy: 100, money: 0, power: 10, speed: 10 };
 
-    // DOM Elementleri
     const authScreen = document.getElementById("auth-screen");
     const gameScreen = document.getElementById("game-screen");
     const mainActions = document.getElementById("main-actions");
@@ -200,13 +199,12 @@
         document.getElementById("stat-speed").innerText = playerData.speed;
     }
 
-    // Kaydetme
     function savePlayerData() {
         if (!currentPlayer) return;
         db.ref('players/' + currentPlayer).set(playerData);
     }
 
-    // KAYIT OLMA BUTONU
+    // KAYIT OLMA SİSTEMİ
     document.getElementById("btn-register").addEventListener("click", () => {
         const user = document.getElementById("username").value.trim().toLowerCase();
         const pass = document.getElementById("password").value.trim();
@@ -225,10 +223,12 @@
                 gameScreen.classList.remove("hidden");
                 updateUI();
             }
+        }, (error) => {
+            alert("Firebase izin hatası! Database Rules ayarlarını kontrol edin.");
         });
     });
 
-    // GİRİŞ YAPMA BUTONU
+    // GİRİŞ YAPMA SİSTEMİ
     document.getElementById("btn-login").addEventListener("click", () => {
         const user = document.getElementById("username").value.trim().toLowerCase();
         const pass = document.getElementById("password").value.trim();
@@ -254,7 +254,7 @@
         });
     });
 
-    // OYUN İÇİ AKSİYONLAR
+    // GELİŞTİRME SEÇENEKLERİ
     document.getElementById("btn-train").addEventListener("click", () => {
         if (playerData.energy >= 20) {
             playerData.energy -= 20;
@@ -279,7 +279,7 @@
         }
     });
 
-    // --- NSS SİSTEMİ ---
+    // MAÇ GİRİŞİ
     document.getElementById("btn-match").addEventListener("click", () => {
         if (playerData.energy >= 40) {
             playerData.energy -= 40;
