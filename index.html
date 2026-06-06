@@ -3,180 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İmanPowerGame - Pro NSS Simülasyonu</title>
+    <title>İmanPowerGame - Ultra NSS Pro Manager</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
+        :root {
+            --bg-color: #0f0f12;
+            --container-bg: #16161a;
+            --primary: #4CAF50;
+            --accent: #00bcd4;
+            --danger: #f44336;
+            --warning: #ff9800;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
+            background-color: var(--bg-color);
             color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
         .container {
-            background-color: #1e1e1e;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
             width: 100%;
-            max-width: 550px;
+            max-width: 600px;
             text-align: center;
+            border: 1px solid #222;
         }
         .logo {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #4CAF50;
-            margin-bottom: 10px;
-            background-color: #252525;
+            border: 3px solid var(--primary);
+            margin-bottom: 5px;
         }
-        h1 { color: #4CAF50; margin: 5px 0 15px 0; font-size: 26px; }
+        h1 { color: var(--primary); margin: 5px 0; font-size: 24px; letter-spacing: 1px; }
         input {
             width: 90%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             border: 1px solid #333;
-            border-radius: 6px;
-            background-color: #2a2a2a;
+            border-radius: 8px;
+            background-color: #222;
             color: white;
             font-size: 15px;
         }
         button {
             width: 95%;
             padding: 12px;
-            background-color: #4CAF50;
+            background-color: var(--primary);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
-            transition: 0.2s;
+            margin-top: 8px;
+            transition: 0.3s;
         }
-        button:hover { background-color: #45a049; }
+        button:hover { filter: brightness(1.2); }
         .hidden { display: none !important; }
         
+        /* MODERN SEKME MENÜSÜ */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            background: #202026;
+            padding: 5px;
+            border-radius: 8px;
+        }
+        .tab-btn {
+            background: none;
+            color: #aaa;
+            padding: 8px 12px;
+            margin: 0;
+            font-size: 13px;
+            width: auto;
+            border-radius: 6px;
+        }
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin: 15px 0;
+            margin-bottom: 15px;
             text-align: left;
-            background: #252525;
+            background: #1e1e24;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
         }
-        .stat-item { padding: 3px 0; font-size: 14px; font-weight: 500; }
+        .stat-item { padding: 2px 0; font-size: 13px; font-weight: 500; }
+
+        .shop-item {
+            background: #1e1e24;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #2d2d35;
+        }
 
         .log-box {
-            background: #000;
-            padding: 12px;
-            height: 130px;
+            background: #050507;
+            padding: 10px;
+            height: 100px;
             overflow-y: auto;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-top: 15px;
-            font-size: 13px;
-            color: #00ff00;
+            font-size: 12px;
+            color: #00ff66;
             text-align: left;
-            border: 1px solid #222;
+            border: 1px solid #1a1a22;
             font-family: monospace;
         }
 
-        /* CANLI MAÇ EKRANI */
+        /* MAÇ EKRANI */
         .match-overlay {
-            background-color: #1b4d22;
-            border: 3px solid #4CAF50;
+            background-color: #0d2e15;
+            border: 3px solid var(--primary);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-top: 15px;
         }
         .match-header {
             display: flex;
             justify-content: space-between;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            color: #fff;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
+            border-radius: 6px;
         }
         .match-ticker {
             background: #000;
             color: #ffeb3b;
             padding: 15px;
-            border-radius: 6px;
-            min-height: 50px;
-            margin-bottom: 15px;
-            font-size: 15px;
+            border-radius: 8px;
+            min-height: 40px;
+            margin: 15px 0;
+            font-size: 14px;
         }
-        .action-btn { background-color: #0d6efd; margin: 5px; width: auto; display: inline-block; padding: 10px 18px; }
-        .action-btn:hover { background-color: #0b5ed7; }
+        .action-btn { background-color: #0d6efd; margin: 4px; width: auto; display: inline-block; padding: 8px 16px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <img src="logo.png" alt="İman Power FC Logo" class="logo">
-    <h1>İmanPowerGame</h1>
+    <h1>İmanPowerGame PRO</h1>
 
     <div id="auth-screen">
-        <h3>Futbolcu Girişi / Kayıt</h3>
-        <input type="text" id="username" placeholder="Futbolcu İsmi (Kullanıcı Adı)" required>
+        <h3>Kariyerine Başla</h3>
+        <input type="text" id="username" placeholder="Futbolcu İsmi" required>
         <input type="password" id="password" placeholder="Şifre" required>
         <button id="btn-login">Giriş Yap</button>
-        <button id="btn-register" style="background-color: #2196F3;">Yeni Kariyer Aç (3. Ligden Başla)</button>
-        <p id="connection-status" style="font-size: 13px; color: #ff9800; margin-top: 15px;">Veritabanına bağlanılıyor...</p>
+        <button id="btn-register" style="background-color: #2196F3;">Yeni Kariyer (Rastgele 3. Lig Takımı)</button>
+        <p id="connection-status" style="font-size: 12px; color: #ff9800; margin-top: 10px;">Bağlanıyor...</p>
     </div>
 
     <div id="game-screen" class="hidden">
-        <h2>⚽ Oyuncu: <span id="player-name-display">-</span></h2>
+        <div style="display:flex; justify-content: space-between; align-items:center;">
+            <h3>🏃 <span id="player-name-display">-</span></h3>
+            <h4 style="color:var(--accent)">🛡️ <span id="player-team-display">-</span></h4>
+        </div>
         
         <div class="stats-grid">
             <div class="stat-item">🏆 Lig: <span id="stat-league">3. Lig</span></div>
-            <div class="stat-item">📈 Değer: <span id="stat-value" style="color: #2196F3;">0</span> €</div>
+            <div class="stat-item">📈 Değer: <span id="stat-value" style="color: #00bcd4;">0</span> €</div>
             <div class="stat-item">🔋 Enerji: <span id="stat-energy">100</span>/100</div>
             <div class="stat-item">💰 Para: <span id="stat-money">0</span> TL</div>
-            <div class="stat-item">💪 Şut Gücü: <span id="stat-power">10</span></div>
-            <div class="stat-item">👟 Koşu Hızı: <span id="stat-speed">10</span></div>
+            <div class="stat-item">💪 Şut: <span id="stat-power">10</span> | 👟 Hız: <span id="stat-speed">10</span></div>
+            <div class="stat-item" style="grid-column: span 2; color:#ffeb3b;">
+                👔 T.D: <span id="m-td">100</span>% | 👥 Takım: <span id="m-team">100</span>% | 🤝 Sponsor: <span id="m-spon">Pasif</span>
+            </div>
         </div>
 
-        <div id="main-actions">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-actions')">🕹️ Aksiyonlar</button>
+            <button class="tab-btn" onclick="switchTab('tab-shop')">🥤 Mağaza/Enerji</button>
+            <button class="tab-btn" onclick="switchTab('tab-luxury')">💎 Lüks Yaşam</button>
+        </div>
+
+        <div id="tab-actions" class="tab-content">
+            <button id="btn-match" style="background-color: var(--warning); font-size:18px;">⚽ MAÇA ÇIK (-40 Enerji)</button>
             <button id="btn-train">🏋️ Antrenman Yap (-20 Enerji, +2 Yetenek)</button>
-            <button id="btn-match" style="background-color: #ff9800;">⚽ Maça Çık (-40 Enerji)</button>
-            <button id="btn-rest" style="background-color: #9c27b0;">🛏️ Dinlen (+30 Enerji)</button>
-            <button id="btn-logout" style="background-color: #f44336; margin-top: 20px;">Oyundan Çık ve Kaydet</button>
+            <button id="btn-rest" style="background-color: #9c27b0;">🛏️ Evde Dinlen (+25 Enerji)</button>
+            <button id="btn-logout" style="background-color: var(--danger); margin-top: 15px;">Oyundan Çık ve Kaydet</button>
+        </div>
+
+        <div id="tab-shop" class="tab-content hidden">
+            <h4>🔋 Enerji İçecekleri</h4>
+            <div class="shop-item">
+                <div>💧 Su (+10 Enerji)</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyEnergy('su', 10, 15)">15 TL</button>
+            </div>
+            <div class="shop-item">
+                <div>⚡ Powerade (+35 Enerji)</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyEnergy('power', 35, 50)">50 TL</button>
+            </div>
+            <div class="shop-item">
+                <div>🚀 Red Bull (+75 Enerji)</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyEnergy('redbull', 75, 100)">100 TL</button>
+            </div>
+            <h4>🤝 Sponsorluk Anlaşması</h4>
+            <div class="shop-item" id="sponsor-box">
+                <div>Nike Resmi Sponsorluğu (Maç Gelirini 2 Kat Yapar)</div>
+                <button style="width:auto; padding:5px 10px; background-color:var(--accent);" onclick="buySponsor()">10,000 TL</button>
+            </div>
+        </div>
+
+        <div id="tab-luxury" class="tab-content hidden">
+            <h4>📱 Telefonlar (Piyasa Değeri Katlar)</h4>
+            <div class="shop-item" id="item-phone-1">
+                <div>📱 Samsung Galaxy S26</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyItem('phone', 3000, 'Samsung S26', 1500)">3,000 TL</button>
+            </div>
+            <div class="shop-item" id="item-phone-2">
+                <div>📱 iPhone 17 Pro Max</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyItem('phone2', 8000, 'iPhone 17', 4000)">8,000 TL</button>
+            </div>
+            <h4>🏠 Evler & Mülkler</h4>
+            <div class="shop-item" id="item-house-1">
+                <div>🏢 Lüks Rezidans Dairesi</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyItem('house', 25000, 'Lüks Rezidans', 15000)">25,000 TL</button>
+            </div>
+            <div class="shop-item" id="item-house-2">
+                <div>🏰 Havuzlu Süper Villa</div>
+                <button style="width:auto; padding:5px 10px;" onclick="buyItem('house2', 75000, 'Süper Villa', 50000)">75,000 TL</button>
+            </div>
+            <p style="font-size:11px; color:#aaa;">Satın alınan lüks eşyalar itibarınızı ve kulüplerin size olan ilgisini doğrudan artırır.</p>
         </div>
 
         <div id="match-screen" class="match-overlay hidden">
             <div class="match-header">
-                <div>🏟️ <span id="match-team-names">İman Power FC - Rakip</span></div>
-                <div style="color: #ffeb3b;"><span id="match-time">0</span>' dk</div>
+                <div>🏟️ <span id="m-team-vs">-</span></div>
+                <div style="color: #ffeb3b;"><span id="m-min">0</span>' dk</div>
             </div>
-            <div class="match-header" style="font-size: 16px; background: none; justify-content: center; padding: 0;">
-                Skor: &nbsp;<span id="match-score">0 - 0</span>
+            <div class="match-header" style="background:none; justify-content:center; font-size:20px; padding:5px 0;">
+                <span id="m-score">0 - 0</span>
             </div>
-            <div id="match-ticker" class="match-ticker">Maç başlamak üzere, oyuncular sahaya çıkıyor...</div>
+            <div id="match-ticker" class="match-ticker">Oyuncular tünelde bekliyor...</div>
             <div id="match-choices"></div>
         </div>
 
         <div class="log-box" id="game-log">
-            Kariyerine hoş geldin! Antrenman yap, maçlara çık, piyasa değerini yükselt ve üst liglere tırman!
+            Kariyerine hoş geldin!
         </div>
     </div>
 </div>
 
 <script>
-    // Firebase Yapılandırması (49ae6 verilerine göre)
     const firebaseConfig = {
         apiKey: "AIzaSyDEbenlp7KcVZ2oE9OiEHTT12oEuGFVGWKs",
         authDomain: "kartalhaber-49ae6.firebaseapp.com",
@@ -184,294 +277,284 @@
         projectId: "kartalhaber-49ae6",
         storageBucket: "kartalhaber-49ae6.firebasestorage.app",
         messagingSenderId: "804745909398",
-        appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
-        measurementId: "G-TV8NLXQTNP"
+        appId: "1:804745909398:web:d4ecaf7174886bbe835eb7"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Bağlantı Kontrolü
-    const statusText = document.getElementById("connection-status");
-    db.ref(".info/connected").on("value", (snap) => {
-        if (snap.val() === true) {
-            statusText.innerText = "🟢 Veritabanı Bağlantısı Başarılı!";
-            statusText.style.color = "#4CAF50";
-        } else {
-            statusText.innerText = "🔴 Bağlantı kesildi, bilgiler kontrol ediliyor...";
-            statusText.style.color = "#f44336";
-        }
+    // Takım Listeleri
+    const lig3Takimlari = ["Göztepe", "Sakaryaspor", "Kocaelispor", "Erzurumspor", "Gençlerbirliği"];
+    const lig2Takimlari = ["Samsunspor", "Antalyaspor", "Konyaspor", "Gaziantep FK", "Sivasspor"];
+    const lig1Takimlari = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor"];
+
+    db.ref(".info/connected").on("value", (s) => {
+        document.getElementById("connection-status").innerText = s.val() ? "🟢 Sunucu Aktif" : "🔴 Bağlantı Yok";
     });
 
     let currentPlayer = null;
-    let playerData = { username: "", password: "", energy: 100, money: 0, power: 10, speed: 10, league: 3, marketValue: 5000 };
+    let playerData = {
+        username: "", password: "", energy: 100, money: 100, power: 10, speed: 10,
+        league: 3, currentTeam: "", marketValue: 5000,
+        tdMoral: 100, teamMoral: 100, hasSponsor: false,
+        inventory: []
+    };
 
     const authScreen = document.getElementById("auth-screen");
     const gameScreen = document.getElementById("game-screen");
-    const mainActions = document.getElementById("main-actions");
-    const matchScreen = document.getElementById("match-screen");
-    const matchTimeDisplay = document.getElementById("match-time");
-    const matchScoreDisplay = document.getElementById("match-score");
-    const matchTicker = document.getElementById("match-ticker");
-    const matchChoices = document.getElementById("match-choices");
     const logBox = document.getElementById("game-log");
 
-    function addLog(message) {
-        logBox.innerHTML += `<br>> ${message}`;
+    function addLog(msg) {
+        logBox.innerHTML += `<br>> ${msg}`;
         logBox.scrollTop = logBox.scrollHeight;
     }
 
-    // Dinamik Piyasa Değeri Hesaplama Fonksiyonu
-    function calculateMarketValue() {
-        let base = (playerData.power * 1200) + (playerData.speed * 1000) + (playerData.money * 2);
-        if(playerData.league === 2) base += 25000;
-        if(playerData.league === 1) base += 75000;
-        return base;
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.remove('hidden');
+        event.currentTarget.classList.add('active');
     }
 
     function updateUI() {
-        playerData.marketValue = calculateMarketValue();
-        
+        // Dinamik Değer Hesaplama
+        let itemBonus = playerData.inventory ? playerData.inventory.length * 10000 : 0;
+        playerData.marketValue = (playerData.power * 2000) + (playerData.speed * 1500) + itemBonus;
+        if(playerData.league === 2) playerData.marketValue += 50000;
+        if(playerData.league === 1) playerData.marketValue += 200000;
+
         document.getElementById("player-name-display").innerText = playerData.username.toUpperCase();
+        document.getElementById("player-team-display").innerText = playerData.currentTeam;
         document.getElementById("stat-league").innerText = playerData.league + ". Lig";
         document.getElementById("stat-value").innerText = playerData.marketValue.toLocaleString();
         document.getElementById("stat-energy").innerText = playerData.energy;
         document.getElementById("stat-money").innerText = playerData.money;
         document.getElementById("stat-power").innerText = playerData.power;
         document.getElementById("stat-speed").innerText = playerData.speed;
+        
+        document.getElementById("m-td").innerText = playerData.tdMoral;
+        document.getElementById("m-team").innerText = playerData.teamMoral;
+        document.getElementById("m-spon").innerText = playerData.hasSponsor ? "Aktif (2x Para)" : "Pasif";
+        if(playerData.hasSponsor) document.getElementById("sponsor-box").style.display = "none";
     }
 
-    function savePlayerData() {
-        if (!currentPlayer) return;
-        db.ref('players/' + currentPlayer).set(playerData);
-    }
+    function save() { if(currentPlayer) db.ref('players/' + currentPlayer).set(playerData); }
 
-    // KAYIT OLMA (3. LİGDEN BAŞLAR)
+    // KAYIT (3. LİGDEN RASTGELE BAŞLAR)
     document.getElementById("btn-register").addEventListener("click", () => {
         const user = document.getElementById("username").value.trim().toLowerCase();
         const pass = document.getElementById("password").value.trim();
+        if(!user || !pass) return alert("Eksik alan!");
 
-        if(!user || !pass) { alert("Lütfen isim ve şifre yazın!"); return; }
-
-        db.ref(`players/${user}`).once("value", (snapshot) => {
-            if (snapshot.exists()) {
-                alert("Bu isim zaten alınmış!");
-            } else {
-                playerData = { username: user, password: pass, energy: 100, money: 100, power: 10, speed: 10, league: 3, marketValue: 5000 };
-                currentPlayer = user;
-                savePlayerData();
-                alert("Kariyeriniz 3. Ligde Başladı!");
-                authScreen.classList.add("hidden");
-                gameScreen.classList.remove("hidden");
-                updateUI();
-            }
+        db.ref(`players/${user}`).once("value", (snap) => {
+            if (snap.exists()) return alert("Bu isim alınmış!");
+            
+            playerData = {
+                username: user, password: pass, energy: 100, money: 200, power: 10, speed: 10,
+                league: 3, currentTeam: lig3Takimlari[Math.floor(Math.random() * lig3Takimlari.length)],
+                marketValue: 5000, tdMoral: 80, teamMoral: 80, hasSponsor: false, inventory: ["Krampon"]
+            };
+            currentPlayer = user;
+            save();
+            authScreen.classList.add("hidden");
+            gameScreen.classList.remove("hidden");
+            updateUI();
+            addLog(`Kariyer ${playerData.currentTeam} takımında başladı! Başarılar!`);
         });
     });
 
-    // GİRİŞ YAPMA
+    // GİRİŞ
     document.getElementById("btn-login").addEventListener("click", () => {
         const user = document.getElementById("username").value.trim().toLowerCase();
         const pass = document.getElementById("password").value.trim();
 
-        if(!user || !pass) { alert("Boş alan bırakmayın!"); return; }
-
-        db.ref(`players/${user}`).once("value", (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                if(data.password === pass) {
-                    playerData = data;
-                    if(!playerData.league) playerData.league = 3; // Eski kayıtlar için koruma
-                    currentPlayer = user;
-                    authScreen.classList.add("hidden");
-                    gameScreen.classList.remove("hidden");
-                    updateUI();
-                    addLog("Kariyer kaldığı yerden devam ediyor...");
-                } else {
-                    alert("Şifre yanlış!");
-                }
-            } else {
-                alert("Böyle bir oyuncu bulunamadı.");
-            }
+        db.ref(`players/${user}`).once("value", (snap) => {
+            if (!snap.exists()) return alert("Kullanıcı yok!");
+            const data = snap.val();
+            if(data.password !== pass) return alert("Şifre yanlış!");
+            
+            playerData = data;
+            currentPlayer = user;
+            authScreen.classList.add("hidden");
+            gameScreen.classList.remove("hidden");
+            updateUI();
+            addLog("Kaldığın yerden devam ediyorsun.");
         });
     });
 
-    // ANTRENMAN
+    // AKSİYONLAR
     document.getElementById("btn-train").addEventListener("click", () => {
-        if (playerData.energy >= 20) {
-            playerData.energy -= 20;
-            playerData.power += 2;
-            playerData.speed += 1;
-            addLog("Antrenman yapıldı. Piyasa değerin yükseliyor!");
-            updateUI();
-            savePlayerData();
-        } else {
-            alert("Enerjin yetersiz!");
-        }
+        if(playerData.energy < 20) return alert("Yetersiz enerji!");
+        playerData.energy -= 20; playerData.power += 2; playerData.speed += 1;
+        addLog("Antrenman yapıldı. Yetenekler ve piyasa değerin arttı.");
+        updateUI(); save();
     });
 
-    // DİNLEN
     document.getElementById("btn-rest").addEventListener("click", () => {
-        if(playerData.energy < 100) {
-            playerData.energy = Math.min(100, playerData.energy + 30);
-            addLog("Dinlendin ve enerji topladın.");
-            updateUI();
-            savePlayerData();
-        }
+        playerData.energy = Math.min(100, playerData.energy + 25);
+        addLog("Evinde uyudun ve dinlendin.");
+        updateUI(); save();
     });
 
-    // --- GELİŞMİŞ 90 DAKİKA MAÇ SİMÜLASYONU VE LİG SİSTEMİ ---
-    let matchInterval;
-    let currentMinute = 0;
-    let myScore = 0;
-    let opScore = 0;
-    let matchActive = false;
+    // MAĞAZA FONKSİYONLARI
+    window.buyEnergy = function(id, eAmt, cost) {
+        if(playerData.money < cost) return alert("Paran yetersiz!");
+        playerData.money -= cost;
+        playerData.energy = Math.min(100, playerData.energy + eAmt);
+        addLog(`Satın Alındı: ${id.toUpperCase()} (+${eAmt} Enerji)`);
+        updateUI(); save();
+    };
+
+    window.buySponsor = function() {
+        if(playerData.money < 10000) return alert("Sponsorluk için 10.000 TL gerekiyor!");
+        playerData.money -= 10000;
+        playerData.hasSponsor = true;
+        addLog("🤝 Nike ile dev sponsorluk anlaşması imzalandı! Artık maç ödülleri 2 katı!");
+        updateUI(); save();
+    };
+
+    window.buyItem = function(id, cost, name, valueAdd) {
+        if(playerData.money < cost) return alert("Yetersiz bakiye!");
+        if(!playerData.inventory) playerData.inventory = [];
+        if(playerData.inventory.includes(name)) return alert("Bu ürüne zaten sahipsin!");
+        
+        playerData.money -= cost;
+        playerData.inventory.push(name);
+        addLog(`💎 Satın alındı ve mülklerine eklendi: ${name}. İtibarın tavan yaptı!`);
+        updateUI(); save();
+    };
+
+    // --- DAHA TEMPOLU VE UZUN SİMÜLASYONLU MAÇ MOTORU ---
+    let mInterval; let mMin = 0; let mScoreUs = 0; let mScoreThem = 0;
+    const rakipTakimlar = ["Diyarbekirspor", "Ankaragücü", "Bursaspor", "Adana Demirspor", "Kasımpaşa", "Alanyaspor"];
 
     document.getElementById("btn-match").addEventListener("click", () => {
-        if (playerData.energy >= 40) {
-            playerData.energy -= 40;
-            updateUI();
-            
-            // Maç değişkenlerini sıfırla
-            currentMinute = 0;
-            myScore = 0;
-            opScore = 0;
-            matchActive = true;
-            
-            mainActions.classList.add("hidden");
-            matchScreen.classList.remove("hidden");
-            matchScoreDisplay.innerText = "0 - 0";
-            
-            runMatchSimulation();
-        } else {
-            alert("Maça çıkacak enerjin yok!");
-        }
+        if(playerData.energy < 40) return alert("Maça çıkacak gücün kalmadı!");
+        playerData.energy -= 40;
+        
+        mMin = 0; mScoreUs = 0; mScoreThem = 0;
+        document.getElementById("m-team-vs").innerText = `${playerData.currentTeam} - ${rakipTakimlar[Math.floor(Math.random()*rakipTakimlar.length)]}`;
+        document.getElementById("m-score").innerText = "0 - 0";
+        
+        document.getElementById("tab-actions").parentElement.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
+        document.getElementById("match-screen").classList.remove("hidden");
+        
+        startMatchEngine();
     });
 
-    function runMatchSimulation() {
-        matchInterval = setInterval(() => {
-            if (!matchActive) return;
+    function startMatchEngine() {
+        mInterval = setInterval(() => {
+            mMin += Math.floor(Math.random() * 5) + 3;
+            if(mMin > 90) mMin = 90;
+            document.getElementById("m-min").innerText = mMin;
 
-            currentMinute += Math.floor(Math.random() * 8) + 4; // Dakikayı hızlıca ilerlet
-            if (currentMinute > 90) currentMinute = 90;
-            
-            matchTimeDisplay.innerText = currentMinute;
-
-            // Rastgele Etkinlik Oluştur (Atak veya Savunma)
-            let eventChance = Math.random();
-            
-            if (eventChance > 0.75) {
-                // BİZİM ATAK POZİSYONUMUZ (Oyun durur, kararı bekler)
-                clearInterval(matchInterval);
-                triggerPlayerAttack();
-            } else if (eventChance < 0.15) {
-                // RAKİP ATAK YAPTI
-                opScore++;
-                matchScoreDisplay.innerText = `${myScore} - ${opScore}`;
-                matchTicker.innerText = `🚨 GOL! Rakip takım defansın hatasını affetmedi ve golü attı.`;
+            let rnd = Math.random();
+            if(rnd > 0.70) {
+                // SÜPER ATAK POZİSYONU
+                clearInterval(mInterval);
+                matchAttack();
+            } else if(rnd < 0.18) {
+                // RAKİP ATAĞI VE SAVUNMA SEÇENEĞİ
+                clearInterval(mInterval);
+                matchDefend();
             } else {
-                // Normal oyun akışı
-                let TickerTexts = [
-                    "Orta sahada kıran kırana bir mücadele var.",
-                    "Takım arkadaşların pas yaparak boşluk arıyor.",
-                    "Rakip takım sağ kanattan yükleniyor ancak defansımız başarılı.",
-                    "Topla buluştun ancak savunma seni sıkıştırıyor."
-                ];
-                matchTicker.innerText = TickerTexts[Math.floor(Math.random() * TickerTexts.length)];
+                document.getElementById("match-ticker").innerText = "Top iki takım arasında hızla gidip geliyor, tempo çok yüksek!";
             }
 
-            if (currentMinute >= 90) {
-                endMatch();
-            }
-        }, 1500); // Her 1.5 saniyede bir süre akacak
+            if(mMin >= 90) { endCurrentMatch(); }
+        }, 1200);
     }
 
-    function triggerPlayerAttack() {
-        matchTicker.innerText = `🔥 POZİSYON! ${playerData.username.toUpperCase()} ceza sahası önünde topla buluştu! Kritik an!`;
-        matchChoices.innerHTML = "";
+    function matchAttack() {
+        document.getElementById("match-ticker").innerText = `🔥 POZİSYON! ${playerData.username.toUpperCase()} ceza sahası çizgisine yakın yerde fırtına gibi esti!`;
+        const div = document.getElementById("match-choices"); div.innerHTML = "";
 
-        // Seçenek butonları oluşturma
-        let choices = [
-            { t: "💥 Sert Şut Çek", type: "power", diff: 15 },
-            { t: "⚡ Hızla Kaleciyi Geç", type: "speed", diff: 14 }
+        let opt = [
+            { t: "🚀 Kaleye Füzeyi Gönder (Güç)", type: "p", diff: 13 },
+            { t: "⚡ Kaleciyi Çalımla (Hız)", type: "s", diff: 12 }
         ];
-
-        choices.forEach(c => {
-            const btn = document.createElement("button");
-            btn.innerText = c.t;
-            btn.className = "action-btn";
-            btn.onclick = () => {
-                let success = false;
-                let userRoll = Math.floor(Math.random() * 10);
-                
-                if (c.type === "power" && (userRoll + playerData.power) >= c.diff) success = true;
-                if (c.type === "speed" && (userRoll + playerData.speed) >= c.diff) success = true;
-
-                if (success) {
-                    myScore++;
-                    matchScoreDisplay.innerText = `${myScore} - ${opScore}`;
-                    matchTicker.innerText = `⚽ HARİKA GOL!! ${playerData.username.toUpperCase()} topu ağlara gönderdi!`;
+        opt.forEach(o => {
+            let b = document.createElement("button"); b.innerText = o.t; b.className = "action-btn";
+            b.onclick = () => {
+                let r = Math.floor(Math.random()*10);
+                if((o.type==='p' && (r+playerData.power)>=o.diff) || (o.type==='s' && (r+playerData.speed)>=o.diff)) {
+                    mScoreUs++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
+                    document.getElementById("match-ticker").innerText = "⚽ MÜTHİŞ GOL!! Top örümcek ağlarını temizledi!";
                 } else {
-                    matchTicker.innerText = `❌ Kaçtı! Top doğrudan auta veya kalecinin kucağına gitti.`;
+                    document.getElementById("match-ticker").innerText = "❌ Defans son anda ayak koydu, pozisyon kaçtı!";
                 }
-
-                matchChoices.innerHTML = "";
-                // Maç simülasyonunu kaldığı yerden devam ettir
-                runMatchSimulation();
+                div.innerHTML = ""; startMatchEngine();
             };
-            matchChoices.appendChild(btn);
+            div.appendChild(b);
         });
     }
 
-    function endMatch() {
-        clearInterval(matchInterval);
-        matchActive = false;
-        
-        let prim = 0;
-        let logMsg = "";
+    function matchDefend() {
+        document.getElementById("match-ticker").innerText = "🚨 RAKİP TEHLİKELİ GELİYOR! Defansa yardıma koşmalısın!";
+        const div = document.getElementById("match-choices"); div.innerHTML = "";
 
-        if (myScore > opScore) {
-            prim = 300;
-            playerData.money += prim;
-            logMsg = `Maçı ${myScore}-${opScore} KAZANDINIZ! Galibiyet primi (+${prim} TL) hesabına yattı.`;
-            
-            // Lig Atlatma Kontrolü (Kazandıkça üst lige tırmanma şansı)
-            if (Math.random() > 0.6) {
-                if (playerData.league === 3) {
-                    playerData.league = 2;
-                    logMsg += " 🎉 TEBRİKLER! Performansınla takımını 2. LİG'E taşımayı başardın!";
-                } else if (playerData.league === 2) {
-                    playerData.league = 1;
-                    logMsg += " 👑 İNANILMAZ! Artık EN ÜST LİG olan 1. LİG'desin!";
-                }
+        let b = document.createElement("button"); b.innerText = "🛑 Kayarak Sert Müdahale Et (Hız)"; b.className = "action-btn";
+        b.onclick = () => {
+            if((Math.floor(Math.random()*10) + playerData.speed) >= 12) {
+                document.getElementById("match-ticker").innerText = "🛡️ Harika müdahale! Topu rakibin ayağından çekip aldın.";
+            } else {
+                mScoreThem++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
+                document.getElementById("match-ticker").innerText = "🚨 Gol! Savunma yetersiz kaldı, top ağlarımızda.";
             }
-        } else if (myScore === opScore) {
-            prim = 100;
-            playerData.money += prim;
-            logMsg = `Maç ${myScore}-${opScore} berabere bitti. Beraberlik ödülü (+${prim} TL)`;
-        } else {
-            logMsg = `Maçı ${myScore}-${opScore} KAYBETTİNİZ. Takım morali bozuk, daha çok çalışmalısın.`;
-        }
-
-        addLog(`[MAÇ SONUCU] ${logMsg}`);
-        updateUI();
-        savePlayerData();
-
-        // 3 saniye sonra ana ekrana geri dön
-        setTimeout(() => {
-            matchScreen.classList.add("hidden");
-            mainActions.classList.remove("hidden");
-            matchTicker.innerText = "Maç bekleniyor...";
-        }, 3500);
+            div.innerHTML = ""; startMatchEngine();
+        };
+        div.appendChild(b);
     }
 
-    // OYUNDAN ÇIKIŞ
+    function endCurrentMatch() {
+        clearInterval(mInterval);
+        let winBonus = playerData.hasSponsor ? 600 : 300;
+        let resText = "";
+
+        if(mScoreUs > mScoreThem) {
+            playerData.money += winBonus;
+            playerData.tdMoral = Math.min(100, playerData.tdMoral + 10);
+            playerData.teamMoral = Math.min(100, playerData.teamMoral + 10);
+            resText = `Maçı Kazandınız! Ödül: +${winBonus} TL. Teknik direktör ve takım mutlu!`;
+            checkTransferOffers();
+        } else if(mScoreUs === mScoreThem) {
+            playerData.money += (winBonus/3);
+            resText = `Berabere bitti. Ödül: +${winBonus/3} TL.`;
+        } else {
+            // YENİLİNCE MORAL VE DEĞER DÜŞMESİ
+            playerData.tdMoral = Math.max(10, playerData.tdMoral - 15);
+            playerData.teamMoral = Math.max(10, playerData.teamMoral - 15);
+            playerData.power = Math.max(5, playerData.power - 1); // Performans düşüşü
+            resText = `🛑 Maçı KAYBETTİNİZ! Teknik direktör ve takımın morali çöktü, yeteneklerin ve değerin azaldı!`;
+        }
+
+        addLog(`[MAÇ SONUCU] ${resText}`);
+        updateUI(); save();
+        
+        setTimeout(() => {
+            document.getElementById("match-screen").classList.add("hidden");
+            document.getElementById("tab-actions").classList.remove("hidden");
+        }, 3000);
+    }
+
+    // LİG VE GERÇEK TAKIM TRANSFER SİSTEMİ
+    function checkTransferOffers() {
+        let rng = Math.random();
+        if(playerData.league === 3 && playerData.marketValue > 35000 && rng > 0.5) {
+            let nextTeam = lig2Takimlari[Math.floor(Math.random()*lig2Takimlari.length)];
+            playerData.league = 2; playerData.currentTeam = nextTeam;
+            alert(`🎉 TEBRİKLER TRANSFER TEKLİFİ! 2. Lig ekiplerinden ${nextTeam} seni kadrosuna kattı!`);
+        } else if(playerData.league === 2 && playerData.marketValue > 85000 && rng > 0.6) {
+            let nextTeam = lig1Takimlari[Math.floor(Math.random()*lig1Takimlari.length)];
+            playerData.league = 1; playerData.currentTeam = nextTeam;
+            alert(`👑 DEV TRANSFER! 1. Lig devi ${nextTeam.toUpperCase()} seni transfer etti! Yıldızlaştın!`);
+        }
+    }
+
     document.getElementById("btn-logout").addEventListener("click", () => {
-        savePlayerData();
-        currentPlayer = null;
-        gameScreen.classList.add("hidden");
-        authScreen.classList.remove("hidden");
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
+        save(); currentPlayer = null;
+        gameScreen.classList.add("hidden"); authScreen.classList.remove("hidden");
+        document.getElementById("username").value = ""; document.getElementById("password").value = "";
     });
 </script>
 </body>
