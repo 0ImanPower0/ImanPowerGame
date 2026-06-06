@@ -132,7 +132,6 @@
             font-family: monospace;
         }
 
-        /* 4 ŞIKLI POZİSYON BUTONLARI */
         .choices-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -140,7 +139,6 @@
             margin-top: 10px;
         }
 
-        /* MAÇ EKRANI */
         .match-overlay {
             background-color: #0d2e15;
             border: 3px solid var(--primary);
@@ -168,7 +166,6 @@
         }
         .action-btn { background-color: #0d6efd; margin: 0; width: 100%; padding: 12px; font-size: 13px; }
 
-        /* LİDERLİK TABLOSU */
         .leaderboard-card {
             background-color: var(--container-bg);
             border: 1px solid #222;
@@ -225,7 +222,6 @@
             </div>
         </div>
 
-        <!-- SEKME MENÜSÜ -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('tab-actions')">🕹️ Aksiyonlar</button>
             <button class="tab-btn" onclick="switchTab('tab-shop')">🥤 Mağaza/Enerji</button>
@@ -240,7 +236,7 @@
             <button id="btn-logout" style="background-color: var(--danger); margin-top: 15px;">Oyundan Çık ve Kaydet</button>
         </div>
 
-        <!-- MAĞAZA VE ENERJİ BÖLÜMÜ (ZAMLI FİYATLAR) -->
+        <!-- MAĞAZA VE ENERJİ BÖLÜMÜ -->
         <div id="tab-shop" class="tab-content hidden">
             <h4>🔋 Enerji İçecekleri</h4>
             <div class="shop-item">
@@ -284,7 +280,7 @@
             </div>
         </div>
 
-        <!-- CANLI MAÇ EKRANI -->
+        <!-- CANLI MAÇ EKRANI (DEVRELİ SİSTEM) -->
         <div id="match-screen" class="match-overlay hidden">
             <div class="match-header">
                 <div>🏟️ <span id="m-team-vs">-</span></div>
@@ -303,7 +299,7 @@
 
 <!-- CANLI LİDERLİK TABLOSU -->
 <div class="leaderboard-card">
-    <h3 style="margin: 0; color: var(--accent); font-size: 16px;">🏆 Dünya Çapında Piyasa Değeri Tablosu</h3>
+    <h3 style="margin: 0; color: var(--accent); font-size: 16px;">🏆 Dünya Çapında Canlı Piyasa Değeri Tablosu</h3>
     <table class="leaderboard-table">
         <thead>
             <tr>
@@ -367,14 +363,14 @@
         event.currentTarget.classList.add('active');
     }
 
-    // LİDERLİK TABLOSUNU REALTIME GÜNCELLEME
+    // REALTIME (ANLIK) LİDERLİK TABLOSU DİNLEYİCİSİ
     function listenLeaderboard() {
-        db.ref('players').orderByChild('marketValue').limitToLast(10).on('value', (snapshot) => {
+        db.ref('players').orderByChild('marketValue').on('value', (snapshot) => {
             const list = [];
             snapshot.forEach((child) => {
                 list.push(child.val());
             });
-            list.reverse(); // En yüksek en üstte olsun
+            list.reverse(); // Pahalıdan ucuza
 
             const tbody = document.getElementById("leaderboard-body");
             tbody.innerHTML = "";
@@ -450,11 +446,11 @@
         });
     });
 
-    // AKSİYONLAR VE MAĞAZA
+    // GELİŞTİRMELER VE MAĞAZA
     document.getElementById("btn-train").addEventListener("click", () => {
         if(playerData.energy < 20) return alert("Yetersiz enerji!");
         playerData.energy -= 20; playerData.power += 2; playerData.speed += 1;
-        updateUI(); save(); addLog("Antrenman tamamlandı.");
+        updateUI(); save(); addLog("Antrenman tamamlandı. Değerin canlı tabloda yükseldi!");
     });
 
     document.getElementById("btn-rest").addEventListener("click", () => {
@@ -479,17 +475,17 @@
         if(!playerData.inventory) playerData.inventory = [];
         if(playerData.inventory.includes(name)) return alert("Zaten var!");
         playerData.money -= cost; playerData.inventory.push(name);
-        updateUI(); save(); addLog(`${name} satın alındı.`);
+        updateUI(); save(); addLog(`${name} satın alındı. Değerin arttı!`);
     };
 
-    // --- AZALTILMIŞ POZİSYONLU VE ÇOK ATAKLI GELİŞMİŞ MAÇ MOTORU ---
-    let mInterval; let mMin = 0; let mScoreUs = 0; let mScoreThem = 0;
+    // --- DEVRELİ GELİŞMİŞ MAÇ MOTORU ---
+    let mInterval; let mMin = 0; let mScoreUs = 0; let mScoreThem = 0; let isFirstHalf = true;
     const rakipTakimlar = ["Diyarbekirspor", "Ankaragücü", "Bursaspor", "Adana Demirspor", "Kasımpaşa"];
 
     document.getElementById("btn-match").addEventListener("click", () => {
         if(playerData.energy < 40) return alert("Maça çıkacak gücün kalmadı!");
         playerData.energy -= 40;
-        mMin = 0; mScoreUs = 0; mScoreThem = 0;
+        mMin = 0; mScoreUs = 0; mScoreThem = 0; isFirstHalf = true;
         document.getElementById("m-team-vs").innerText = `${playerData.currentTeam} - ${rakipTakimlar[Math.floor(Math.random()*rakipTakimlar.length)]}`;
         document.getElementById("m-score").innerText = "0 - 0";
         document.getElementById("tab-actions").parentElement.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
@@ -499,43 +495,76 @@
 
     function startMatchEngine() {
         mInterval = setInterval(() => {
-            mMin += Math.floor(Math.random() * 6) + 4;
-            if(mMin > 90) mMin = 90;
-            document.getElementById("m-min").innerText = mMin;
+            mMin += Math.floor(Math.random() * 5) + 3;
+            
+            // 1. DEVRE DURDURMA NOKTASI (45. Dakika Kontrolü)
+            if(isFirstHalf && mMin >= 45) {
+                mMin = 45;
+                document.getElementById("m-min").innerText = mMin;
+                clearInterval(mInterval);
+                showHalfTimeScreen();
+                return;
+            }
 
+            // 2. DEVRE DURDURMA NOKTASI (90. Dakika Kontrolü)
+            if(!isFirstHalf && mMin >= 90) {
+                mMin = 90;
+                document.getElementById("m-min").innerText = mMin;
+                clearInterval(mInterval);
+                endCurrentMatch();
+                return;
+            }
+
+            document.getElementById("m-min").innerText = mMin;
             let rnd = Math.random();
 
             if (rnd > 0.88) { 
-                // 1. SANA GELEN ÖZEL 4 ŞIKLI ATAK POZİSYONU (Nadir Gelir)
+                // SANA GELEN ÖZEL 4 ŞIKLI ATAK
                 clearInterval(mInterval);
                 matchPlayerAttack();
             } else if (rnd > 0.70 && rnd <= 0.80) {
-                // 2. TAKIM ARKADAŞLARININ YAPTIĞI ATAK (Otomatik)
+                // TAKIM ARKADAŞLARININ ATAĞI
                 if(Math.random() > 0.5) {
                     mScoreUs++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
-                    document.getElementById("match-ticker").innerText = `⚽ GOL! Takım arkadaşın ceza sahasında harika vurdu ve takımını öne geçirdi!`;
+                    document.getElementById("match-ticker").innerText = `⚽ GOL! Takım arkadaşın ceza sahasında bitirici vuruşu yaptı!`;
                 } else {
-                    document.getElementById("match-ticker").innerText = `❌ Takım arkadaşının şutunda top az farkla auta gidiyor.`;
+                    document.getElementById("match-ticker").innerText = `❌ Takım arkadaşının şutu direğin hemen yanından dışarı çıkıyor.`;
                 }
             } else if (rnd < 0.15) {
-                // 3. RAKİP TAKIMIN ATAĞI (Otomatik)
+                // RAKİP TAKIMIN ATAĞI
                 if(Math.random() > 0.4) {
                     mScoreThem++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
-                    document.getElementById("match-ticker").innerText = `🚨 GOL! Rakip forvet kontra atakta kalecimizi çaresiz bıraktı.`;
+                    document.getElementById("match-ticker").innerText = `🚨 GOL! Savunma arkasına sarkan rakip forvet topu ağlarımıza gönderdi.`;
                 } else {
-                    document.getElementById("match-ticker").innerText = `🛡️ Kalecimiz harika bir kurtarışla rakip atağı savuşturdu!`;
+                    document.getElementById("match-ticker").innerText = `🛡️ Defansımız kritik bir müdahaleyle tehlikeyi uzaklaştırdı!`;
                 }
             } else {
-                document.getElementById("match-ticker").innerText = "Top orta alanda sıkıştı. İki takım da boşluk arıyor.";
+                document.getElementById("match-ticker").innerText = "Top orta sahada sıkıştı, kıran kırana bir mücadele var.";
             }
-
-            if(mMin >= 90) { endCurrentMatch(); }
         }, 1500);
+    }
+
+    // DEVRE ARASI EKRANI VE BUTONU
+    function showHalfTimeScreen() {
+        document.getElementById("match-ticker").innerText = `⏳ İLK YARI BİTTİ! Soyunma odasına gidiliyor. Skorda denge var mı? Görüşlerinizi alın.`;
+        const div = document.getElementById("match-choices"); div.innerHTML = "";
+        
+        let nextHalfBtn = document.createElement("button");
+        nextHalfBtn.innerText = "▶️ 2. Yarıya Başla";
+        nextHalfBtn.className = "action-btn";
+        nextHalfBtn.style.backgroundColor = "var(--warning)";
+        nextHalfBtn.onclick = () => {
+            isFirstHalf = false;
+            div.innerHTML = "";
+            document.getElementById("match-ticker").innerText = `🏃 Hakem düdüğü çaldı, ikinci yarı başladı!`;
+            startMatchEngine();
+        };
+        div.appendChild(nextHalfBtn);
     }
 
     // 4 ŞIKLI SÜPER POZİSYON SİSTEMİ
     function matchPlayerAttack() {
-        document.getElementById("match-ticker").innerText = `🔥 KRİTİK POZİSYON! ${playerData.username.toUpperCase()} topla buluştu. Kararını ver!`;
+        document.getElementById("match-ticker").innerText = `🔥 KRİTİK POZİSYON! Top ayaklarına geldi, ne yapacaksın?`;
         const div = document.getElementById("match-choices"); div.innerHTML = "";
 
         let opt = [
@@ -557,9 +586,9 @@
 
                 if (success) {
                     mScoreUs++; document.getElementById("m-score").innerText = `${mScoreUs} - ${mScoreThem}`;
-                    document.getElementById("match-ticker").innerText = "⚽ MÜTHİŞ SEÇİM VE GOL!! Taraftarlar adını haykırıyor!";
+                    document.getElementById("match-ticker").innerText = "⚽ MÜTHİŞ GOL!! Stadyum yıkılıyor!";
                 } else {
-                    document.getElementById("match-ticker").innerText = "❌ Hatalı tercih veya şanssızlık! Savunma topu kaptı.";
+                    document.getElementById("match-ticker").innerText = "❌ Defans araya girdi, topu kaybettin!";
                 }
                 div.innerHTML = ""; startMatchEngine();
             };
@@ -568,7 +597,6 @@
     }
 
     function endCurrentMatch() {
-        clearInterval(mInterval);
         let winBonus = playerData.hasSponsor ? 1000 : 500;
         let resText = "";
 
@@ -579,13 +607,13 @@
             resText = `Maçı Kazandınız! +${winBonus} TL kazandın.`;
             checkTransferOffers();
         } else if(mScoreUs === mScoreThem) {
-            playerData.money += (winBonus/3);
-            resText = `Beraberlik. +${Math.floor(winBonus/3)} TL.`;
+            playerData.money += Math.floor(winBonus/3);
+            resText = `Beraberlik bitti. +${Math.floor(winBonus/3)} TL aldın.`;
         } else {
             playerData.tdMoral = Math.max(10, playerData.tdMoral - 15);
             playerData.teamMoral = Math.max(10, playerData.teamMoral - 15);
-            playerData.power = Math.max(5, playerData.power - 1); // Performans ve değer kaybı
-            resText = `🛑 Maçı KAYBETTİNİZ! Moraller düştü, yeteneklerin ve değerin azaldı!`;
+            playerData.power = Math.max(5, playerData.power - 1);
+            resText = `🛑 Maçı KAYBETTİNİZ! Kaliten düştü.`;
         }
 
         addLog(`[MAÇ] ${resText}`);
@@ -602,7 +630,7 @@
         if(playerData.league === 3 && playerData.marketValue > 45000 && rng > 0.5) {
             let nextTeam = lig2Takimlari[Math.floor(Math.random()*lig2Takimlari.length)];
             playerData.league = 2; playerData.currentTeam = nextTeam;
-            alert(`🎉 TRANSFER! 2. Lig ekiplerinden ${nextTeam} seni transfer etti!`);
+            alert(`🎉 TRANSFER! 2. Lig ekibi ${nextTeam} seni renklerine bağladı!`);
         } else if(playerData.league === 2 && playerData.marketValue > 110000 && rng > 0.6) {
             let nextTeam = lig1Takimlari[Math.floor(Math.random()*lig1Takimlari.length)];
             playerData.league = 1; playerData.currentTeam = nextTeam;
@@ -610,7 +638,6 @@
         }
     }
 
-    // İlk açılışta liderlik tablosunu hazırla
     listenLeaderboard();
 
     document.getElementById("btn-logout").addEventListener("click", () => {
