@@ -267,7 +267,7 @@
             position: relative; width: 100%; border-radius: 14px; overflow: hidden;
             background: #000; min-height: 360px;
         }
-        .video-wrapper div { width: 100%; height: 100%; min-height: 360px; }
+        .video-wrapper div, .video-wrapper iframe { width: 100%; height: 100%; min-height: 360px; position: absolute; top:0; left:0; }
         
         /* ANTİ-SABOTAJ KORUMA KALKANI */
         .video-protection-shield {
@@ -296,7 +296,7 @@
             .neon-glow-ball { width: 14px; height: 14px; }
             .light-track { display: none; }
             .video-wrapper { min-height: 240px; }
-            .video-wrapper div { min-height: 240px; }
+            .video-wrapper div, .video-wrapper iframe { min-height: 240px; }
         }
     </style>
 </head>
@@ -328,7 +328,7 @@
     <div class="light-track light-track-left"><div class="energy-ball ball-left"></div></div>
     <div class="light-track light-track-right"><div class="energy-ball ball-right"></div></div>
 
-    <div id="hidden-music-engine" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px;"></div>
+    <div id="hidden-music-engine" style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; pointer-events: none;"></div>
 
     <div id="auth-screen">
         <div class="auth-card">
@@ -456,7 +456,6 @@
         let currentUser = "";
         let isRegisterMode = false;
         
-        // Resmi API Player Nesneleri
         let musicPlayer = null;
         let videoPlayer = null;
         
@@ -489,7 +488,9 @@
                     if(snap.exists() && snap.val().password === password) { 
                         currentUser = username; 
                         document.getElementById('auth-screen').style.display = 'none'; 
-                        buildPlayersSystem(); // Kullanıcı odaya girdiği an oynatıcı motorlarını aktif et
+                        
+                        // Tarayıcının autoplay engelini aşmak için tam dokunma anında player kurulumunu tetikliyoruz
+                        buildPlayersSystem(); 
                     } else { alert("Hatalı veri girişi!"); }
                 }, { onlyOnce: true });
             }
@@ -546,37 +547,55 @@
         window.clearAllSongs = () => { if(confirm("Çalma listesi sıfırlansın mı?")) remove(ref(db, 'fun_songs')); };
         window.updateGlobalVolumeFromAdmin = (val) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); };
 
-        // --- TAM SENKRONİZE OYNATICI KURULUMU ---
+        // --- EN GÜVENLİ VE ENGELE TAKILMAZ YOUTUBE PLAYER MOTORLARI ---
         function buildPlayersSystem() {
-            if(!isYTApiReady) return setTimeout(buildPlayersSystem, 300);
+            if(!isYTApiReady) {
+                setTimeout(buildPlayersSystem, 200);
+                return;
+            }
 
-            // 1. Merkezi Müzik Çalar Nesnesi (Sesli Çalar)
-            musicPlayer = new YT.Player('hidden-music-engine', {
-                height: '1', width: '1', videoId: currentActiveSongId || 'EY07kVGs_Jk',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'modestbranding': 1, 'rel': 0 },
-                events: {
-                    'onReady': (e) => { e.target.setVolume(globalVolumeSetting); e.target.playVideo(); },
-                    'onStateChange': (e) => {
-                        // Eğer müzik bir şekilde durursa veya biterse otomatik ilk şarkıyı yeniden oynat veya hazırda tut
-                        if (e.data === YT.PlayerState.ENDED) e.target.playVideo();
-                    }
-                }
-            });
-
-            // 2. Canlı Video Oynatıcı Nesnesi (Sonsuz Döngülü & Sessiz Kalkanlı Oynatıcı)
-            videoPlayer = new YT.Player('video-player-frame', {
-                height: '100%', width: '100%', videoId: currentActiveVideoId || 'EY07kVGs_Jk',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'disablekb': 1, 'iv_load_policy': 3 },
-                events: {
-                    'onReady': (e) => { e.target.mute(); e.target.playVideo(); },
-                    'onStateChange': (e) => {
-                        // Durmadan Tekrar Oynasın: Video biterse veya kullanıcı durdurmaya çalışırsa anında başa sar ve oynat!
-                        if (e.data === YT.PlayerState.ENDED || e.data === YT.PlayerState.PAUSED) {
+            // 1. Müzik Oynatıcı Motoru (Arka planda sadece ses)
+            if(!musicPlayer) {
+                musicPlayer = new YT.Player('hidden-music-engine', {
+                    height: '1', width: '1',
+                    videoId: currentActiveSongId || 'EY07kVGs_Jk',
+                    playerVars: { 'autoplay': 1, 'controls': 0, 'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3 },
+                    events: {
+                        'onReady': (e) => {
+                            e.target.setVolume(globalVolumeSetting);
                             e.target.playVideo();
+                        },
+                        'onStateChange': (e) => {
+                            if (e.data === YT.PlayerState.ENDED) {
+                                e.target.playVideo(); // Biterse tekrar çal
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+
+            // 2. Canlı Video Oynatıcı Motoru (Sonsuz Döngülü & Sıfır Sesli Kalkanlı)
+            if(!videoPlayer) {
+                videoPlayer = new YT.Player('video-player-frame', {
+                    height: '100%', width: '100%',
+                    videoId: currentActiveVideoId || 'EY07kVGs_Jk',
+                    playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'disablekb': 1, 'iv_load_policy': 3 },
+                    events: {
+                        'onReady': (e) => {
+                            e.target.mute();
+                            e.target.setVolume(0);
+                            e.target.playVideo();
+                        },
+                        'onStateChange': (e) => {
+                            // DURMADAN TEKRAR OYNASIN (LOOP KORUMASI)
+                            if (e.data === YT.PlayerState.ENDED || e.data === YT.PlayerState.PAUSED) {
+                                e.target.mute();
+                                e.target.playVideo();
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         // --- REALTIME DATABASE BAĞLANTI KANALI ---
@@ -604,7 +623,7 @@
                 if(ambient) ambient.style.display = 'block';
             }
 
-            // ADMİN SES AYARLAMA MOTORU SİNYALİ
+            // GLOBAL SES DEĞİŞİM SİNYALİ
             if(settings.globalVolume !== undefined) {
                 globalVolumeSetting = settings.globalVolume;
                 if(musicPlayer && typeof musicPlayer.setVolume === 'function') {
@@ -614,7 +633,7 @@
                 if(slider) slider.value = globalVolumeSetting;
             }
 
-            // CANLI VİDEO DATA DEĞİŞİM TAKİBİ
+            // CANLI VİDEO YAYIN DEĞİŞİM MOTORU
             if(settings.videoData && settings.videoData.sourceId) {
                 const targetVid = settings.videoData.sourceId;
                 if(targetVid !== currentActiveVideoId) {
@@ -626,7 +645,7 @@
                 }
             }
 
-            // MERKEZİ ŞARKI DATA DEĞİŞİM TAKİBİ
+            // MERKEZİ ŞARKI DEĞİŞİM MOTORU
             if(data.fun_current_track) {
                 const targetSongId = data.fun_current_track.youtubeId;
                 document.getElementById('now-playing-title').innerText = data.fun_current_track.title || "Bilinmeyen Şarkı";
@@ -640,7 +659,7 @@
                 }
             }
 
-            // ADMİN LİSTESİ OLUŞTURUCU
+            // ADMİN PANELİ LİSTESİ YENİLEYİCİ
             const adminPlaylistContainer = document.getElementById('admin-live-tracks-container');
             if(adminPlaylistContainer) {
                 adminPlaylistContainer.innerHTML = "";
