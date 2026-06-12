@@ -267,15 +267,11 @@
             position: relative; width: 100%; border-radius: 14px; overflow: hidden;
             background: #000; min-height: 360px;
         }
-        .video-wrapper div { width: 100%; height: 100%; min-height: 360px; }
+        .video-wrapper div { width: 100%; height: 360px; min-height: 360px; }
         
         /* ANTİ-SABOTAJ KORUMA KALKANI */
         .video-protection-shield {
-            position: absolute;
-            inset: 0;
-            z-index: 99;
-            background: transparent;
-            pointer-events: auto;
+            display:none;
         }
 
         /* ADMİN MASASI */
@@ -549,6 +545,17 @@
         window.clearAllSongs = () => { if(confirm("Çalma listesi sıfırlansın mı?")) remove(ref(db, 'fun_songs')); };
         window.updateGlobalVolumeFromAdmin = (val) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); };
 
+
+        document.addEventListener('click', () => {
+            if(directMp3Player && directMp3Player.src) {
+                directMp3Player.play().catch(()=>{});
+            }
+            if(musicYTPlayer && typeof musicYTPlayer.unMute === 'function') {
+                musicYTPlayer.unMute();
+                musicYTPlayer.setVolume(globalVolumeSetting);
+            }
+        }, {once:false});
+
         // TARAYICILARIN SES ENGELİNİ KALDIRMA TETİKLEYİCİSİ
         window.unlockBrowsersAudio = () => {
             if(musicYTPlayer && typeof musicYTPlayer.unMute === 'function') {
@@ -567,9 +574,9 @@
             // 1. CANLI SESSİZ VİDEO MOTORU
             videoPlayer = new YT.Player('video-player-frame', {
                 height: '100%', width: '100%', videoId: currentActiveVideoId || 'EY07kVGs_Jk',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'disablekb': 1, 'iv_load_policy': 3 },
+                playerVars: { 'autoplay': 1, 'controls': 1, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'playsinline': 1, 'disablekb': 0, 'iv_load_policy': 3 },
                 events: {
-                    'onReady': (e) => { e.target.mute(); e.target.playVideo(); },
+                    'onReady': (e) => { e.target.mute(); e.target.setPlaybackQuality('hd720'); e.target.playVideo(); },
                     'onStateChange': (e) => {
                         if (e.data === YT.PlayerState.ENDED || e.data === YT.PlayerState.PAUSED) {
                             e.target.playVideo();
@@ -581,7 +588,7 @@
             // 2. MERKEZİ YT ŞARKI MOTORU
             musicYTPlayer = new YT.Player('youtube-audio-frame', {
                 height: '1px', width: '1px', videoId: 'dQw4w9WgXcQ',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'mute': 1, 'disablekb': 1, 'rel': 0 },
+                playerVars: { 'autoplay': 0, 'controls': 0, 'mute': 0, 'playsinline': 1, 'disablekb': 1, 'rel': 0 },
                 events: {
                     'onReady': () => {
                         if(currentActiveSongId) {
@@ -608,7 +615,7 @@
                 if(directMp3Player) {
                     directMp3Player.src = trackTarget;
                     directMp3Player.volume = globalVolumeSetting / 100;
-                    directMp3Player.play().catch(e => console.log("İlk tıklama bekleniyor..."));
+                    directMp3Player.play().catch(e => console.log("Tarayıcı otomatik sesi engelledi, sayfaya tıklayın."));
                 }
             } else {
                 // YouTube ID'si veya Linkidir
