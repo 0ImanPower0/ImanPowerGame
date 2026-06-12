@@ -267,11 +267,15 @@
             position: relative; width: 100%; border-radius: 14px; overflow: hidden;
             background: #000; min-height: 360px;
         }
-        .video-wrapper div { width: 100%; height: 360px; min-height: 360px; }
+        .video-wrapper div { width: 100%; height: 100%; min-height: 360px; }
         
         /* ANTİ-SABOTAJ KORUMA KALKANI */
         .video-protection-shield {
-            display:none;
+            position: absolute;
+            inset: 0;
+            z-index: 99;
+            background: transparent;
+            pointer-events: auto;
         }
 
         /* ADMİN MASASI */
@@ -326,7 +330,7 @@
 
     <div id="hidden-music-engine" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
         <div id="youtube-audio-frame"></div>
-        <audio id="direct-mp3-frame" loop></audio>
+        
     </div>
 
     <div id="auth-screen">
@@ -372,7 +376,7 @@
             <div class="video-box-container">
                 <div class="panel-title" style="color:#3b82f6; border-color:rgba(59, 130, 246, 0.3); margin-bottom:15px;">📺 AURA FC CANLI OYNATICI (DURMADAN OYNAR)</div>
                 <div style="position:relative; width:100%;">
-                    
+                    <div class="video-protection-shield"></div>
                     <div class="video-wrapper">
                         <div id="video-player-frame"></div>
                     </div>
@@ -406,7 +410,7 @@
 
                 <div class="admin-card">
                     <h4 style="color:#3b82f6; margin-bottom:10px;">🎬 Aura FC Video Masası</h4>
-                    <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:5px;">Sadece YouTube Video ID'si veya Linki Girin (Sonsuz Döngüde Oynar):</label>
+                    <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:5px;">Sadece YouTube video linki girin (Sonsuz Döngüde Oynar):</label>
                     <input type="text" id="adm-video-link-input" placeholder="Örn: EY07kVGs_Jk Veya Tam Link">
                     <button class="btn" style="background:#3b82f6;" onclick="updateAuraMediaLink()">VİDEOYU BAŞLAT</button>
                 </div>
@@ -457,7 +461,7 @@
         
         let videoPlayer = null;      // CANLI VİDEO OYNATICISI
         let musicYTPlayer = null;    // YOUTUBE ŞARKI OYNATICISI
-        let directMp3Player = document.getElementById('direct-mp3-frame'); // MP3 OYNATICISI
+        let directMp3Player = null; // MP3 sistemi kaldırıldı
         
         let currentActiveSongId = "";
         let currentActiveVideoId = "";
@@ -531,10 +535,12 @@
             const title = document.getElementById('adm-song-title').value.trim();
             const id = document.getElementById('adm-song-id').value.trim();
             if(title && id) {
-                push(ref(db, 'fun_songs'), { title, youtubeId: id });
+                const cleanId = parseYoutubeID(id);
+                if(!cleanId || cleanId.length !== 11) return alert("Sadece YouTube Video ID girin!");
+                push(ref(db, 'fun_songs'), { title, youtubeId: cleanId });
                 document.getElementById('adm-song-title').value = "";
                 document.getElementById('adm-song-id').value = "";
-            } else { alert("Başlık ve ID/Link girin!"); }
+            } else { alert("Şarkı adı ve YouTube ID girin!"); }
         };
 
         window.setLiveTrack = (key, id, title) => { 
@@ -545,25 +551,11 @@
         window.clearAllSongs = () => { if(confirm("Çalma listesi sıfırlansın mı?")) remove(ref(db, 'fun_songs')); };
         window.updateGlobalVolumeFromAdmin = (val) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); };
 
-
-        document.addEventListener('click', () => {
-            if(directMp3Player && directMp3Player.src) {
-                directMp3Player.play().catch(()=>{});
-            }
-            if(musicYTPlayer && typeof musicYTPlayer.unMute === 'function') {
-                musicYTPlayer.unMute();
-                musicYTPlayer.setVolume(globalVolumeSetting);
-            }
-        }, {once:false});
-
         // TARAYICILARIN SES ENGELİNİ KALDIRMA TETİKLEYİCİSİ
         window.unlockBrowsersAudio = () => {
             if(musicYTPlayer && typeof musicYTPlayer.unMute === 'function') {
                 musicYTPlayer.unMute();
                 musicYTPlayer.setVolume(globalVolumeSetting);
-            }
-            if(directMp3Player) {
-                directMp3Player.play().catch(e => {});
             }
         };
 
@@ -573,25 +565,12 @@
 
             // 1. CANLI SESSİZ VİDEO MOTORU
             videoPlayer = new YT.Player('video-player-frame', {
-                height: '360',
-                width: '100%',
-                videoId: currentActiveVideoId || 'EY07kVGs_Jk',
-                playerVars: {
-                    autoplay: 1,
-                    controls: 1,
-                    mute: 1,
-                    playsinline: 1,
-                    rel: 0,
-                    modestbranding: 1
-                },
+                height: '100%', width: '100%', videoId: currentActiveVideoId || 'EY07kVGs_Jk',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'disablekb': 1, 'iv_load_policy': 3 },
                 events: {
-                    onReady: function(e) {
-                        e.target.mute();
-                        e.target.playVideo();
-                    },
-                    onStateChange: function(e) {
-                        if(e.data === YT.PlayerState.ENDED){
-                            e.target.seekTo(0);
+                    'onReady': (e) => { e.target.mute(); e.target.playVideo(); },
+                    'onStateChange': (e) => {
+                        if (e.data === YT.PlayerState.ENDED || e.data === YT.PlayerState.PAUSED) {
                             e.target.playVideo();
                         }
                     }
@@ -600,21 +579,18 @@
 
             // 2. MERKEZİ YT ŞARKI MOTORU
             musicYTPlayer = new YT.Player('youtube-audio-frame', {
-                height: '1',
-                width: '1',
-                videoId: 'dQw4w9WgXcQ',
-                playerVars: {
-                    autoplay: 0,
-                    controls: 0,
-                    playsinline: 1,
-                    rel: 0
-                },
+                height: '1px', width: '1px', videoId: 'dQw4w9WgXcQ',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'mute': 1, 'disablekb': 1, 'rel': 0 },
                 events: {
-                    onReady: function(){
-                        if(currentActiveSongId) playCentralAudioTrack(currentActiveSongId);
+                    'onReady': () => {
+                        if(currentActiveSongId) {
+                            playCentralAudioTrack(currentActiveSongId);
+                        }
                     },
-                    onStateChange: function(e){
-                        if(e.data === YT.PlayerState.ENDED) e.target.playVideo();
+                    'onStateChange': (e) => {
+                        if(e.data === YT.PlayerState.ENDED) {
+                            e.target.playVideo(); // Döngüde kalsın
+                        }
                     }
                 }
             });
@@ -622,28 +598,19 @@
 
         // AKILLI SİNYAL DAĞITICI (YOUTUBE MU HARİCİ MP3 MÜ?)
         function playCentralAudioTrack(trackTarget) {
-            // Önce iki motoru da sustur/durdur
-            if(musicYTPlayer && typeof musicYTPlayer.stopVideo === 'function') musicYTPlayer.stopVideo();
-            if(directMp3Player) { directMp3Player.pause(); directMp3Player.src = ""; }
+            if(!musicYTPlayer || typeof musicYTPlayer.loadVideoById !== 'function') return;
 
-            // MP3 Linki mi?
-            if(trackTarget.includes('.mp3') || trackTarget.includes('drive.google') || trackTarget.includes('dropbox') || trackTarget.includes('http')) {
-                if(directMp3Player) {
-                    directMp3Player.src = trackTarget;
-                    directMp3Player.loop = true;
-                    directMp3Player.volume = globalVolumeSetting / 100;
-                    directMp3Player.play().catch(e => console.log("Tarayıcı otomatik sesi engelledi, sayfaya tıklayın."));
-                }
-            } else {
-                // YouTube ID'si veya Linkidir
-                const ytCleanId = parseYoutubeID(trackTarget);
-                if(musicYTPlayer && typeof musicYTPlayer.loadVideoById === 'function') {
-                    musicYTPlayer.loadVideoById({ videoId: ytCleanId });
-                    musicYTPlayer.unMute();
-                    musicYTPlayer.setVolume(globalVolumeSetting);
-                    musicYTPlayer.playVideo();
-                }
+            const ytId = parseYoutubeID(trackTarget);
+
+            if(!ytId || ytId.length !== 11) {
+                console.log("Geçersiz YouTube ID:", trackTarget);
+                return;
             }
+
+            musicYTPlayer.loadVideoById({ videoId: ytId });
+            musicYTPlayer.unMute();
+            musicYTPlayer.setVolume(globalVolumeSetting);
+            musicYTPlayer.playVideo();
         }
 
         // --- REALTIME DATABASE BAĞLANTI KANALI ---
