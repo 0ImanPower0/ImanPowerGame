@@ -31,17 +31,19 @@
             pointer-events: none;
             z-index: 2;
             opacity: 0;
-            animation: strobeFlash 4s steps(1, end) infinite;
+            animation: strobeFlash 2s steps(1, end) infinite; /* Hızlandırıldı: Daha çılgın parti efekti */
         }
         @keyframes strobeFlash {
             0%, 100% { opacity: 0; background: transparent; }
-            10% { opacity: 0.15; background: #ff0055; filter: blur(50px); }
+            10% { opacity: 0.25; background: #ff0055; filter: blur(50px); }
             12% { opacity: 0; }
-            40% { opacity: 0.2; background: #00ffcc; filter: blur(60px); }
-            43% { opacity: 0; }
-            70% { opacity: 0.18; background: #9900ff; filter: blur(50px); }
-            72% { opacity: 0; }
-            85% { opacity: 0.25; background: #10b981; filter: blur(70px); }
+            30% { opacity: 0.3; background: #00ffcc; filter: blur(60px); }
+            33% { opacity: 0; }
+            50% { opacity: 0.25; background: #9900ff; filter: blur(50px); }
+            52% { opacity: 0; }
+            70% { opacity: 0.35; background: #10b981; filter: blur(70px); }
+            73% { opacity: 0; }
+            85% { opacity: 0.3; background: #eab308; filter: blur(50px); }
             88% { opacity: 0; }
         }
 
@@ -58,16 +60,16 @@
             height: 300px;
             border-radius: 50%;
             filter: blur(100px);
-            opacity: 0.35;
-            animation: pulseSpot 6s ease-in-out infinite alternate;
+            opacity: 0.4;
+            animation: pulseSpot 4s ease-in-out infinite alternate; /* Işık geçişleri hızlandırıldı */
         }
         .spot-1 { top: -50px; left: 15%; background: #ef4444; }
-        .spot-2 { bottom: 10%; right: 10%; background: #3b82f6; animation-delay: 2s; }
-        .spot-3 { top: 40%; left: 45%; background: #a855f7; animation-delay: 4s; }
+        .spot-2 { bottom: 10%; right: 10%; background: #3b82f6; animation-delay: 1s; }
+        .spot-3 { top: 40%; left: 45%; background: #a855f7; animation-delay: 2s; }
 
         @keyframes pulseSpot {
-            0% { transform: scale(0.8); opacity: 0.25; filter: hue-rotate(0deg); }
-            100% { transform: scale(1.2); opacity: 0.45; filter: hue-rotate(360deg); }
+            0% { transform: scale(0.8); opacity: 0.3; filter: hue-rotate(0deg); }
+            100% { transform: scale(1.3); opacity: 0.55; filter: hue-rotate(360deg); }
         }
 
         /* --- SAĞ VE SOL KANAT GÖMÜLÜ NEON LAZER VE BÜYÜYEN TOP ŞERİTLERİ --- */
@@ -91,7 +93,7 @@
             height: 28px;
             border-radius: 50%;
             position: relative;
-            animation: ballPulseGlow 2s ease-in-out infinite alternate;
+            animation: ballPulseGlow 1.2s ease-in-out infinite alternate; /* Topların parlaması hızlandırıldı */
         }
         .lane-left .neon-glow-ball {
             background: #ff0055;
@@ -102,27 +104,27 @@
             box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc, inset 0 0 5px #fff;
         }
 
-        .neon-glow-ball:nth-child(2) { animation-delay: 0.4s; }
-        .neon-glow-ball:nth-child(3) { animation-delay: 0.8s; }
-        .neon-glow-ball:nth-child(4) { animation-delay: 1.2s; }
-        .neon-glow-ball:nth-child(5) { animation-delay: 1.6s; }
+        .neon-glow-ball:nth-child(2) { animation-delay: 0.2s; }
+        .neon-glow-ball:nth-child(3) { animation-delay: 0.4s; }
+        .neon-glow-ball:nth-child(4) { animation-delay: 0.6s; }
+        .neon-glow-ball:nth-child(5) { animation-delay: 0.8s; }
 
         @keyframes ballPulseGlow {
-            0% { transform: scale(0.7); filter: brightness(0.8) hue-rotate(0deg); }
-            100% { transform: scale(1.3); filter: brightness(1.3) hue-rotate(45deg); box-shadow: 0 0 25px currentColor, 0 0 50px currentColor; }
+            0% { transform: scale(0.6); filter: brightness(0.8) hue-rotate(0deg); }
+            100% { transform: scale(1.4); filter: brightness(1.5) hue-rotate(90deg); box-shadow: 0 0 30px currentColor, 0 0 60px currentColor; }
         }
 
         /* --- SÜZÜLEN ENERJİ TOPLARI --- */
         .light-track { position: fixed; top: 0; bottom: 0; width: 30px; z-index: 998; pointer-events: none; }
         .light-track-left { left: 25px; }
         .light-track-right { right: 25px; }
-        .energy-ball { position: absolute; width: 22px; height: 22px; border-radius: 50%; top: -50px; left: 2px; animation: dropAndPulse 3.5s linear infinite; }
+        .energy-ball { position: absolute; width: 22px; height: 22px; border-radius: 50%; top: -50px; left: 2px; animation: dropAndPulse 2.2s linear infinite; } /* Lazer hızları artırıldı */
         .ball-left { background: #a855f7; box-shadow: 0 0 25px #a855f7; }
-        .ball-right { background: #3b82f6; box-shadow: 0 0 25px #3b82f6; animation-delay: 1.75s; }
+        .ball-right { background: #3b82f6; box-shadow: 0 0 25px #3b82f6; animation-delay: 1.1s; }
 
         @keyframes dropAndPulse {
             0% { top: -50px; transform: scale(0.6); }
-            50% { transform: scale(1.4); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 1; }
             100% { top: 105vh; transform: scale(0.5); }
         }
 
@@ -247,13 +249,13 @@
         .troll-text {
             font-family: 'Orbitron'; font-size: 1.8rem; font-weight: 900; color: #f43f5e;
             text-shadow: 0 0 20px rgba(244, 63, 94, 0.6); margin-bottom: 20px;
-            animation: pulseText 1.2s infinite alternate; text-transform: uppercase;
+            animation: pulseText 0.8s infinite alternate; text-transform: uppercase;
         }
-        @keyframes pulseText { from { transform: scale(0.97); } to { transform: scale(1.03); } }
+        @keyframes pulseText { from { transform: scale(0.95); } to { transform: scale(1.05); } }
         .cat-box { width: 140px; height: 140px; }
         .cat-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* MULTIMEDIA VİDEO KUTUSU */
+        /* MULTIMEDIA VİDEO KUTUSU VE KALKAN SİSTEMİ */
         .video-box-container {
             background: var(--glass);
             border-radius: 24px;
@@ -266,6 +268,15 @@
             background: #000; min-height: 300px; display: flex; align-items: center; justify-content: center;
         }
         .video-wrapper video, .video-wrapper iframe { width: 100%; height: 100%; min-height: 320px; border: 0; display: block; }
+        
+        /* KULLANICILARIN VİDEOYU DURDURMASINI ENGELLEYEN ANTİ-SABOTAJ KALKANI */
+        .video-protection-shield {
+            position: absolute;
+            inset: 0;
+            z-index: 99;
+            background: transparent;
+            pointer-events: auto; /* Tıklamaları yakalar ama videoya geçirmeden bloke eder */
+        }
 
         /* ADMİN SEKSİYONU */
         .admin-section { grid-column: 1 / -1; background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 25px; }
@@ -361,8 +372,11 @@
 
             <div class="video-box-container">
                 <div class="panel-title" style="color:#3b82f6; border-color:rgba(59, 130, 246, 0.3); margin-bottom:15px;">📺 AURA FC CANLI OYNATICI</div>
-                <div id="dynamic-media-wrapper" class="video-wrapper">
-                    <div style="color:#64748b; font-size:0.85rem;">Video bekleniyor...</div>
+                <div style="position:relative; width:100%;">
+                    <div class="video-protection-shield"></div>
+                    <div id="dynamic-media-wrapper" class="video-wrapper">
+                        <div style="color:#64748b; font-size:0.85rem;">Video bekleniyor...</div>
+                    </div>
                 </div>
             </div>
 
@@ -494,6 +508,7 @@
             if(url.includes("youtube.com") || url.includes("youtu.be")) {
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
                 const match = url.match(regExp);
+                // Kullanıcıların kontrol etmesini engellemek için autoplay ve controls=0 parametrelerini url tabanına gömüyoruz
                 return { type: "youtube", source: (match && match[2].length === 11) ? match[2] : url };
             }
             return { type: "direct", source: url };
@@ -589,7 +604,7 @@
                 if(ambient) ambient.style.display = 'block';
             }
 
-            // AKILLI MEDYA KUTUSU DÜZENİ
+            // AKILLI MEDYA KUTUSU DÜZENİ (KONTROLLER KAPATILDI VE OTOMATİK OYNATMA ZORUNLU KILINDI)
             const media = settings.mediaData || { type: "youtube", source: "EY07kVGs_Jk" };
             const wrapper = document.getElementById('dynamic-media-wrapper');
             const uniqueTargetKey = media.source + "_" + (media.nonce || "");
@@ -597,9 +612,11 @@
             if(uniqueTargetKey !== currentLoadedMediaTarget) {
                 currentLoadedMediaTarget = uniqueTargetKey;
                 if(media.type === "youtube") {
-                    wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${media.source}?autoplay=1&rel=0" allowfullscreen></iframe>`;
+                    // controls=0 ve disablekb=1 ile kullanıcı müdahalesi engellendi
+                    wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${media.source}?autoplay=1&controls=0&modestbranding=1&rel=0&disablekb=1&iv_load_policy=3" allow="autoplay" allowfullscreen></iframe>`;
                 } else {
-                    wrapper.innerHTML = `<video src="${media.source}" controls autoplay loop playsinline></video>`;
+                    // controls kaldırıldı, loop ve autoplay eklendi
+                    wrapper.innerHTML = `<video src="${media.source}" autoplay loop playsinline muted></video>`;
                 }
             }
 
