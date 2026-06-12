@@ -161,7 +161,7 @@
         .logo-section { display: flex; align-items: center; gap: 12px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); font-size: 1.1rem; }
         .logo-section img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* SADELEŞTİRİLMİŞ KULLANICI SOL PANELİ */
+        /* SADELEŞTİRİLMİŞ SOL PANEL */
         .music-panel {
             background: var(--glass);
             border-radius: 24px;
@@ -185,7 +185,7 @@
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
         }
 
-        /* ADMİN PANELİNDEKİ ÇALMA LİSTESİ SCROLLER ALANI */
+        /* ADMİN ÇALMA LİSTESİ ALANI */
         .admin-playlist-scroller {
             max-height: 180px;
             overflow-y: auto;
@@ -253,7 +253,7 @@
         .cat-box { width: 140px; height: 140px; }
         .cat-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* MULTIMEDIA OYNATICI KUTUSU */
+        /* MULTIMEDIA VİDEO KUTUSU */
         .video-box-container {
             background: var(--glass);
             border-radius: 24px;
@@ -273,7 +273,6 @@
         .admin-card { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
 
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #1e293b; background: #070a12; color: white; }
-        .file-custom-input { border: 1px dashed #3b82f6; padding: 10px; cursor: pointer; text-align: center; width: 100%; background: rgba(59,130,246,0.05); color: #fff; border-radius: 10px; }
         
         .btn { padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; }
         .btn:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--accent-glow); }
@@ -394,11 +393,9 @@
 
                 <div class="admin-card">
                     <h4 style="color:#3b82f6; margin-bottom:10px;">🎬 Aura FC Video Yükleme Masası</h4>
-                    <label style="font-size:0.75rem; color:#94a3b8;">1. Bilgisayardan Dosya Seç (.mp4):</label>
-                    <input type="file" id="adm-local-file-picker" accept="video/*" class="file-custom-input" onchange="uploadLocalVideoFile(this)">
-                    <label style="font-size:0.75rem; color:#94a3b8; margin-top:5px; display:block;">2. Veya YouTube / URL Video Linki:</label>
-                    <input type="text" id="adm-video-link-input" placeholder="YouTube Linki veya Direkt URL">
-                    <button class="btn" style="background:#3b82f6;" onclick="updateAuraMediaLink()">MEDYAYI BAŞLAT</button>
+                    <label style="font-size:0.75rem; color:#94a3b8; display:block; margin-bottom:5px;">Herkesin Görebilmesi İçin YouTube Linki veya Direkt .mp4 İnternet URL Linki Girin:</label>
+                    <input type="text" id="adm-video-link-input" placeholder="Örn: https://www.youtube.com/watch?v=XXXXX veya https://site.com/video.mp4">
+                    <button class="btn" style="background:#3b82f6;" onclick="updateAuraMediaLink()">MEDYAYI HERKESTE BAŞLAT</button>
                 </div>
 
                 <div class="admin-card">
@@ -502,23 +499,16 @@
             return { type: "direct", source: url };
         }
 
-        window.uploadLocalVideoFile = (input) => {
-            const file = input.files[0];
-            if (!file) return;
-            const objectURL = URL.createObjectURL(file);
-            set(ref(db, 'fun_settings/mediaData'), { type: "direct", source: objectURL, nonce: Date.now() });
-        };
-
         window.updateAuraMediaLink = () => {
             const url = document.getElementById('adm-video-link-input').value.trim();
             if(!url) return alert("Link girin!");
             const payload = extractVideoPayload(url);
             set(ref(db, 'fun_settings/mediaData'), { type: payload.type, source: payload.source, nonce: Date.now() }).then(() => {
                 document.getElementById('adm-video-link-input').value = "";
+                alert("Medya odadaki herkeste senkronize olarak başlatıldı!");
             });
         };
 
-        // ADMIN ÇALMA LİSTESİ İŞLEMLERİ
         window.addNewSongToDatabase = () => {
             const title = document.getElementById('adm-song-title').value.trim();
             const id = document.getElementById('adm-song-id').value.trim();
@@ -545,16 +535,15 @@
                 playerVars: { 'autoplay': 1, 'controls': 0 },
                 events: {
                     'onReady': (e) => { e.target.setVolume(globalVolumeSetting); },
-                    'onStateChange': (e) => { if (e.data === 0) triggerNextTrackAuto(); } // Şarkı bitince sonrakine geç
+                    'onStateChange': (e) => { if (e.data === 0) triggerNextTrackAuto(); }
                 }
             });
         }
 
-        // DURMADAN ÇALMA SİSTEMİ (ŞARKI BİTİNCE OTOMATİK SONRAKİNE GEÇER)
         function triggerNextTrackAuto() {
             if(dbSongsList.length <= 1) return;
             let idx = dbSongsList.findIndex(s => s.key === currentActiveSongKey) + 1;
-            if(idx >= dbSongsList.length || idx < 0) idx = 0; // Liste bittiyse başa dön
+            if(idx >= dbSongsList.length || idx < 0) idx = 0;
             if(dbSongsList[idx]) {
                 setLiveTrack(dbSongsList[idx].key, dbSongsList[idx].youtubeId, dbSongsList[idx].title);
             }
@@ -567,14 +556,13 @@
             }
         }
 
-        // --- REALTIME DATABASE SENKRONİZASYON HATTI ---
+        // --- REALTIME DATABASE BAĞLANTI HATTI ---
         onValue(ref(db, '/'), (snap) => {
             const data = snap.val() || {};
             const settings = data.fun_settings || {};
 
             document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power Eğlence Odası! 😎";
             
-            // Küresel Ortak Ses Ayarı Güncellemesi
             if(settings.globalVolume !== undefined) {
                 globalVolumeSetting = settings.globalVolume;
                 if(ytPlayer && typeof ytPlayer.setVolume === 'function') {
@@ -584,7 +572,6 @@
                 if(volSlider) volSlider.value = globalVolumeSetting;
             }
 
-            // Işıklar ve Flaşör Senkronu
             const lanes = document.querySelectorAll('.party-side-lane');
             const tracks = document.querySelectorAll('.light-track');
             const strobe = document.querySelector('.strobe-bg-effect');
@@ -616,7 +603,7 @@
                 }
             }
 
-            // ADMİN ÇALMA LİSTESİ YAPILANDIRMASI
+            // ADMİN ÇALMA LİSTESİ
             dbSongsList = [];
             const adminPlaylistContainer = document.getElementById('admin-live-tracks-container');
             adminPlaylistContainer.innerHTML = "";
@@ -637,7 +624,6 @@
                 adminPlaylistContainer.innerHTML = `<div style="color:#64748b; font-size:0.75rem; text-align:center;">Liste boş, şarkı ekleyin.</div>`;
             }
 
-            // Canlı Çalan Şarkıyı Senkron Etme (Sol Panele Yazdırma)
             if(data.fun_current_track) {
                 const activeId = data.fun_current_track.youtubeId;
                 const activeTitle = data.fun_current_track.title || "Bilinmeyen Şarkı";
