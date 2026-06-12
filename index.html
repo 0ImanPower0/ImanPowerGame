@@ -161,7 +161,7 @@
         .logo-section { display: flex; align-items: center; gap: 12px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); font-size: 1.1rem; }
         .logo-section img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* SADELEŞTİRİLMİŞ SOL PANEL (Sadece O An Çalan Şarkı) */
+        /* SADELEŞTİRİLMİŞ KULLANICI SOL PANELİ */
         .music-panel {
             background: var(--glass);
             border-radius: 24px;
@@ -183,6 +183,51 @@
             border-radius: 16px;
             text-align: center;
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
+        }
+
+        /* ADMİN PANELİNDEKİ ÇALMA LİSTESİ SCROLLER ALANI */
+        .admin-playlist-scroller {
+            max-height: 180px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 10px;
+        }
+        .admin-track-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+        .admin-track-info {
+            cursor: pointer;
+            color: #fff;
+            transition: 0.2s;
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .admin-track-info:hover, .admin-track-item.active .admin-track-info {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .admin-del-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         .content-stage-area { display: flex; flex-direction: column; gap: 25px; }
@@ -222,7 +267,7 @@
         }
         .video-wrapper video, .video-wrapper iframe { width: 100%; height: 100%; min-height: 320px; border: 0; display: block; }
 
-        /* ADMİN */
+        /* ADMİN SEKSİYONU */
         .admin-section { grid-column: 1 / -1; background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 25px; }
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 15px; }
         .admin-card { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
@@ -357,10 +402,16 @@
                 </div>
 
                 <div class="admin-card">
-                    <h4 style="color:var(--accent); margin-bottom:10px;">🎵 Canlı Çalan Şarkıyı Değiştir</h4>
+                    <h4 style="color:var(--accent); margin-bottom:10px;">🗂️ ÇALMA LİSTESİ & ŞARKI HAVUZU</h4>
+                    
+                    <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
+                    
+                    <button class="btn btn-danger" style="padding:6px; font-size:0.75rem; margin-bottom:15px;" onclick="clearAllSongs()">LİSTEYİ TAMAMEN SIFIRLA</button>
+
+                    <h4 style="color:#3b82f6; margin-bottom:5px; font-size:0.85rem;">➕ Havuza Yeni Şarkı Ekle</h4>
                     <input type="text" id="adm-song-title" placeholder="Şarkı Adı Yaz">
                     <input type="text" id="adm-song-id" placeholder="YouTube Video ID Gir">
-                    <button class="btn" onclick="updateLiveTrackFromAdmin()">ŞARKIYI HERKESTE BAŞLAT</button>
+                    <button class="btn" onclick="addNewSongToDatabase()">LİSTEYE EKLE</button>
 
                     <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
                         <label style="font-size:0.75rem; font-weight:600; color:#10b981; display:block; margin-bottom:5px; font-family:'Orbitron';">🔊 ORTAK ODANIN SES AYARI</label>
@@ -376,7 +427,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDy4ZUv_wZsntWSIDbcOlvpqDTBvWuSdrk",
@@ -394,9 +445,11 @@
         let currentUser = "";
         let isRegisterMode = false;
         let ytPlayer = null;
+        let currentActiveSongKey = "";
         let currentActiveSongId = "";
         let currentLoadedMediaTarget = "";
         let globalVolumeSetting = 50;
+        let dbSongsList = [];
 
         window.toggleFunAuthMode = () => {
             isRegisterMode = !isRegisterMode;
@@ -465,22 +518,25 @@
             });
         };
 
-        // ADMİNİN HERKESTE DEĞİŞECEK ŞARKIYI VE SESİ GÜNCELLEME KOMUTLARI
-        window.updateLiveTrackFromAdmin = () => {
+        // ADMIN ÇALMA LİSTESİ İŞLEMLERİ
+        window.addNewSongToDatabase = () => {
             const title = document.getElementById('adm-song-title').value.trim();
             const id = document.getElementById('adm-song-id').value.trim();
             if(title && id) {
-                set(ref(db, 'fun_current_track'), { title: title, youtubeId: id }).then(() => {
+                push(ref(db, 'fun_songs'), { title, youtubeId: id }).then(() => {
                     document.getElementById('adm-song-title').value = "";
                     document.getElementById('adm-song-id').value = "";
-                    alert("Şarkı odadaki herkeste güncellendi!");
                 });
-            } else { alert("Şarkı adı ve ID'sini eksiksiz girin!"); }
+            } else { alert("Başlık ve ID alanlarını doldurun!"); }
         };
 
-        window.updateGlobalVolumeFromAdmin = (val) => {
-            set(ref(db, 'fun_settings/globalVolume'), parseInt(val));
+        window.setLiveTrack = (key, id, title) => { 
+            set(ref(db, 'fun_current_track'), { songKey: key, youtubeId: id, title: title }); 
         };
+
+        window.delSong = (key) => { remove(ref(db, 'fun_songs/' + key)); };
+        window.clearAllSongs = () => { if(confirm("Tüm çalma listesi sıfırlansın mı?")) remove(ref(db, 'fun_songs')); };
+        window.updateGlobalVolumeFromAdmin = (val) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); };
 
         function initPlayerEngine() {
             document.getElementById('hidden-player-container').innerHTML = `<div id="fun-yt-frame"></div>`;
@@ -488,9 +544,20 @@
                 height: '0', width: '0', videoId: currentActiveSongId || 'EY07kVGs_Jk',
                 playerVars: { 'autoplay': 1, 'controls': 0 },
                 events: {
-                    'onReady': (e) => { e.target.setVolume(globalVolumeSetting); }
+                    'onReady': (e) => { e.target.setVolume(globalVolumeSetting); },
+                    'onStateChange': (e) => { if (e.data === 0) triggerNextTrackAuto(); } // Şarkı bitince sonrakine geç
                 }
             });
+        }
+
+        // DURMADAN ÇALMA SİSTEMİ (ŞARKI BİTİNCE OTOMATİK SONRAKİNE GEÇER)
+        function triggerNextTrackAuto() {
+            if(dbSongsList.length <= 1) return;
+            let idx = dbSongsList.findIndex(s => s.key === currentActiveSongKey) + 1;
+            if(idx >= dbSongsList.length || idx < 0) idx = 0; // Liste bittiyse başa dön
+            if(dbSongsList[idx]) {
+                setLiveTrack(dbSongsList[idx].key, dbSongsList[idx].youtubeId, dbSongsList[idx].title);
+            }
         }
 
         function runLivePlayer(id) {
@@ -549,7 +616,28 @@
                 }
             }
 
-            // Canlı Çalan Şarkıyı Sol Panele Bastırma ve Müzik Çalar Senkronu
+            // ADMİN ÇALMA LİSTESİ YAPILANDIRMASI
+            dbSongsList = [];
+            const adminPlaylistContainer = document.getElementById('admin-live-tracks-container');
+            adminPlaylistContainer.innerHTML = "";
+
+            if(data.fun_songs) {
+                Object.entries(data.fun_songs).forEach(([k, v]) => dbSongsList.push({ key: k, ...v }));
+                dbSongsList.forEach(song => {
+                    const isPlaying = data.fun_current_track && data.fun_current_track.songKey === song.key;
+                    adminPlaylistContainer.innerHTML += `
+                        <div class="admin-track-item ${isPlaying ? 'active' : ''}">
+                            <div class="admin-track-info" onclick="setLiveTrack('${song.key}', '${song.youtubeId}', '${song.title}')">
+                                🎵 ${song.title} ${isPlaying ? '⚡(Çalıyor)' : ''}
+                            </div>
+                            <button class="admin-del-btn" onclick="delSong('${song.key}')">SİL</button>
+                        </div>`;
+                });
+            } else {
+                adminPlaylistContainer.innerHTML = `<div style="color:#64748b; font-size:0.75rem; text-align:center;">Liste boş, şarkı ekleyin.</div>`;
+            }
+
+            // Canlı Çalan Şarkıyı Senkron Etme (Sol Panele Yazdırma)
             if(data.fun_current_track) {
                 const activeId = data.fun_current_track.youtubeId;
                 const activeTitle = data.fun_current_track.title || "Bilinmeyen Şarkı";
@@ -557,6 +645,7 @@
                 document.getElementById('now-playing-title').innerText = activeTitle;
 
                 if(activeId !== currentActiveSongId) {
+                    currentActiveSongKey = data.fun_current_track.songKey || "";
                     currentActiveSongId = activeId;
                     if(currentUser) runLivePlayer(activeId);
                 }
