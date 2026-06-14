@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İman Power | Cyber Disco V2</title>
+    <title>İman Power | Cyber Disco V3</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #030008;
-            --glass: rgba(10, 3, 20, 0.85);
+            --bg: #020006;
+            --glass: rgba(8, 2, 18, 0.88);
             --accent: #ff0055;
             --accent-glow: rgba(255, 0, 85, 0.5);
             --neon-blue: #00f0ff;
             --neon-purple: #9d00ff;
             --text: #f3f4f6;
-            --border: rgba(255, 0, 85, 0.3);
+            --border: rgba(255, 0, 85, 0.35);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -28,32 +28,28 @@
 
         /* --- ÇILGIN DISCO FLAŞÖRÜ --- */
         .strobe-bg-effect {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 2;
-            opacity: 0;
-            animation: strobeFlash 0.8s steps(1, end) infinite;
+            position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0;
+            animation: strobeFlash 0.6s steps(1, end) infinite;
         }
         @keyframes strobeFlash {
             0%, 100% { opacity: 0; background: transparent; }
-            12% { opacity: 0.25; background: var(--accent); filter: blur(50px); }
-            25% { opacity: 0; }
-            50% { opacity: 0.3; background: var(--neon-blue); filter: blur(70px); }
-            62% { opacity: 0; }
-            80% { opacity: 0.25; background: var(--neon-purple); filter: blur(50px); }
+            15% { opacity: 0.25; background: var(--accent); filter: blur(50px); }
+            30% { opacity: 0; }
+            55% { opacity: 0.3; background: var(--neon-blue); filter: blur(70px); }
+            70% { opacity: 0; }
+            85% { opacity: 0.25; background: var(--neon-purple); filter: blur(50px); }
         }
 
         /* --- SÜREKLİ DÖNEN SPOT IŞIKLARI --- */
         .ambient-party-lights { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
-        .spot { position: absolute; width: 450px; height: 450px; border-radius: 50%; filter: blur(130px); opacity: 0.45; animation: pulseSpot 5s ease-in-out infinite alternate; }
+        .spot { position: absolute; width: 450px; height: 450px; border-radius: 50%; filter: blur(140px); opacity: 0.5; animation: pulseSpot 4s ease-in-out infinite alternate; }
         .spot-1 { top: -100px; left: -50px; background: var(--accent); }
-        .spot-2 { bottom: -100px; right: -50px; background: var(--neon-blue); animation-delay: 1.5s; }
-        .spot-3 { top: 25%; left: 35%; background: var(--neon-purple); animation-delay: 3s; }
+        .spot-2 { bottom: -100px; right: -50px; background: var(--neon-blue); animation-delay: 1s; }
+        .spot-3 { top: 30%; left: 35%; background: var(--neon-purple); animation-delay: 2s; }
 
         @keyframes pulseSpot {
-            0% { transform: scale(0.8) rotate(0deg); filter: hue-rotate(0deg); opacity: 0.3; }
-            100% { transform: scale(1.4) rotate(360deg); filter: hue-rotate(180deg); opacity: 0.7; }
+            0% { transform: scale(0.8) translate(0, 0); filter: hue-rotate(0deg); opacity: 0.3; }
+            100% { transform: scale(1.3) translate(40px, 40px); filter: hue-rotate(180deg); opacity: 0.7; }
         }
 
         /* --- YAN AMBİYANS IŞIK ŞERİTLERİ --- */
@@ -61,24 +57,33 @@
             position: fixed; top: 0; bottom: 0; width: 40px; z-index: 99; pointer-events: none;
             display: flex; flex-direction: column; justify-content: space-around; align-items: center;
         }
-        .lane-left { left: 5px; background: linear-gradient(to bottom, transparent, rgba(255,0,85,0.1), transparent); box-shadow: inset -5px 0 10px rgba(255,0,85,0.05); }
-        .lane-right { right: 5px; background: linear-gradient(to bottom, transparent, rgba(0,240,255,0.1), transparent); box-shadow: inset 5px 0 10px rgba(0,240,255,0.05); }
+        .lane-left { left: 5px; background: linear-gradient(to bottom, transparent, rgba(255,0,85,0.15), transparent); }
+        .lane-right { right: 5px; background: linear-gradient(to bottom, transparent, rgba(0,240,255,0.15), transparent); }
 
         .neon-glow-ball {
-            width: 15px; height: 15px; border-radius: 50%;
-            animation: ballPulseGlow 0.6s ease-in-out infinite alternate;
+            width: 16px; height: 16px; border-radius: 50%;
+            animation: ballPulseGlow 0.5s ease-in-out infinite alternate;
         }
-        .lane-left .neon-glow-ball { background: var(--accent); box-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent); }
-        .lane-right .neon-glow-ball { background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue); }
-        .neon-glow-ball:nth-child(even) { animation-delay: 0.3s; }
+        .lane-left .neon-glow-ball { background: var(--accent); box-shadow: 0 0 25px var(--accent); }
+        .lane-right .neon-glow-ball { background: var(--neon-blue); box-shadow: 0 0 25px var(--neon-blue); }
+        .neon-glow-ball:nth-child(even) { animation-delay: 0.25s; }
 
         @keyframes ballPulseGlow {
-            0% { transform: scale(0.6); filter: brightness(0.7); }
-            100% { transform: scale(1.3); filter: brightness(1.5); }
+            0% { transform: scale(0.6); filter: brightness(0.8); }
+            100% { transform: scale(1.4); filter: brightness(1.6); }
         }
 
+        /* --- AKILLI TARAYICI SES AÇMA BUTONU --- */
+        #audio-unlocker-overlay {
+            position: fixed; bottom: 25px; right: 25px; z-index: 99999;
+            background: #00ff66; color: #000; padding: 15px 25px; font-weight: 900;
+            font-family: 'Orbitron'; border-radius: 50px; cursor: pointer; display: none;
+            box-shadow: 0 0 30px #00ff66; animation: pulseButton 0.6s infinite alternate;
+        }
+        @keyframes pulseButton { from { transform: scale(0.95); } to { transform: scale(1.05); } }
+
         /* --- GİRİŞ PANELİ --- */
-        #auth-screen { position: fixed; inset: 0; background: #020005; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        #auth-screen { position: fixed; inset: 0; background: #010003; z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .auth-card { background: var(--glass); padding: 45px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 90%; max-width: 420px; box-shadow: 0 0 50px var(--accent-glow); backdrop-filter: blur(25px); }
         .auth-card img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 25px; object-fit: cover; box-shadow: 0 0 25px var(--accent-glow); }
 
@@ -107,33 +112,20 @@
             backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .panel-title { font-family: 'Orbitron'; font-size: 1rem; font-weight: 700; color: var(--neon-blue); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px var(--neon-blue); }
-        
-        /* GÖRÜNMEZ SES MOTORU YUVASI (IFRAME İÇİN) */
-        .audio-engine-wrapper {
-            width: 100%; height: 60px; background: rgba(0,0,0,0.4); border-radius: 14px;
-            overflow: hidden; border: 1px dashed rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; position: relative;
-        }
-        .audio-engine-wrapper iframe {
-            position: absolute; width: 100%; height: 120px; top: -30px; left: 0; pointer-events: none; opacity: 0.01;
-        }
-        .audio-status-pulse {
-            width: 10px; height: 10px; background: #00ff66; border-radius: 50%; box-shadow: 0 0 15px #00ff66;
-            animation: pulseStatus 1s infinite alternate; margin-right: 8px;
-        }
-        @keyframes pulseStatus { from { transform: scale(0.8); opacity: 0.5; } to { transform: scale(1.4); opacity: 1; } }
+        .now-playing-box { background: rgba(255, 0, 85, 0.12); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
 
         /* MERKEZ SAHNE & KUDURTUCU SÖZLER */
         .center-stage {
             background: var(--glass); backdrop-filter: blur(15px); border-radius: 24px; border: 1px solid var(--border);
             padding: 45px 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.6); text-align: center; overflow: hidden; position: relative;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.6); text-align: center; overflow: hidden;
         }
         .troll-text {
             font-family: 'Orbitron'; font-size: 2.6rem; font-weight: 900; color: #fff;
             text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent), 0 0 60px var(--accent); margin-bottom: 25px;
-            animation: pulseText 0.5s infinite alternate; text-transform: uppercase; word-break: break-word; letter-spacing: 1px;
+            animation: pulseText 0.4s infinite alternate; text-transform: uppercase; word-break: break-word; letter-spacing: 1px;
         }
-        @keyframes pulseText { from { transform: scale(0.95); filter: brightness(0.8); } to { transform: scale(1.05); filter: brightness(1.4); } }
+        @keyframes pulseText { from { transform: scale(0.94); filter: brightness(0.8); } to { transform: scale(1.06); filter: brightness(1.4); } }
         .cat-box { width: 130px; height: 130px; filter: drop-shadow(0 0 15px var(--neon-purple)); }
         .cat-box img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -143,11 +135,11 @@
             box-shadow: 0 10px 35px rgba(0,0,0,0.6);
         }
         .video-wrapper { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: #000; min-height: 420px; box-shadow: 0 0 30px rgba(0,240,255,0.15); }
-        .video-wrapper iframe { position: absolute; top:0; left:0; width: 100%; height: 100%; border: none; }
+        .video-wrapper div { width: 100%; height: 100%; min-height: 420px; }
         .video-protection-shield { position: absolute; inset: 0; z-index: 99; background: transparent; pointer-events: auto; }
 
         /* ADMİN MASASI */
-        .admin-section { grid-column: 1 / -1; background: rgba(15, 3, 25, 0.98); border: 2px solid var(--accent); border-radius: 28px; padding: 30px; box-shadow: 0 0 40px var(--accent-glow); }
+        .admin-section { grid-column: 1 / -1; background: rgba(12, 2, 22, 0.98); border: 2px solid var(--accent); border-radius: 28px; padding: 30px; box-shadow: 0 0 40px var(--accent-glow); }
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
         .admin-card { background: rgba(0,0,0,0.5); padding: 22px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.07); }
         .admin-playlist-scroller { max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 14px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
@@ -157,7 +149,7 @@
         .admin-del-btn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-weight: bold; }
 
         /* BUTONLAR & INPUTLAR */
-        input, select { width: 100%; padding: 14px; margin-bottom: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0c061a; color: white; transition: 0.2s; }
+        input, select { width: 100%; padding: 14px; margin-bottom: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0a0416; color: white; transition: 0.2s; }
         input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,240,255,0.3); outline: none; }
         .btn { padding: 14px; border: none; border-radius: 12px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; transition: 0.2s; letter-spacing: 1px; }
         .btn:hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--accent-glow); }
@@ -166,14 +158,17 @@
 
         @media (max-width: 768px) {
             .troll-text { font-size: 1.8rem; }
-            .video-wrapper { min-height: 260px; }
+            .video-wrapper div { min-height: 260px; }
             .party-side-lane { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- DISCO ATMOSFER ELEMANLARI -->
+    <!-- AKILLI SES AÇMA BUTONU (TARAYICI KORUMASI İÇİN) -->
+    <div id="audio-unlocker-overlay" onclick="forceUnlockAudio()">📢 SESİ AÇ / PARTİYE KATIL</div>
+
+    <!-- DISCO AMBİYANS ELEMANLARI -->
     <div class="strobe-bg-effect"></div>
     <div id="ambient-container" class="ambient-party-lights">
         <div class="spot spot-1"></div>
@@ -189,6 +184,11 @@
         <div class="neon-glow-ball"></div><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div>
     </div>
 
+    <!-- GİZLİ SES MOTORU YUVASI -->
+    <div id="hidden-music-engine" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
+        <div id="youtube-audio-frame"></div>
+    </div>
+
     <!-- GİRİŞ SİSTEMİ -->
     <div id="auth-screen">
         <div class="auth-card">
@@ -197,7 +197,7 @@
             <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
             <input type="password" id="fun-pass-in" placeholder="Şifre">
             <button class="btn" id="auth-btn" onclick="handleFunAuth()">SALONA GİRİŞ YAP</button>
-            <p id="toggle-text" style="margin-top:15px; font-size:0.9; cursor:pointer; color:var(--neon-blue);" onclick="toggleFunAuthMode()">Hesabın yok mu? Kayıt Ol</p>
+            <p id="toggle-text" style="margin-top:15px; font-size:0.9rem; cursor:pointer; color:var(--neon-blue);" onclick="toggleFunAuthMode()">Hesabın yok mu? Kayıt Ol</p>
         </div>
     </div>
 
@@ -215,42 +215,35 @@
             </div>
         </div>
 
-        <!-- SOL BÖLÜM: CANLI SES SİSTEMİ -->
+        <!-- SOL BÖLÜM: SES DURUMU -->
         <div class="left-sidebar">
             <div class="music-panel">
-                <div class="panel-title">🎵 MERKEZİ SES SİSTEMİ</div>
+                <div class="panel-title">🎵 MERKEZİ MULTIMEDIA</div>
                 <div style="font-size:0.8rem; opacity:0.7; font-family:'Orbitron'; color:var(--neon-blue); margin-bottom:8px;">ŞU AN ODADA ÇALAN ŞARKI:</div>
-                <div class="now-playing-box" style="margin-bottom: 15px;">
+                <div class="now-playing-box">
                     <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:1rem; word-break:break-all;">Kaptan Şarkı Seçiyor... 🎧</div>
-                </div>
-
-                <!-- DIRECT EMBED GÜVENLİ MÜZİK YUVASI -->
-                <div class="audio-engine-wrapper">
-                    <div class="audio-status-pulse"></div>
-                    <span id="audio-engine-status-text" style="font-size:0.8rem; font-weight:600; font-family:'Orbitron'; color:#00ff66;">SES SİSTEMİ ÇEVRİMİÇİ</span>
-                    <div id="live-audio-iframe-container"></div>
                 </div>
             </div>
         </div>
 
-        <!-- SAĞ BÖLÜM: SÖZLER VE VİDEO AYNALAMA -->
+        <!-- SAĞ BÖLÜM: SÖZLER V2 VE VİDEO SEKMESİ -->
         <div style="display: flex; flex-direction: column; gap: 25px;">
             
-            <!-- KUDURTUCU SÖZLER EKRANI -->
+            <!-- KUDURTUCU SÖZLER ALANI -->
             <div class="center-stage">
-                <div id="live-troll-text" class="troll-text">DISCO AKIYOR... 🔥</div>
+                <div id="live-troll-text" class="troll-text">DISCO BAŞLIYOR... 🔥</div>
                 <div class="cat-box">
                     <img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif" alt="Dancing Cat">
                 </div>
             </div>
 
-            <!-- VİDEO OYNATMA BÖLÜMÜ -->
+            <!-- CANLI SESSİZ DÖNGÜ VİDEO DUVARI -->
             <div class="video-box-container">
                 <div class="panel-title" style="color:var(--neon-blue); border-color:rgba(0, 240, 255, 0.4);">📺 CANLI DISCO VİDEO DUVARI (KESİNTİSİZ DÖNGÜ)</div>
                 <div style="position:relative; width:100%;">
                     <div class="video-protection-shield"></div>
-                    <div class="video-wrapper" id="live-video-iframe-container">
-                        <!-- Güvenli Iframe buraya basılacak -->
+                    <div class="video-wrapper">
+                        <div id="video-player-frame"></div>
                     </div>
                 </div>
             </div>
@@ -267,12 +260,12 @@
             </div>
         </div>
 
-        <!-- SÜPER ADMİN PANELİ -->
+        <!-- ADMİN PANEL KONTROLLERİ -->
         <div id="super-admin-panel" class="admin-section" style="display:none;">
             <h3 style="font-family:'Orbitron'; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:20px;">🛠️ DISCO KONTROL MASASI (ADMİN)</h3>
             
             <div class="admin-grid">
-                <!-- SÖZ AYARLARI -->
+                <!-- SÖZLER DEĞİŞTİRME BÖLGESİ -->
                 <div class="admin-card">
                     <h4 style="color:var(--neon-blue); margin-bottom:12px;">💡 Kudurtucu Sözler & Efektler</h4>
                     <input type="text" id="adm-troll-input" placeholder="Ekrana Basılacak Kudurtucu Cümle">
@@ -283,7 +276,7 @@
                     <button class="btn" onclick="updateVisualSettings()">SÖZÜ VE MODU ATEŞLE</button>
                 </div>
 
-                <!-- VİDEO AYARLARI -->
+                <!-- VİDEO DEĞİŞTİRME BÖLGESİ -->
                 <div class="admin-card">
                     <h4 style="color:var(--accent); margin-bottom:12px;">🎬 Canlı Arka Plan Videosu Değiştir</h4>
                     <input type="text" id="adm-video-link-input" placeholder="YouTube Video Linki veya Kimliği">
@@ -301,7 +294,7 @@
                     <input type="text" id="adm-song-id" placeholder="YouTube Video Linki veya Kimliği">
                     <button class="btn" onclick="addNewSongToDatabase()">HAVUZA GÖNDER</button>
 
-                    <!-- MERKEZİ SES SEVİYESİ AYARI -->
+                    <!-- MERKEZİ SES GÜNCELLEME SENSÖRÜ -->
                     <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
                         <label style="font-size:0.8rem; font-weight:600; color:var(--accent); display:block; margin-bottom:8px; font-family:'Orbitron';">🔊 ODANIN SES SEVİYESİ (HERKESTE DEĞİŞİR)</label>
                         <input type="range" id="admin-global-volume" min="0" max="100" value="70" onchange="updateGlobalVolumeFromAdmin(this.value)" style="margin:0; accent-color:var(--accent);">
@@ -312,12 +305,12 @@
 
     </div>
 
-    <!-- FIREBASE VE MOTOR SENKRONİZASYON SCRIPTİ -->
+    <!-- SİSTEM SCRIPT YAPISI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Ayarları
+        // Firebase Ayarları Korundu[cite: 1]
         const firebaseConfig = {
             apiKey: "AIzaSyDy4ZUv_wZsntWSIDbcOlvpqDTBvWuSdrk",
             authDomain: "imanpowerveri.firebaseapp.com",
@@ -334,9 +327,18 @@
         let currentUser = "";
         let isRegisterMode = false;
         
+        let videoPlayer = null;
+        let musicYTPlayer = null;
+        
         let currentActiveSongId = "";
         let currentActiveVideoId = "";
         let globalVolumeSetting = 70;
+        let isYTApiReady = false;
+
+        // API Yüklenme Takibi[cite: 1]
+        window.onYouTubeIframeAPIReady = () => {
+            isYTApiReady = true;
+        };
 
         window.toggleFunAuthMode = () => {
             isRegisterMode = !isRegisterMode;
@@ -358,7 +360,7 @@
                     if(snap.exists() && snap.val().password === password) { 
                         currentUser = username; 
                         document.getElementById('auth-screen').style.display = 'none'; 
-                        // Giriş yapıldığı an güncel durumu tetikle
+                        buildPlayersSystem(); 
                     } else { alert("Hatalı kullanıcı adı veya şifre!"); }
                 }, { onlyOnce: true });
             }
@@ -382,7 +384,7 @@
             const lights = document.getElementById('adm-light-toggle').value;
             set(ref(db, 'fun_settings/trollText'), txt || "İman Power Kopuyor! 🔥");
             set(ref(db, 'fun_settings/lightsStatus'), lights);
-            alert("Kudurtucu sözler ve ışık ayarları odadaki herkese gönderildi!");
+            alert("Sözler ve ışık ayarları güncellendi!");
         };
 
         function parseYoutubeID(url) {
@@ -398,7 +400,7 @@
             const videoId = parseYoutubeID(raw);
             set(ref(db, 'fun_settings/videoData'), { sourceId: videoId }).then(() => {
                 document.getElementById('adm-video-link-input').value = "";
-                alert("Canlı video tüm ekranda güncellendi!");
+                alert("Video herkes için senkronize edildi!");
             });
         };
 
@@ -407,7 +409,7 @@
             const id = document.getElementById('adm-song-id').value.trim();
             if(title && id) {
                 const cleanId = parseYoutubeID(id);
-                if(!cleanId || cleanId.length !== 11) return alert("Geçersiz YouTube linki veya kimliği!");
+                if(!cleanId || cleanId.length !== 11) return alert("Geçersiz YouTube ID veya linki!");
                 push(ref(db, 'fun_songs'), { title, youtubeId: cleanId });
                 document.getElementById('adm-song-title').value = "";
                 document.getElementById('adm-song-id').value = "";
@@ -420,47 +422,86 @@
 
         window.delSong = (key) => { remove(ref(db, 'fun_songs/' + key)); };
         window.clearAllSongs = () => { if(confirm("Çalma listesi sıfırlansın mı?")) remove(ref(db, 'fun_songs')); };
-        
-        // Admin ses seviyesini değiştirdiğinde odadaki herkesin sesi o yüzdede güncellenir
-        window.updateGlobalVolumeFromAdmin = (val) => { 
-            set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); 
+        window.updateGlobalVolumeFromAdmin = (val) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); };
+
+        // TARAYICI SES ENGELİNİ KIRAN AKILLI TETİKLEYİCİ
+        window.forceUnlockAudio = () => {
+            if(musicYTPlayer && typeof musicYTPlayer.unMute === 'function') {
+                musicYTPlayer.unMute();
+                musicYTPlayer.setVolume(globalVolumeSetting);
+                musicYTPlayer.playVideo();
+                document.getElementById('audio-unlocker-overlay').style.display = 'none';
+            }
         };
 
-        // --- GÜVENLİ IFRAME YENİDEN OLUŞTURMA MOTORLARI ---
-        function renderAudioIframe(youtubeId, volume) {
-            const container = document.getElementById('live-audio-iframe-container');
-            if (!container) return;
-            // Tarayıcı kısıtlamalarını aşmak için ses seviyesini parametrik yolluyoruz
-            const volParam = volume !== undefined ? Math.floor(volume) : 70;
-            
-            // Tarayıcının autoplay engelini doğrudan aşan kusursuz embed link kurgusu:
-            container.innerHTML = `
-                <iframe 
-                    src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&loop=1&playlist=${youtubeId}&controls=0&mute=0&volume=${volParam}" 
-                    allow="autoplay; encrypted-media">
-                </iframe>`;
+        // RESMİ YT ÇİFT MOTOR ALTYAPISI
+        function buildPlayersSystem() {
+            if(!isYTApiReady) return setTimeout(buildPlayersSystem, 300);
+
+            // 1. CANLI SESSİZ VİDEO MOTORU (Arka Planda Sorunsuz Döner)
+            videoPlayer = new YT.Player('video-player-frame', {
+                height: '100%', width: '100%', videoId: currentActiveVideoId || 'EY07kVGs_Jk',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'disablekb': 1, 'iv_load_policy': 3 },
+                events: {
+                    'onReady': (e) => { e.target.mute(); e.target.playVideo(); },
+                    'onStateChange': (e) => {
+                        if (e.data === YT.PlayerState.ENDED || e.data === YT.PlayerState.PAUSED) {
+                            e.target.playVideo();
+                        }
+                    }
+                }
+            });
+
+            // 2. MERKEZİ YT SES MOTORU (Ses Buradan Alınır)
+            musicYTPlayer = new YT.Player('youtube-audio-frame', {
+                height: '1px', width: '1px', videoId: 'dQw4w9WgXcQ',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 0, 'disablekb': 1, 'rel': 0 },
+                events: {
+                    'onReady': () => {
+                        if(currentActiveSongId) {
+                            playCentralAudioTrack(currentActiveSongId);
+                        }
+                    },
+                    'onStateChange': (e) => {
+                        // Tarayıcı otomatik oynamayı engellediyse algıla ve butonu göster
+                        if (e.data === YT.PlayerState.UNSTARTED || e.data === -1) {
+                            document.getElementById('audio-unlocker-overlay').style.display = 'block';
+                        }
+                        if(e.data === YT.PlayerState.ENDED) {
+                            e.target.playVideo(); // Şarkıyı sonsuz döngüye al
+                        }
+                    }
+                }
+            });
         }
 
-        function renderVideoIframe(youtubeId) {
-            const container = document.getElementById('live-video-iframe-container');
-            if (!container) return;
+        function playCentralAudioTrack(trackTarget) {
+            if(!musicYTPlayer || typeof musicYTPlayer.loadVideoById !== 'function') return;
+            const ytId = parseYoutubeID(trackTarget);
+            if(!ytId || ytId.length !== 11) return;
+
+            musicYTPlayer.loadVideoById({ videoId: ytId });
+            musicYTPlayer.unMute();
+            musicYTPlayer.setVolume(globalVolumeSetting);
             
-            container.innerHTML = `
-                <iframe 
-                    src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&loop=1&playlist=${youtubeId}&controls=0&mute=1&showinfo=0&rel=0&modestbranding=1" 
-                    allow="autoplay; encrypted-media">
-                </iframe>`;
+            // Çalma komutu gönderildiğinde tarayıcı engeline takılırsa butonu tetikle
+            let playPromise = musicYTPlayer.playVideo();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    document.getElementById('audio-unlocker-overlay').style.display = 'block';
+                });
+            }
         }
 
-        // --- REALTIME DATABASE KANALI (CANLI SENKRONİZASYON) ---
+        // --- REALTIME DATABASE SENKRONU ---
         onValue(ref(db, '/'), (snap) => {
             const data = snap.val() || {};
             const settings = data.fun_settings || {};
 
-            // 1. Kudurtucu Sözler Güncellemesi
-            document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power Sahada! 🔥";
+            // 1. Canlı Kudurtucu Söz Güncellemesi[cite: 1]
+            document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power Eğlence Odası! 😎";
 
-            // 2. Işıkların Durumu
+            // 2. Işık Efektleri Kontrolü[cite: 1]
             const lanes = document.querySelectorAll('.party-side-lane');
             const strobe = document.querySelector('.strobe-bg-effect');
             const ambient = document.getElementById('ambient-container');
@@ -475,43 +516,42 @@
                 if(ambient) ambient.style.display = 'block';
             }
 
-            // 3. Ortak Ses Seviyesi Verisi
+            // 3. Ortak Ses Seviyesi Kontrolü[cite: 1]
             if(settings.globalVolume !== undefined) {
                 globalVolumeSetting = settings.globalVolume;
+                if(musicYTPlayer && typeof musicYTPlayer.setVolume === 'function') {
+                    musicYTPlayer.setVolume(globalVolumeSetting);
+                }
                 const slider = document.getElementById('admin-global-volume');
                 if(slider) slider.value = globalVolumeSetting;
             }
 
-            // 4. Canlı Video Senkronizasyonu (Değiştiyse Iframe yenilenir)
+            // 4. Canlı Arka Plan Videosu Takibi[cite: 1]
             if(settings.videoData && settings.videoData.sourceId) {
                 const targetVid = settings.videoData.sourceId;
                 if(targetVid !== currentActiveVideoId) {
                     currentActiveVideoId = targetVid;
-                    if(currentUser) { // Kullanıcı giriş yaptıysa render et
-                        renderVideoIframe(targetVid);
+                    if(videoPlayer && typeof videoPlayer.loadVideoById === 'function') {
+                        videoPlayer.loadVideoById({ videoId: targetVid });
+                        videoPlayer.mute();
                     }
-                }
-            } else {
-                if(currentActiveVideoId === "" && currentUser) {
-                    currentActiveVideoId = "EY07kVGs_Jk"; // Varsayılan video
-                    renderVideoIframe(currentActiveVideoId);
                 }
             }
 
-            // 5. Herkes İçin Çalan Şarkı Takibi
+            // 5. Canlı Şarkı Değişimi Takibi[cite: 1]
             if(data.fun_current_track) {
                 const targetSongId = data.fun_current_track.youtubeId;
-                document.getElementById('now-playing-title').innerText = data.fun_current_track.title || "Bilinmeyen Müzik";
+                document.getElementById('now-playing-title').innerText = data.fun_current_track.title || "Bilinmeyen Şarkı";
                 
                 if(targetSongId !== currentActiveSongId) {
                     currentActiveSongId = targetSongId;
                     if(currentUser) {
-                        renderAudioIframe(targetSongId, globalVolumeSetting);
+                        playCentralAudioTrack(targetSongId);
                     }
                 }
             }
 
-            // 6. Yönetici Panelindeki Çalma Listesi Görünümü
+            // 6. Yönetici Panelindeki Çalma Listesi Yapısı[cite: 1]
             const adminPlaylistContainer = document.getElementById('admin-live-tracks-container');
             if(adminPlaylistContainer) {
                 adminPlaylistContainer.innerHTML = "";
@@ -521,13 +561,13 @@
                         adminPlaylistContainer.innerHTML += `
                             <div class="admin-track-item ${isPlaying ? 'active' : ''}">
                                 <div class="admin-track-info" onclick="setLiveTrack('${k}', '${v.youtubeId}', '${v.title}')">
-                                    🎵 ${v.title} ${isPlaying ? '⚡ (Şu An Çalıyor)' : ''}
+                                    🎵 ${v.title} ${isPlaying ? '⚡(Çalıyor)' : ''}
                                 </div>
                                 <button class="admin-del-btn" onclick="delSong('${k}')">SİL</button>
                             </div>`;
                     });
                 } else {
-                    adminPlaylistContainer.innerHTML = `<div style="color:#64748b; font-size:0.8rem; text-align:center;">Liste boş. Şarkı ekle!</div>`;
+                    adminPlaylistContainer.innerHTML = `<div style="color:#64748b; font-size:0.75rem; text-align:center;">Liste boş.</div>`;
                 }
             }
         });
