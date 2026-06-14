@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İman Power | Cyber Disco V6 (Kesin Çalışan)</title>
+    <title>İman Power | Cyber Disco V7 (Sadece Müzik)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.youtube.com/iframe_api"></script>
     <style>
@@ -19,9 +19,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { 
-            background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; position: relative;
-        }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
 
         /* DISCO IŞIKLARI */
         .strobe-bg-effect { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0; animation: strobeFlash 0.6s steps(1, end) infinite; }
@@ -59,19 +57,11 @@
         @keyframes pulseBtn { from { box-shadow: 0 0 10px rgba(0,255,102,0.3); } to { box-shadow: 0 0 30px rgba(0,255,102,0.8); } }
 
         /* KUDURTUCU MERKEZ */
-        .center-stage { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 45px 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; text-align: center; }
-        .troll-text { font-family: 'Orbitron'; font-size: 2.6rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); margin-bottom: 25px; animation: pulseText 0.4s infinite alternate; }
+        .center-stage { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 60px 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; text-align: center; }
+        .troll-text { font-family: 'Orbitron'; font-size: 3rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); margin-bottom: 40px; animation: pulseText 0.4s infinite alternate; }
         @keyframes pulseText { from { transform: scale(0.96); } to { transform: scale(1.04); } }
-        .cat-box { width: 130px; height: 130px; filter: drop-shadow(0 0 15px var(--neon-purple)); }
+        .cat-box { width: 200px; height: 200px; filter: drop-shadow(0 0 15px var(--neon-purple)); }
         .cat-box img { width: 100%; height: 100%; object-fit: contain; }
-
-        /* DOKUNULMAZ VİDEO DUVARI */
-        .video-box-container { background: var(--glass); border-radius: 24px; border: 1px solid rgba(0, 240, 255, 0.4); padding: 25px; }
-        .video-wrapper { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: #000; min-height: 420px; }
-        
-        /* Sihirli Kalkan */
-        .video-protection-shield { position: absolute; inset: 0; z-index: 10; background: transparent; pointer-events: auto; }
-        .iframe-container { width: 100%; height: 100%; min-height: 420px; pointer-events: none; }
 
         /* FORMLAR & BUTONLAR */
         input, select { width: 100%; padding: 14px; margin-bottom: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0a0416; color: white; }
@@ -88,11 +78,8 @@
         .admin-track-info { cursor: pointer; color: #fff; transition: 0.2s; flex-grow: 1; }
         .admin-track-info:hover { color: var(--accent); font-weight: bold; }
 
-        /* ZORUNLU GÜVENLİK ALANI: Ses çaları gizliyoruz ama YOK ETMİYORUZ. Tarayıcı kandırmacası. */
-        .audio-stealth-box {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 200px; height: 200px; opacity: 0.001; z-index: -999; pointer-events: none;
-        }
+        /* OYNATICI (EKRAN DIŞINDA GİZLİ) */
+        .audio-stealth-box { position: fixed; top: -9999px; left: -9999px; width: 200px; height: 200px; pointer-events: none; opacity: 0; }
     </style>
 </head>
 <body>
@@ -102,7 +89,7 @@
         <div class="spot spot-1"></div><div class="spot spot-2"></div>
     </div>
 
-    <!-- SES MOTORU: 200x200 boyutunda, ekranın ortasında ama neredeyse %100 şeffaf -->
+    <!-- SADECE SES OYNATICI -->
     <div class="audio-stealth-box">
         <div id="hidden-audio-player"></div>
     </div>
@@ -114,6 +101,7 @@
             <h2 id="auth-title" style="margin-bottom:25px; font-family:'Orbitron'; color:var(--accent);">CYBER DISCO</h2>
             <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
             <input type="password" id="fun-pass-in" placeholder="Şifre">
+            <!-- Tıklama anında müziği ateşler -->
             <button class="btn" id="auth-btn" onclick="handleFunAuth()">SALONA GİRİŞ YAP</button>
             <p style="margin-top:15px; font-size:0.9rem; cursor:pointer; color:var(--neon-blue);" onclick="toggleFunAuthMode()">Hesabın yok mu? Kayıt Ol</p>
         </div>
@@ -121,6 +109,7 @@
 
     <!-- ANA EKRAN -->
     <div class="main-layout">
+        
         <div class="fun-header">
             <div class="logo-section"><img src="image_a2cd46.png" onerror="this.src='logo.png'"> İMAN POWER</div>
             <button class="btn btn-danger" style="width:auto; padding:10px 20px;" onclick="toggleAdminPrompt()">ADMİN MASASI</button>
@@ -130,30 +119,22 @@
             <div class="music-panel">
                 <div class="panel-title">🎵 MERKEZİ SES</div>
                 <div class="now-playing-box">
-                    <div id="now-playing-title" style="font-weight:800; font-size:1rem;">Kaptan Şarkı Seçiyor... 🎧</div>
+                    <div id="now-playing-title" style="font-weight:800; font-size:1rem;">Şarkı Yükleniyor... 🎧</div>
                 </div>
-                <button class="join-audio-btn" onclick="unlockAudioContext()">🎧 MÜZİĞİ SENKRONİZE ET</button>
+                <!-- Garanti Buton -->
+                <button class="join-audio-btn" onclick="unlockAudio()">🎧 SESİ BAŞLAT / SENKRONİZE ET</button>
             </div>
         </div>
 
+        <!-- SAĞ TARAF: SADECE KUDURTMA -->
         <div style="display: flex; flex-direction: column; gap: 25px;">
             <div class="center-stage">
                 <div id="live-troll-text" class="troll-text">DISCO BAŞLIYOR... 🔥</div>
                 <div class="cat-box"><img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif"></div>
             </div>
-
-            <!-- VİDEO DUVARI -->
-            <div class="video-box-container">
-                <div class="panel-title">📺 ARKA PLAN VİDEOSU</div>
-                <div class="video-wrapper">
-                    <!-- Sihirli Kalkan -->
-                    <div class="video-protection-shield"></div>
-                    <div class="iframe-container" id="visual-video-player"></div>
-                </div>
-            </div>
         </div>
 
-        <!-- ADMİN KISIMLARI -->
+        <!-- ADMİN -->
         <div id="admin-lock-box" style="display:none; grid-column:1/-1; max-width:400px; margin:0 auto; background:var(--glass); padding:25px; border-radius:20px; border:2px solid var(--accent);">
             <h4 style="color:var(--accent); text-align:center; margin-bottom:15px;">ŞİFRE DOĞRULAMA</h4>
             <input type="password" id="admin-password-field" placeholder="Admin Şifresi">
@@ -163,17 +144,12 @@
         <div id="super-admin-panel" class="admin-section" style="display:none;">
             <h3 style="color:var(--accent); margin-bottom:20px;">🛠️ KONTROL MASASI</h3>
             <div class="admin-grid">
+                
                 <div class="admin-card">
                     <h4 style="color:var(--neon-blue);">💡 Söz & Işık</h4>
                     <input type="text" id="adm-troll-input" placeholder="Kudurtucu Cümle">
                     <select id="adm-light-toggle"><option value="on">Işıklar Açık</option><option value="off">Kapat</option></select>
                     <button class="btn" onclick="updateVisualSettings()">ATEŞLE</button>
-                </div>
-
-                <div class="admin-card">
-                    <h4 style="color:var(--accent);">🎬 Video Değiştir</h4>
-                    <input type="text" id="adm-video-link-input" placeholder="YouTube Video ID/Link">
-                    <button class="btn" style="background:var(--neon-blue); color:#000;" onclick="updateAuraMediaLink()">VİDEOYU YANSIT</button>
                 </div>
 
                 <div class="admin-card">
@@ -188,6 +164,7 @@
                         <input type="range" id="admin-global-volume" min="0" max="100" value="70" onchange="updateGlobalVolumeFromAdmin(this.value)">
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -211,53 +188,40 @@
         let currentUser = "";
         let isRegisterMode = false;
         
-        let bgVideoPlayer = null;
         let audioPlayer = null;
-        let isAudioContextUnlocked = false; // BU ÇOK ÖNEMLİ
-        
-        let currentActiveSongId = "dQw4w9WgXcQ"; // İlk kurulum için varsayılan bir şarkı şart
-        let currentActiveVideoId = "EY07kVGs_Jk";
+        let isAudioUnlocked = false;
+        let currentActiveSongId = "dQw4w9WgXcQ"; 
         let globalVolumeSetting = 70;
 
         window.onYouTubeIframeAPIReady = () => {
-            // Görsel Video Oynatıcı (Zaten hep sessiz)
-            bgVideoPlayer = new YT.Player('visual-video-player', {
-                videoId: currentActiveVideoId,
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'modestbranding': 1, 'rel': 0, 'disablekb': 1, 'loop': 1 },
-                events: {
-                    'onReady': (e) => { e.target.mute(); e.target.playVideo(); },
-                    'onStateChange': (e) => { if (e.data === 0) e.target.playVideo(); } 
-                }
-            });
-
-            // Ses Oynatıcı 
             audioPlayer = new YT.Player('hidden-audio-player', {
                 videoId: currentActiveSongId,
                 playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1 },
                 events: {
-                    'onStateChange': (e) => { if (e.data === 0) e.target.playVideo(); } 
+                    'onStateChange': (e) => { 
+                        // Şarkı bitince başa sar
+                        if (e.data === YT.PlayerState.ENDED) e.target.playVideo(); 
+                    } 
                 }
             });
         };
 
-        // İŞTE SİHİR BURADA: Kullanıcı sayfaya dokunduğu an tarayıcının ses kilidini kırıyoruz
-        window.unlockAudioContext = () => {
-            if(!isAudioContextUnlocked && audioPlayer && typeof audioPlayer.playVideo === 'function') {
+        // KESİN SES AÇICI
+        window.unlockAudio = () => {
+            if(audioPlayer && typeof audioPlayer.playVideo === 'function') {
                 audioPlayer.unMute();
                 audioPlayer.setVolume(globalVolumeSetting);
                 audioPlayer.playVideo();
-                isAudioContextUnlocked = true;
+                isAudioUnlocked = true;
             }
         };
 
-        // Her ihtimale karşı: Kullanıcı "Kullanıcı adı" kutusuna tıkladığında bile arka planda sesi çözer.
-        document.body.addEventListener('click', () => { unlockAudioContext(); }, { once: true });
-        document.body.addEventListener('touchstart', () => { unlockAudioContext(); }, { once: true });
-
-        // GİRİŞ YAP BUTONU
+        // GİRİŞ YAPILDIĞINDA
         window.handleFunAuth = () => {
-            unlockAudioContext(); // Garantiye almak için tekrar tetikleniyor
+            // 1. İşlem: Doğrudan müziği patlat
+            unlockAudio();
 
+            // 2. İşlem: Veritabanı sorgusu
             const user = document.getElementById('fun-user-in').value.trim().toLowerCase();
             const pass = document.getElementById('fun-pass-in').value;
             if(!user || !pass) return alert("Boş bırakma!");
@@ -280,7 +244,7 @@
             document.getElementById('auth-btn').innerText = isRegisterMode ? "HESAP OLUŞTUR" : "GİRİŞ YAP";
         };
 
-        // ADMIN KOMUTLARI (Aynı Kasıtlı Tutuldu)
+        // ADMIN MASASI
         window.toggleAdminPrompt = () => { document.getElementById('admin-lock-box').style.display = 'block'; };
         window.verifyAdminKey = () => {
             if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
@@ -299,11 +263,6 @@
             return (m && m[2].length === 11) ? m[2] : (url.length === 11 ? url : null);
         }
 
-        window.updateAuraMediaLink = () => {
-            const id = parseYT(document.getElementById('adm-video-link-input').value);
-            if(id) set(ref(db, 'fun_settings/videoData'), { sourceId: id });
-        };
-
         window.addNewSongToDatabase = () => {
             const title = document.getElementById('adm-song-title').value;
             const id = parseYT(document.getElementById('adm-song-id').value);
@@ -316,42 +275,36 @@
         window.setLiveTrack = (k, id, t) => { set(ref(db, 'fun_current_track'), { songKey: k, youtubeId: id, title: t }); };
         window.updateGlobalVolumeFromAdmin = (v) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(v)); };
 
-        // FIREBASE DİNLEYİCİSİ
+        // CANLI VERİ DİNLEME
         onValue(ref(db, '/'), (snap) => {
             const data = snap.val() || {};
             const set_data = data.fun_settings || {};
 
+            // Görsel Ayarlar
             document.getElementById('live-troll-text').innerText = set_data.trollText || "PARTİ ZAMANI!";
             document.querySelector('.strobe-bg-effect').style.display = set_data.lightsStatus === 'off' ? 'none' : 'block';
 
+            // Ses Seviyesi
             if(set_data.globalVolume !== undefined) {
                 globalVolumeSetting = set_data.globalVolume;
                 if(audioPlayer && audioPlayer.setVolume) audioPlayer.setVolume(globalVolumeSetting);
                 if(document.getElementById('admin-global-volume')) document.getElementById('admin-global-volume').value = globalVolumeSetting;
             }
 
-            if(set_data.videoData && set_data.videoData.sourceId && set_data.videoData.sourceId !== currentActiveVideoId) {
-                currentActiveVideoId = set_data.videoData.sourceId;
-                if(bgVideoPlayer && bgVideoPlayer.loadVideoById) {
-                    bgVideoPlayer.loadVideoById({ videoId: currentActiveVideoId });
-                    bgVideoPlayer.mute(); 
-                }
-            }
-
-            // Müzik Güncellemesi Gelirse
+            // Şarkı Değişikliği
             if(data.fun_current_track && data.fun_current_track.youtubeId !== currentActiveSongId) {
                 currentActiveSongId = data.fun_current_track.youtubeId;
                 document.getElementById('now-playing-title').innerText = data.fun_current_track.title;
                 
                 if(audioPlayer && audioPlayer.loadVideoById) {
                     audioPlayer.loadVideoById({ videoId: currentActiveSongId });
-                    // Eğer kullanıcı daha önce bir yere tıkladıysa, ses zateb hazırdır direkt çalar
-                    if(isAudioContextUnlocked) {
+                    if(isAudioUnlocked) {
                         audioPlayer.playVideo();
                     }
                 }
             }
 
+            // Playlist Güncelleme
             const list = document.getElementById('admin-live-tracks-container');
             if(list) {
                 list.innerHTML = "";
