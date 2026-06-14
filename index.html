@@ -2,101 +2,501 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>İman Power | Cyber Disco V7</title>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İman Power | Gelişmiş Eğlence Masası</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #020006; --glass: rgba(8, 2, 18, 0.88); --accent: #ff0055; --neon-blue: #00f0ff; --neon-purple: #9d00ff; --text: #f3f4f6; }
-        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; min-height: 100vh; }
+        :root {
+            --bg: #02040a;
+            --glass: rgba(10, 15, 30, 0.88);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --text: #f3f4f6;
+            --border: rgba(16, 185, 129, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* --- ARKA PLAN DISCO FLAŞÖR IŞIKLARI --- */
+        .strobe-bg-effect {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            animation: strobeFlash 1.2s steps(1, end) infinite;
+        }
+        @keyframes strobeFlash {
+            0%, 100% { opacity: 0; background: transparent; }
+            10% { opacity: 0.25; background: #ff0055; filter: blur(50px); }
+            12% { opacity: 0; }
+            30% { opacity: 0.3; background: #00ffcc; filter: blur(60px); }
+            33% { opacity: 0; }
+            50% { opacity: 0.25; background: #9900ff; filter: blur(50px); }
+            52% { opacity: 0; }
+            70% { opacity: 0.35; background: #10b981; filter: blur(70px); }
+            73% { opacity: 0; }
+            85% { opacity: 0.3; background: #eab308; filter: blur(50px); }
+            88% { opacity: 0; }
+        }
+
+        .ambient-party-lights { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        .spot { position: absolute; width: 300px; height: 300px; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: pulseSpot 3s ease-in-out infinite alternate; }
+        .spot-1 { top: -50px; left: 15%; background: #ef4444; }
+        .spot-2 { bottom: 10%; right: 10%; background: #3b82f6; animation-delay: 0.5s; }
+        .spot-3 { top: 40%; left: 45%; background: #a855f7; animation-delay: 1.5s; }
+
+        @keyframes pulseSpot {
+            0% { transform: scale(0.8); opacity: 0.3; filter: hue-rotate(0deg); }
+            100% { transform: scale(1.4); opacity: 0.6; filter: hue-rotate(360deg); }
+        }
+
+        /* --- NEON YAN LEDLER V HAZNE HATLARI --- */
+        .party-side-lane { position: fixed; top: 0; bottom: 0; width: 60px; z-index: 999; pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; align-items: center; }
+        .lane-left { left: 10px; border-right: 2px dashed rgba(255, 0, 85, 0.4); }
+        .lane-right { right: 10px; border-left: 2px dashed rgba(59, 130, 246, 0.4); }
+        .neon-glow-ball { width: 28px; height: 28px; border-radius: 50%; position: relative; animation: ballPulseGlow 1s ease-in-out infinite alternate; }
+        .lane-left .neon-glow-ball { background: #ff0055; box-shadow: 0 0 15px #ff0055, 0 0 30px #ff0055, inset 0 0 5px #fff; }
+        .lane-right .neon-glow-ball { background: #00ffcc; box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc, inset 0 0 5px #fff; }
+        .neon-glow-ball:nth-child(2) { animation-delay: 0.2s; }
+        .neon-glow-ball:nth-child(3) { animation-delay: 0.4s; }
+        .neon-glow-ball:nth-child(4) { animation-delay: 0.6s; }
+        @keyframes ballPulseGlow { 0% { transform: scale(0.6); } 100% { transform: scale(1.4); } }
+
+        /* --- GİRİŞ PANELİ (ANA SİTE İLE AYNI GÖRÜNÜM) --- */
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; border: 2px solid var(--accent); text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(12px); }
+        .auth-card img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover; }
+
+        /* ANA EKRAN DÜZENİ */
+        .main-layout {
+            position: relative;
+            z-index: 5;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 25px 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        @media (min-width: 992px) {
+            .main-layout { grid-template-columns: 340px 1fr; }
+        }
+
+        .fun-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        .logo-section { display: flex; align-items: center; gap: 12px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); }
+        .logo-section img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); }
+
+        /* SOL TARAF: ŞARKI SİSTEMİ KUTUSU */
+        .music-panel {
+            background: var(--glass);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: fit-content;
+        }
+        .panel-title { font-family: 'Orbitron'; font-size: 1rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         
-        /* GİRİŞ EKRANI */
-        #auth-screen { position: fixed; inset: 0; background: #010003; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: var(--glass); padding: 40px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 350px; box-shadow: 0 0 50px rgba(255,0,85,0.3); }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #333; background: #0a0416; color: white; box-sizing: border-box; }
-        .btn { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: 12px; color: white; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        
-        /* DASHBOARD */
-        #main-content { display: none; padding: 20px; max-width: 1200px; margin: auto; }
-        .grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
-        .card { background: var(--glass); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .troll-text { font-size: 2.5rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--accent); text-align: center; margin: 20px 0; }
-        .cat-box img { width: 200px; display: block; margin: auto; filter: drop-shadow(0 0 20px var(--neon-purple)); }
+        .now-playing-box {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        /* ORTA ALAN: KUDURTUCU SÖZ VE DANS EDEN KEDİ */
+        .center-stage {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .troll-text {
+            font-family: 'Orbitron'; font-size: 2.2rem; font-weight: 900; color: #f43f5e;
+            text-shadow: 0 0 25px rgba(244, 63, 94, 0.8); margin-bottom: 30px;
+            animation: pulseText 0.6s infinite alternate; text-transform: uppercase;
+            word-break: break-word;
+        }
+        @keyframes pulseText { from { transform: scale(0.93); } to { transform: scale(1.07); } }
+        .cat-box { width: 180px; height: 180px; }
+        .cat-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* EN ALT ALAN: GELİŞMİŞ ADMİN MASASI */
+        .admin-section { grid-column: 1 / -1; background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 25px; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 15px; }
+        .admin-card { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+
+        .admin-playlist-scroller { max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 12px; margin-bottom: 10px; }
+        .admin-track-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 6px; font-size: 0.8rem; }
+        .admin-track-info { cursor: pointer; color: #fff; flex-grow: 1; }
+        .admin-track-item.active .admin-track-info { color: var(--accent); font-weight: bold; }
+        .admin-del-btn { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 6px; cursor: pointer; }
+
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #1e293b; background: #070a12; color: white; }
+        .btn { padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; }
+        .btn:hover { filter: brightness(1.2); }
+        .btn-danger { background: #ef4444; }
+
+        /* KULLANICI ŞARKI LİSTESİ BUTONLARI */
+        .user-track-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 10px; text-align: left; color: #fff; cursor: pointer; margin-bottom: 8px; width: 100%; font-size: 0.85rem; display: flex; justify-content: space-between; }
+        .user-track-btn.active { border-color: var(--accent); background: rgba(16, 185, 129, 0.1); color: var(--accent); font-weight: bold; }
     </style>
 </head>
-<body>
+<body onclick="unlockAudioOnFirstTouch()">
+
+    <div class="strobe-bg-effect"></div>
+    <div id="ambient-container" class="ambient-party-lights"><div class="spot spot-1"></div><div class="spot spot-2"></div><div class="spot spot-3"></div></div>
+
+    <div class="party-side-lane lane-left"><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div></div>
+    <div class="party-side-lane lane-right"><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div><div class="neon-glow-ball"></div></div>
+
+    <div style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
+        <div id="youtube-audio-engine"></div>
+        <audio id="direct-mp3-engine" loop></audio>
+    </div>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <img src="logo.png" style="width:100px; border-radius:50%; border:2px solid var(--accent); margin-bottom:20px;">
-            <input type="text" id="user-in" placeholder="Kullanıcı Adı">
-            <input type="password" id="pass-in" placeholder="Şifre">
-            <button class="btn" onclick="enterParty()">SALONA GİRİŞ YAP</button>
+            <img src="image_a2cd46.png" alt="İman Power Logo" onerror="this.src='logo.png'">
+            <h2 id="auth-title" style="margin-bottom:20px; font-family:'Orbitron'; color:var(--accent); letter-spacing: 2px;">EĞLENCE ODASI GİRİŞİ</h2>
+            <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
+            <input type="password" id="fun-pass-in" placeholder="Şifre">
+            <button class="btn" id="auth-btn" onclick="handleFunAuth()">GİRİŞ YAP</button>
+            <p id="toggle-text" style="margin-top:10px; font-size:0.8rem; cursor:pointer; color:var(--accent);" onclick="toggleFunAuthMode()">Hesabın yok mu? Kayıt Ol</p>
         </div>
     </div>
 
-    <div id="main-content">
-        <div class="grid">
-            <div class="card">
-                <h3>🎵 Çalan Şarkı</h3>
-                <div id="now-playing">Yükleniyor...</div>
-                <div id="player-container" style="display:none;"></div>
-            </div>
-            <div class="card">
-                <div id="live-troll-text" class="troll-text">PARTİ BAŞLIYOR...</div>
-                <div class="cat-box"><img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif"></div>
-            </div>
-        </div>
+    <div class="main-layout">
         
-        <!-- ADMIN PANEL -->
-        <div class="card" style="margin-top:20px;">
-            <h3>🛠️ Admin Masası</h3>
-            <input type="text" id="adm-troll" placeholder="Kudurtucu Söz">
-            <button class="btn" onclick="updateTroll()">GÜNCELLE</button>
+        <div class="fun-header">
+            <div class="logo-section">
+                <img src="image_a2cd46.png" onerror="this.src='logo.png'">
+                <span>İMAN POWER DISCO AREA</span>
+            </div>
+            <div>
+                <button class="btn btn-danger" style="padding: 8px 16px; font-size: 0.75rem; width: auto;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ GİRİŞİ</button>
+            </div>
         </div>
+
+        <div class="music-panel">
+            <div class="panel-title">🎵 CANLI PLAYLIST MOTORU</div>
+            <div style="font-size:0.75rem; opacity:0.7; font-family:'Orbitron'; color:var(--accent);">ŞU ANDA ÇALAN:</div>
+            <div class="now-playing-box">
+                <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:0.9rem; word-break:break-all;">Müzik Bekleniyor... 🎧</div>
+            </div>
+            
+            <div class="panel-title" style="border:none; margin-top:5px;">📁 ŞARKILAR SİSTEMİ</div>
+            <div id="user-songs-list-container" style="max-height: 220px; overflow-y: auto;">
+                </div>
+
+            <div style="margin-top:10px;">
+                <label id="vol-lbl-text" style="font-size:0.75rem; color:var(--accent); display:block; margin-bottom:5px; font-family:'Orbitron';">KİŞİSEL SES AYARI</label>
+                <input type="range" id="local-volume-slider" min="0" max="100" value="60" oninput="changeLocalVolume(this.value)" style="margin:0; accent-color:#10b981;">
+            </div>
+        </div>
+
+        <div class="center-stage">
+            <div id="live-troll-text" class="troll-text">YÜKLENİYOR... 😎</div>
+            <div class="cat-box">
+                <img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif" alt="Dancing Cat">
+            </div>
+        </div>
+
+        <div id="admin-lock-box" style="display:none; grid-column:1/-1; max-width:400px; margin:0 auto; width:100%; border:2px solid #ef4444; background:var(--glass); padding:20px; border-radius:16px; z-index: 999;">
+            <h4 style="font-family:'Orbitron'; margin-bottom:12px; color:#ef4444;">ADMİN ŞİFRE DOĞRULAMA</h4>
+            <input type="password" id="admin-password-field" placeholder="Admin Şifresi">
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:#ef4444;" onclick="verifyAdminKey()">GİRİŞ</button>
+                <button class="btn" style="background:#64748b;" onclick="document.getElementById('admin-lock-box').style.display='none'">KAPAT</button>
+            </div>
+        </div>
+
+        <div id="super-admin-panel" class="admin-section" style="display:none;">
+            <h3 style="font-family:'Orbitron'; color:#ef4444; border-bottom:1px solid rgba(239,68,68,0.2); padding-bottom:10px;">🛠️ İMAN POWER EĞLENCE MASASI (YÖNETİCİ)</h3>
+            
+            <div class="admin-grid">
+                <div class="admin-card">
+                    <h4 style="color:var(--accent); margin-bottom:10px;">💡 Işıklar & Yazı Ayarları</h4>
+                    <input type="text" id="adm-troll-input" placeholder="Kudurtucu Sözü Yaz">
+                    <select id="adm-light-toggle">
+                        <option value="on">Parti Işıkları & Flaşör Aktif</option>
+                        <option value="off">Tüm Işıkları Söndür</option>
+                    </select>
+                    <button class="btn" style="background:#ef4444;" onclick="updateVisualSettings()">AYARLARI YAYINLA</button>
+                </div>
+
+                <div class="admin-card">
+                    <h4 style="color:var(--accent); margin-bottom:10px;">🗂️ ŞARKILARI DÜZENLE & YÖNET</h4>
+                    <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
+                    <button class="btn btn-danger" style="padding:6px; font-size:0.75rem; margin-bottom:12px;" onclick="clearAllSongs()">TÜM HAVUZU SIFIRLA</button>
+
+                    <h4 style="color:#3b82f6; margin-bottom:5px; font-size:0.85rem;">➕ Havuza Yeni Şarkı Ekle</h4>
+                    <input type="text" id="adm-song-title" placeholder="Şarkı Adı">
+                    <input type="text" id="adm-song-id" placeholder="YouTube ID veya .mp3 Linki">
+                    <button class="btn" onclick="addNewSongToDatabase()">HAVUZA EKLE</button>
+
+                    <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
+                        <label style="font-size:0.75rem; color:#10b981; display:block; margin-bottom:5px; font-family:'Orbitron';">🔊 MERKEZİ SES SEVİYESİ (HERKESTE DEĞİŞİR)</label>
+                        <input type="range" id="admin-global-volume" min="0" max="100" value="60" onchange="updateGlobalVolumeFromAdmin(this.value)" style="margin:0; accent-color:#10b981;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // GÖNDERDİĞİN RESİMDEKİ ASIL VERİTABANI KİMLİĞİ (kartalhaber-49ae6)
         const firebaseConfig = {
-            apiKey: "AIzaSyDy4ZUv_wZsntWSIDbcOlvpqDTBvWuSdrk",
-            authDomain: "imanpowerveri.firebaseapp.com",
-            databaseURL: "https://imanpowerveri-default-rtdb.firebaseio.com",
-            projectId: "imanpowerveri",
-            storageBucket: "imanpowerveri.firebasestorage.app",
-            messagingSenderId: "891464029314",
-            appId: "1:891464029314:web:581bd3b2ed3d7c6af2d09b"
+            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
+            authDomain: "kartalhaber-49ae6.firebaseapp.com",
+            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com", 
+            projectId: "kartalhaber-49ae6",
+            storageBucket: "kartalhaber-49ae6.firebasestorage.app",
+            messagingSenderId: "840474590939r",
+            appId: "1:840474590939:web:d4ecaf7174886bbe835eb7"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        let player;
 
-        window.onYouTubeIframeAPIReady = () => {
-            player = new YT.Player('player-container', {
-                videoId: 'dQw4w9WgXcQ',
-                events: { 'onStateChange': (e) => { if(e.data === 0) player.playVideo(); } }
-            });
+        let currentUser = "";
+        let isRegisterMode = false;
+        
+        let musicYTPlayer = null; 
+        let directMp3Player = document.getElementById('direct-mp3-engine');
+        
+        let currentActiveSongId = "";
+        let globalVolumeSetting = 60;
+        let isYTApiReady = false;
+
+        window.onYouTubeIframeAPIReady = () => { isYTApiReady = true; };
+
+        window.toggleFunAuthMode = () => {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').innerText = isRegisterMode ? "EĞLENCE ODASI KAYIT" : "EĞLENCE ODASI GİRİŞİ";
+            document.getElementById('auth-btn').innerText = isRegisterMode ? "KAYIT OL" : "GİRİŞ YAP";
         };
 
-        window.enterParty = () => {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            if(player) {
-                player.unMute();
-                player.playVideo();
+        window.handleFunAuth = () => {
+            const username = document.getElementById('fun-user-in').value.trim().toLowerCase();
+            const password = document.getElementById('fun-pass-in').value;
+            if(!username || !password) return alert("Boş alan bırakma başkan!");
+
+            if(isRegisterMode) {
+                set(ref(db, 'fun_users/' + username), { password: password }).then(() => { 
+                    alert("Kayıt başarılı! Giriş yapabilirsin."); toggleFunAuthMode(); 
+                });
+            } else {
+                onValue(ref(db, 'fun_users/' + username), (snap) => {
+                    if(snap.exists() && snap.val().password === password) { 
+                        currentUser = username; 
+                        document.getElementById('auth-screen').style.display = 'none'; 
+                        buildAudioEngine(); 
+                    } else { alert("Kullanıcı adı veya şifre hatalı!"); }
+                }, { onlyOnce: true });
             }
         };
 
-        window.updateTroll = () => {
-            const text = document.getElementById('adm-troll').value;
-            set(ref(db, 'fun_settings/trollText'), text);
+        window.verifyAdminKey = () => {
+            if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
+                document.getElementById('admin-lock-box').style.display = 'none';
+                document.getElementById('super-admin-panel').style.display = 'block';
+                alert("Giriş Başarılı!");
+            } else { alert("Şifre yanlış!"); }
         };
 
+        window.updateVisualSettings = () => {
+            const txt = document.getElementById('adm-troll-input').value.trim();
+            const lights = document.getElementById('adm-light-toggle').value;
+            set(ref(db, 'fun_settings/trollText'), txt || "İman Power Sahada!");
+            set(ref(db, 'fun_settings/lightsStatus'), lights);
+            alert("Görsel ayarlar yayınlandı!");
+        };
+
+        function parseYoutubeID(url) {
+            if(url.length === 11) return url;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : url;
+        }
+
+        window.addNewSongToDatabase = () => {
+            const title = document.getElementById('adm-song-title').value.trim();
+            const id = document.getElementById('adm-song-id').value.trim();
+            if(title && id) {
+                push(ref(db, 'fun_songs'), { title, youtubeId: id });
+                document.getElementById('adm-song-title').value = "";
+                document.getElementById('adm-song-id').value = "";
+            } else { alert("Eksik alan bırakmayın!"); }
+        };
+
+        window.setLiveTrack = (key, id, title) => { 
+            set(ref(db, 'fun_current_track'), { songKey: key, youtubeId: id, title: title }); 
+        };
+
+        window.delSong = (key) => { remove(ref(db, 'fun_songs/' + key)); };
+        window.clearAllSongs = () => { if(confirm("Tüm havuz temizlensin mi?")) remove(ref(db, 'fun_songs')); };
+        window.updateGlobalVolumeFromAdmin = (val) => { set(ref(db, 'fun_settings/globalVolume'), parseInt(val)); };
+
+        // TARAYICI ENGELİNİ KALDIRMA TETİKLEYİCİSİ
+        window.unlockAudioOnFirstTouch = () => {
+            if(musicYTPlayer && typeof musicYTPlayer.unMute === 'function') {
+                musicYTPlayer.unMute();
+                musicYTPlayer.setVolume(globalVolumeSetting);
+            }
+            if(directMp3Player && directMp3Player.src) {
+                directMp3Player.play().catch(e => {});
+            }
+        };
+
+        window.changeLocalVolume = (val) => {
+            globalVolumeSetting = parseInt(val);
+            if(musicYTPlayer && typeof musicYTPlayer.setVolume === 'function') musicYTPlayer.setVolume(globalVolumeSetting);
+            if(directMp3Player) directMp3Player.volume = globalVolumeSetting / 100;
+        };
+
+        function buildAudioEngine() {
+            if(!isYTApiReady) return setTimeout(buildAudioEngine, 300);
+
+            musicYTPlayer = new YT.Player('youtube-audio-engine', {
+                height: '1px', width: '1px', videoId: 'dQw4w9WgXcQ',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'mute': 1, 'disablekb': 1, 'rel': 0 },
+                events: {
+                    'onReady': () => { if(currentActiveSongId) playAudioRoute(currentActiveSongId); },
+                    'onStateChange': (e) => { if(e.data === YT.PlayerState.ENDED) e.target.playVideo(); }
+                }
+            });
+        }
+
+        function playAudioRoute(target) {
+            if(musicYTPlayer && typeof musicYTPlayer.stopVideo === 'function') musicYTPlayer.stopVideo();
+            if(directMp3Player) { directMp3Player.pause(); directMp3Player.src = ""; }
+
+            if(target.includes('.mp3') || target.includes('http://') || target.includes('https://')) {
+                if(directMp3Player) {
+                    directMp3Player.src = target;
+                    directMp3Player.volume = globalVolumeSetting / 100;
+                    directMp3Player.play().catch(e => console.log("Ses açmak için ekrana tıklayın."));
+                }
+            } else {
+                const cleanId = parseYoutubeID(target);
+                if(musicYTPlayer && typeof musicYTPlayer.loadVideoById === 'function') {
+                    musicYTPlayer.loadVideoById({ videoId: cleanId });
+                    musicYTPlayer.unMute();
+                    musicYTPlayer.setVolume(globalVolumeSetting);
+                    musicYTPlayer.playVideo();
+                }
+            }
+        }
+
+        // --- REALTIME DATABASE VERİ DİNLEME AKIŞI ---
         onValue(ref(db, '/'), (snap) => {
-            const data = snap.val();
-            if(data?.fun_settings?.trollText) {
-                document.getElementById('live-troll-text').innerText = data.fun_settings.trollText;
+            const data = snap.val() || {};
+            const settings = data.fun_settings || {};
+
+            // Kudurtucu Söz Senkronu
+            document.getElementById('live-troll-text').innerText = settings.trollText || "İMAN POWER SAHADA! 😎";
+
+            // Disco Işıkları Durum Kontrolü
+            const lanes = document.querySelectorAll('.party-side-lane');
+            const strobe = document.querySelector('.strobe-bg-effect');
+            const ambient = document.getElementById('ambient-container');
+            if(settings.lightsStatus === 'off') {
+                lanes.forEach(l => l.style.display = 'none');
+                if(strobe) strobe.style.display = 'none';
+                if(ambient) ambient.style.display = 'none';
+            } else {
+                lanes.forEach(l => l.style.display = 'flex');
+                if(strobe) strobe.style.display = 'block';
+                if(ambient) ambient.style.display = 'block';
+            }
+
+            // Ses Ayarı Senkronu
+            if(settings.globalVolume !== undefined && !currentUser) {
+                globalVolumeSetting = settings.globalVolume;
+                if(musicYTPlayer && typeof musicYTPlayer.setVolume === 'function') musicYTPlayer.setVolume(globalVolumeSetting);
+                if(directMp3Player) directMp3Player.volume = globalVolumeSetting / 100;
+                document.getElementById('local-volume-slider').value = globalVolumeSetting;
+            }
+
+            // Çalan Şarkıyı Güncelle
+            if(data.fun_current_track) {
+                const targetSongId = data.fun_current_track.youtubeId;
+                document.getElementById('now-playing-title').innerText = data.fun_current_track.title || "Bilinmeyen Şarkı";
+                
+                if(targetSongId !== currentActiveSongId) {
+                    currentActiveSongId = targetSongId;
+                    if(currentUser) playAudioRoute(targetSongId);
+                }
+            }
+
+            // KULLANICI LİSTESİ OLUŞTURMA (Sol Taraf)
+            const userSongsContainer = document.getElementById('user-songs-list-container');
+            if(userSongsContainer) {
+                userSongsContainer.innerHTML = "";
+                if(data.fun_songs) {
+                    Object.entries(data.fun_songs).forEach(([k, v]) => {
+                        const isPlaying = data.fun_current_track && data.fun_current_track.songKey === k;
+                        userSongsContainer.innerHTML += `
+                            <button class="user-track-btn ${isPlaying ? 'active' : ''}" onclick="setLiveTrack('${k}', '${v.youtubeId}', '${v.title}')">
+                                <span>🎵 ${v.title}</span>
+                                ${isPlaying ? '<span style="color:var(--accent);">● ÇALIYOR</span>' : ''}
+                            </button>`;
+                    });
+                } else {
+                    userSongsContainer.innerHTML = `<div style="color:#64748b; font-size:0.75rem; text-align:center; padding:10px;">Şarkı havuzu boş.</div>`;
+                }
+            }
+
+            // ADMİN PANELİ LİSTESİ OLUŞTURMA (En Alt)
+            const adminPlaylistContainer = document.getElementById('admin-live-tracks-container');
+            if(adminPlaylistContainer) {
+                adminPlaylistContainer.innerHTML = "";
+                if(data.fun_songs) {
+                    Object.entries(data.fun_songs).forEach(([k, v]) => {
+                        const isPlaying = data.fun_current_track && data.fun_current_track.songKey === k;
+                        adminPlaylistContainer.innerHTML += `
+                            <div class="admin-track-item ${isPlaying ? 'active' : ''}">
+                                <div class="admin-track-info" onclick="setLiveTrack('${k}', '${v.youtubeId}', '${v.title}')">
+                                    🎵 ${v.title} ${isPlaying ? '⚡(Aktif)' : ''}
+                                </div>
+                                <button class="admin-del-btn" onclick="delSong('${k}')">SİL</button>
+                            </div>`;
+                    });
+                }
             }
         });
     </script>
