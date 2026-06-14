@@ -2,81 +2,121 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>İman Power | Yönetim Odası</title>
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>İman Power | Yeni Nesil Disco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #02040a; --glass: rgba(10, 15, 30, 0.9); --accent: #10b981; }
-        body { background: var(--bg); color: white; font-family: 'Poppins', sans-serif; margin: 0; }
-        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #main-content { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
-        .input-box { background: #111; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
-        .player-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; padding: 10px; border-top: 2px solid var(--accent); z-index: 1000; }
-        .btn { background: var(--accent); border: none; padding: 10px 20px; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        :root { --bg: #050505; --accent: #10b981; --glass: rgba(20, 20, 20, 0.8); }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); color: white; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* HEADER */
+        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+        .logo { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--accent); }
+        .btn { background: var(--accent); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* MAİN LAYOUT */
+        main { display: grid; grid-template-columns: 1fr 350px; gap: 20px; padding: 20px; flex-grow: 1; }
+        
+        /* TOXİK CHAT */
+        .chat-box { background: var(--glass); border-radius: 15px; padding: 20px; height: 500px; display: flex; flex-direction: column; }
+        #chat-messages { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 0.9rem; }
+        .msg { margin-bottom: 8px; border-left: 2px solid var(--accent); padding-left: 10px; }
+
+        /* PLAYER */
+        .video-box { background: #000; border-radius: 15px; overflow: hidden; height: 300px; }
+        
+        /* MODAL */
+        #admin-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <h2 style="color:var(--accent);">EĞLENCE ODASI GİRİŞİ</h2>
-        <input type="text" id="user" placeholder="Kullanıcı" style="padding:10px; margin-bottom:10px;">
-        <input type="password" id="pass" placeholder="Şifre" style="padding:10px; margin-bottom:10px;">
-        <button class="btn" onclick="login()">GİRİŞ YAP</button>
+    <header>
+        <div class="logo">İMAN POWER</div>
+        <button class="btn" onclick="document.getElementById('admin-modal').style.display='flex'">YÖNETİCİ GİRİŞİ</button>
+    </header>
+
+    <main>
+        <div class="chat-box">
+            <h3 style="color:var(--accent);">TOXİK MESAJLAR</h3>
+            <div id="chat-messages"></div>
+            <input type="text" id="chat-in" placeholder="Mesaj yaz..." style="padding:10px; border-radius:8px; border:none;">
+            <button class="btn" style="margin-top:5px;" onclick="sendMessage()">GÖNDER</button>
+        </div>
+
+        <div>
+            <div class="video-box" id="yt-player"></div>
+            <div style="margin-top:20px;">
+                <button class="btn" onclick="startAudio()">SİSTEMİ BAŞLAT</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="admin-modal">
+        <div class="modal-content">
+            <h3>Admin Şifresi</h3>
+            <input type="password" id="admin-pass" style="padding:10px; width:100%; margin-bottom:10px;">
+            <button class="btn" onclick="checkAdmin()">GİRİŞ</button>
+            <div id="admin-panel" style="display:none; margin-top:20px;">
+                <input type="text" id="new-yt" placeholder="Yeni Video ID" style="padding:10px; width:100%;">
+                <button class="btn" style="margin-top:10px;" onclick="updateVideo()">VİDEOYU GÜNCELLE</button>
+            </div>
+        </div>
     </div>
 
-    <div id="main-content">
-        <h1 style="color:var(--accent);">YÖNETİM PANELİ</h1>
-        <div id="admin-panel" class="input-box" style="display:none;">
-            <h3>Yönetici Kontrolü</h3>
-            <input type="text" id="yt-id" placeholder="YouTube Video ID (Örn: EY07kVGs_Jk)" style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="btn" onclick="updateVideo()">TÜM EKRANLARA GÖNDER</button>
-        </div>
-        <div id="song-list" class="input-box">
-            <h3>Şarkı Listesi</h3>
-            <div id="list-container"></div>
-        </div>
-    </div>
-
-    <div class="player-footer">
-        <div style="display:flex; align-items:center; justify-content:space-between; max-width:800px; margin:0 auto;">
-            <button class="btn" onclick="startAudio()">🔊 SESİ BAŞLAT</button>
-            <input type="range" id="vol" min="0" max="100" value="100" onchange="setVolume(this.value)">
-            <div id="yt-player-container"></div>
-        </div>
-    </div>
-
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = { databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com" };
+        // Senin Orijinal Firebase Ayarların
+        const firebaseConfig = {
+            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
+            authDomain: "kartalhaber-49ae6.firebaseapp.com",
+            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
+            projectId: "kartalhaber-49ae6",
+            storageBucket: "kartalhaber-49ae6.firebasestorage.app",
+            messagingSenderId: "804745909398",
+            appId: "1:804745909398:web:d4ecaf7174886bbe835eb7"
+        };
         const db = getDatabase(initializeApp(firebaseConfig));
-        
         let player;
+
+        // YOUTUBE
         window.onYouTubeIframeAPIReady = () => {
-            player = new YT.Player('yt-player-container', {
-                height: '0', width: '0', videoId: 'EY07kVGs_Jk',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 0 }
+            player = new YT.Player('yt-player', { height: '300', width: '100%', videoId: 'EY07kVGs_Jk', playerVars: { 'autoplay': 1, 'mute': 0 } });
+        };
+        window.startAudio = () => { if(player) player.playVideo(); };
+
+        // CHAT (TOXİK)
+        window.sendMessage = () => {
+            const msg = document.getElementById('chat-in').value;
+            if(msg) push(ref(db, 'toxic_chat'), { text: msg, time: Date.now() });
+            document.getElementById('chat-in').value = "";
+        };
+
+        onValue(ref(db, 'toxic_chat'), (snap) => {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = "";
+            snap.forEach((child) => {
+                container.innerHTML += `<div class="msg">${child.val().text}</div>`;
             });
-        };
+            container.scrollTop = container.scrollHeight;
+        });
 
-        window.login = () => {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            if(document.getElementById('user').value === "admin") document.getElementById('admin-panel').style.display = 'block';
+        // ADMIN
+        window.checkAdmin = () => {
+            if(document.getElementById('admin-pass').value === "imanpoweradmini31") {
+                document.getElementById('admin-panel').style.display = 'block';
+            } else { alert("Yanlış şifre!"); }
         };
-
         window.updateVideo = () => {
-            const id = document.getElementById('yt-id').value;
-            set(ref(db, 'current_song'), { videoId: id });
+            const newId = document.getElementById('new-yt').value;
+            set(ref(db, 'current_song'), { videoId: newId });
         };
-
-        window.startAudio = () => { if(player) { player.unMute(); player.playVideo(); } };
-        window.setVolume = (v) => { if(player) player.setVolume(v); };
-
         onValue(ref(db, 'current_song'), (snap) => {
-            const data = snap.val();
-            if(data && player) player.loadVideoById(data.videoId);
+            if(snap.exists() && player) player.loadVideoById(snap.val().videoId);
         });
     </script>
 </body>
