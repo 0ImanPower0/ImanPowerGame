@@ -2,79 +2,94 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İman Power | Cyber Disco V7</title>
+    <title>İman Power | Cyber Party</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <script src="https://www.youtube.com/iframe_api"></script>
     <style>
-        /* CSS Kısmı aynı kalıyor, sadece yapısal olarak korundu */
-        :root { --bg: #020006; --glass: rgba(8, 2, 18, 0.88); --accent: #ff0055; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; }
-        #auth-screen { position: fixed; inset: 0; background: #010003; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: var(--glass); padding: 45px; border-radius: 30px; border: 2px solid var(--accent); text-align: center; width: 90%; max-width: 420px; }
-        input { width: 100%; padding: 14px; margin-bottom: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0a0416; color: white; }
-        .btn { padding: 14px; border: none; border-radius: 12px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; }
+        :root { --bg: #020006; --accent: #ff0055; --neon: #00f0ff; --glass: rgba(255,255,255,0.05); }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        
+        /* Giriş Ekranı */
+        #auth-screen { position: fixed; inset: 0; background: radial-gradient(circle, #1a0b1e, #020006); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--glass); padding: 40px; border-radius: 30px; border: 1px solid var(--accent); backdrop-filter: blur(15px); text-align: center; width: 320px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: #111; color: white; }
+        .login-btn { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        /* Ana İçerik */
+        .dashboard { display: none; padding: 20px; max-width: 1000px; margin: auto; }
+        .flex-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .card { background: var(--glass); padding: 20px; border-radius: 20px; border: 1px solid var(--neon); flex: 1; }
+        
+        /* Dans Eden Kedi */
+        .cat-stage { text-align: center; margin-top: 30px; }
+        .cat-stage img { width: 250px; filter: drop-shadow(0 0 20px var(--neon)); }
+        
+        .troll-text { font-family: 'Orbitron'; font-size: 2rem; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="hidden-audio-player" style="position:absolute; top:-9999px;"></div>
-
     <div id="auth-screen">
-        <div class="auth-card">
-            <img src="image_a2cd46.png" onerror="this.src='logo.png'" style="width:100px; border-radius:50%; margin-bottom:20px;">
-            <h2 id="auth-title" style="color:var(--accent);">CYBER DISCO</h2>
-            <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
-            <input type="password" id="fun-pass-in" placeholder="Şifre">
-            <button class="btn" id="auth-btn" onclick="handleFunAuth()">SALONA GİRİŞ YAP</button>
+        <div class="login-box">
+            <h2 style="font-family: 'Orbitron';">CYBER DISCO</h2>
+            <input type="text" id="user" placeholder="Kullanıcı Adı">
+            <input type="password" id="pass" placeholder="Şifre">
+            <button class="login-btn" onclick="startParty()">SALONA GİR</button>
         </div>
     </div>
 
-    <div class="main-layout">
+    <div id="main-content" class="dashboard">
+        <div class="flex-container">
+            <div class="card">
+                <h3>🎵 Çalan Şarkı</h3>
+                <p id="current-track-name">Yükleniyor...</p>
+                <div id="hidden-player" style="display:none;"></div>
+            </div>
+            <div class="card">
+                <h3>🔥 Anlık Durum</h3>
+                <div id="troll-display" class="troll-text">PARTİ BAŞLIYOR!</div>
+            </div>
         </div>
+
+        <div class="cat-stage">
+            <img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif" alt="Dancing Cat">
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDy4ZUv_wZsntWSIDbcOlvpqDTBvWuSdrk",
-            authDomain: "imanpowerveri.firebaseapp.com",
-            databaseURL: "https://imanpowerveri-default-rtdb.firebaseio.com", 
-            projectId: "imanpowerveri",
-            storageBucket: "imanpowerveri.firebasestorage.app",
-            messagingSenderId: "891464029314",
-            appId: "1:891464029314:web:581bd3b2ed3d7c6af2d09b"
-        };
-        
+        // Firebase ve YouTube ayarları buraya gelecek (Eski kodundaki config ile aynı)
+        const firebaseConfig = { /* ... */ };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        let audioPlayer = null;
-
-        // YouTube API Hazırlığı
+        
+        let player;
         window.onYouTubeIframeAPIReady = () => {
-            audioPlayer = new YT.Player('hidden-audio-player', {
-                videoId: 'dQw4w9WgXcQ', // Varsayılan video
-                playerVars: { 'autoplay': 0, 'controls': 0 }
+            player = new YT.Player('hidden-player', {
+                videoId: 'dQw4w9WgXcQ',
+                events: { 'onStateChange': (e) => { if(e.data === 0) player.playVideo(); } } // Sürekli tekrar
             });
         };
 
-        // GİRİŞ YAP VE SESİ TETİKLE
-        window.handleFunAuth = () => {
-            // 1. SESİ BAŞLAT (Tarayıcı kısıtlamasını aşar)
-            if(audioPlayer) {
-                audioPlayer.unMute();
-                audioPlayer.playVideo();
-            }
-
-            // 2. VERİTABANI İŞLEMLERİNİ YAP (Orijinal giriş mantığın)
-            const user = document.getElementById('fun-user-in').value;
-            if(user) {
-                document.getElementById('auth-screen').style.display = 'none';
-                console.log("Ses başlatıldı ve panele girildi.");
+        window.startParty = () => {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            if(player) {
+                player.unMute();
+                player.playVideo();
             }
         };
-        
-        // ... (Orijinal veritabanı dinleyicilerin ve admin fonksiyonların buraya gelecek)
+
+        // Veritabanından gelen verileri anlık güncelleme
+        onValue(ref(db, '/'), (snapshot) => {
+            const data = snapshot.val();
+            // Kudurtucu sözü güncelle
+            document.getElementById('troll-display').innerText = data.fun_settings.trollText;
+            // Işıklar (Basit bir örnek)
+            document.body.style.filter = data.fun_settings.lightsStatus === 'off' ? 'grayscale(1)' : 'none';
+        });
     </script>
 </body>
 </html>
