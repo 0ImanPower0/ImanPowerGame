@@ -2,154 +2,82 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İman Power | Eğlence Odası</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>İman Power | Yönetim Odası</title>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #02040a; --glass: rgba(10, 15, 30, 0.88); --accent: #10b981; --accent-glow: rgba(16, 185, 129, 0.4); --text: #f3f4f6; --border: rgba(16, 185, 129, 0.25); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; position: relative; }
-        
-        /* Orijinal Stillerin Aynen Korundu */
-        .strobe-bg-effect { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0; animation: strobeFlash 1.2s steps(1, end) infinite; }
-        @keyframes strobeFlash { 0%, 100% { opacity: 0; background: transparent; } 10% { opacity: 0.25; background: #ff0055; filter: blur(50px); } 30% { opacity: 0.3; background: #00ffcc; filter: blur(60px); } 50% { opacity: 0.25; background: #9900ff; filter: blur(50px); } 70% { opacity: 0.35; background: #10b981; filter: blur(70px); } 85% { opacity: 0.3; background: #eab308; filter: blur(50px); } }
-        .ambient-party-lights { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
-        .spot { position: absolute; width: 300px; height: 300px; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: pulseSpot 3s ease-in-out infinite alternate; }
-        .spot-1 { top: -50px; left: 15%; background: #ef4444; } .spot-2 { bottom: 10%; right: 10%; background: #3b82f6; animation-delay: 0.5s; } .spot-3 { top: 40%; left: 45%; background: #a855f7; animation-delay: 1.5s; }
-        @keyframes pulseSpot { 0% { transform: scale(0.8); } 100% { transform: scale(1.4); } }
-        
-        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; border: 2px solid var(--accent); text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(12px); }
-        .main-layout { position: relative; z-index: 5; max-width: 1300px; margin: 0 auto; padding: 25px 20px; display: grid; grid-template-columns: 1fr; gap: 25px; }
-        @media (min-width: 992px) { .main-layout { grid-template-columns: 320px 1fr; } }
-        .fun-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px 25px; border-radius: 20px; border: 1px solid var(--border); }
-        .music-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 15px; }
-        .admin-section { grid-column: 1 / -1; background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 25px; }
-        .btn { padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; }
-        .btn-danger { background: #ef4444; }
-        input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #1e293b; background: #070a12; color: white; }
+        :root { --bg: #02040a; --glass: rgba(10, 15, 30, 0.9); --accent: #10b981; }
+        body { background: var(--bg); color: white; font-family: 'Poppins', sans-serif; margin: 0; }
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #main-content { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .input-box { background: #111; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        .player-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; padding: 10px; border-top: 2px solid var(--accent); z-index: 1000; }
+        .btn { background: var(--accent); border: none; padding: 10px 20px; color: white; cursor: pointer; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="strobe-bg-effect"></div>
-    <div id="ambient-container" class="ambient-party-lights">
-        <div class="spot spot-1"></div><div class="spot spot-2"></div><div class="spot spot-3"></div>
-    </div>
-
     <div id="auth-screen">
-        <div class="auth-card">
-            <h2 id="auth-title" style="margin-bottom:20px; font-family:'Orbitron'; color:var(--accent);">GİRİŞ YAP</h2>
-            <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
-            <input type="password" id="fun-pass-in" placeholder="Şifre">
-            <button class="btn" id="auth-btn" onclick="handleFunAuth()">GİRİŞ YAP</button>
+        <h2 style="color:var(--accent);">EĞLENCE ODASI GİRİŞİ</h2>
+        <input type="text" id="user" placeholder="Kullanıcı" style="padding:10px; margin-bottom:10px;">
+        <input type="password" id="pass" placeholder="Şifre" style="padding:10px; margin-bottom:10px;">
+        <button class="btn" onclick="login()">GİRİŞ YAP</button>
+    </div>
+
+    <div id="main-content">
+        <h1 style="color:var(--accent);">YÖNETİM PANELİ</h1>
+        <div id="admin-panel" class="input-box" style="display:none;">
+            <h3>Yönetici Kontrolü</h3>
+            <input type="text" id="yt-id" placeholder="YouTube Video ID (Örn: EY07kVGs_Jk)" style="width:100%; padding:10px; margin-bottom:10px;">
+            <button class="btn" onclick="updateVideo()">TÜM EKRANLARA GÖNDER</button>
+        </div>
+        <div id="song-list" class="input-box">
+            <h3>Şarkı Listesi</h3>
+            <div id="list-container"></div>
         </div>
     </div>
 
-    <div class="main-layout">
-        <div class="fun-header">
-            <div style="color:var(--accent); font-weight:bold;">İMAN POWER DISCO</div>
-            <button class="btn btn-danger" style="width:auto; padding:8px 16px; font-size:0.75rem;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ</button>
-        </div>
-
-        <div class="music-panel">
-            <div class="panel-title" style="color:var(--accent);">🎵 CANLI YAYIN (SPOTIFY)</div>
-            <div id="now-playing-title" style="font-size:0.9rem; margin-bottom:10px;">Müzik Bekleniyor...</div>
-            <div id="spotify-player-container" style="background:rgba(0,0,0,0.3); border-radius:12px; height:80px; display:flex; align-items:center; justify-content:center;">
-                <p style="color:#666; font-size:0.8rem;">Yükleniyor...</p>
-            </div>
-        </div>
-
-        <div class="content-stage-area">
-            <div class="video-box-container" style="background:var(--glass); padding:20px; border-radius:24px;">
-                <div class="video-wrapper"><div id="video-player-frame"></div></div>
-            </div>
-        </div>
-
-        <div id="admin-lock-box" style="display:none; grid-column:1/-1; max-width:400px; margin:0 auto; width:100%; border:2px solid #ef4444; background:var(--glass); padding:20px; border-radius:16px;">
-            <input type="password" id="admin-password-field" placeholder="Admin Şifresi">
-            <button class="btn" onclick="verifyAdminKey()">GİRİŞ</button>
-        </div>
-
-        <div id="super-admin-panel" class="admin-section" style="display:none;">
-            <h3>🛠️ YÖNETİM PANELİ</h3>
-            <input type="text" id="adm-song-title" placeholder="Şarkı Adı">
-            <input type="text" id="adm-spotify-url" placeholder="Spotify Embed URL (https://open.spotify.com/embed/...)">
-            <button class="btn" onclick="addNewSong()">LİSTEYE EKLE</button>
-            <div id="admin-live-tracks-container" style="margin-top:20px;"></div>
+    <div class="player-footer">
+        <div style="display:flex; align-items:center; justify-content:space-between; max-width:800px; margin:0 auto;">
+            <button class="btn" onclick="startAudio()">🔊 SESİ BAŞLAT</button>
+            <input type="range" id="vol" min="0" max="100" value="100" onchange="setVolume(this.value)">
+            <div id="yt-player-container"></div>
         </div>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Senin orijinal Firebase ayarların
-        const firebaseConfig = {
-            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
-            authDomain: "kartalhaber-49ae6.firebaseapp.com",
-            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
-            projectId: "kartalhaber-49ae6",
-            storageBucket: "kartalhaber-49ae6.firebasestorage.app",
-            messagingSenderId: "804745909398",
-            appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
-            measurementId: "G-TV8NLXQTNP"
-        };
-
+        const firebaseConfig = { databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com" };
         const db = getDatabase(initializeApp(firebaseConfig));
-        let videoPlayer = null;
-
-        // AUTH
-        window.handleFunAuth = () => {
-            const user = document.getElementById('fun-user-in').value.trim();
-            const pass = document.getElementById('fun-pass-in').value;
-            if(user && pass) { document.getElementById('auth-screen').style.display = 'none'; }
-        };
-
-        window.verifyAdminKey = () => {
-            if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
-                document.getElementById('admin-lock-box').style.display = 'none';
-                document.getElementById('super-admin-panel').style.display = 'block';
-            }
-        };
-
-        // MÜZİK/VİDEO
-        window.addNewSong = () => {
-            const title = document.getElementById('adm-song-title').value;
-            const url = document.getElementById('adm-spotify-url').value;
-            if(title && url) push(ref(db, 'fun_songs'), { title, url });
-        };
-
-        window.setLiveTrack = (key, url, title) => { set(ref(db, 'fun_current_track'), { url, title }); };
-
-        // FIREBASE DİNLEYİCİ
-        onValue(ref(db, '/'), (snap) => {
-            const data = snap.val() || {};
-            
-            // Spotify Güncelleme
-            if(data.fun_current_track) {
-                document.getElementById('now-playing-title').innerText = "🎵 " + data.fun_current_track.title;
-                document.getElementById('spotify-player-container').innerHTML = 
-                    `<iframe src="${data.fun_current_track.url}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-            }
-
-            // Admin Listesi
-            const container = document.getElementById('admin-live-tracks-container');
-            if(container && data.fun_songs) {
-                container.innerHTML = "";
-                Object.entries(data.fun_songs).forEach(([k, v]) => {
-                    container.innerHTML += `<div style="padding:10px; border:1px solid #333; margin-bottom:5px; cursor:pointer; background:rgba(255,255,255,0.05);" onclick="setLiveTrack('${k}', '${v.url}', '${v.title}')">${v.title}</div>`;
-                });
-            }
-        });
-
+        
+        let player;
         window.onYouTubeIframeAPIReady = () => {
-            videoPlayer = new YT.Player('video-player-frame', {
-                height: '360', width: '100%', videoId: 'EY07kVGs_Jk',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1 }
+            player = new YT.Player('yt-player-container', {
+                height: '0', width: '0', videoId: 'EY07kVGs_Jk',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 0 }
             });
         };
+
+        window.login = () => {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            if(document.getElementById('user').value === "admin") document.getElementById('admin-panel').style.display = 'block';
+        };
+
+        window.updateVideo = () => {
+            const id = document.getElementById('yt-id').value;
+            set(ref(db, 'current_song'), { videoId: id });
+        };
+
+        window.startAudio = () => { if(player) { player.unMute(); player.playVideo(); } };
+        window.setVolume = (v) => { if(player) player.setVolume(v); };
+
+        onValue(ref(db, 'current_song'), (snap) => {
+            const data = snap.val();
+            if(data && player) player.loadVideoById(data.videoId);
+        });
     </script>
 </body>
 </html>
