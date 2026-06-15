@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>İman Power | Ultra Disco v6.5 (Otomatik Akış)</title>
+    <title>İman Power | Ultra Disco v6.6</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -57,8 +57,12 @@
         .equal-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; backdrop-filter: blur(15px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-bottom: 3px solid var(--border); }
         .panel-title { font-family: 'Orbitron'; font-size: 0.85rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; letter-spacing: 0.5px; }
         
-        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 25px 12px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px 12px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
         .now-playing-box::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+
+        /* TELEFONLAR İÇİN ACİL DURUM KURTARMA BUTONU */
+        .phone-rescue-btn { width: 100%; padding: 10px; font-weight: 800; font-family: 'Orbitron'; background: rgba(244, 63, 94, 0.15); border: 1px dashed #f43f5e; border-radius: 10px; color: #f43f5e; cursor: pointer; transition: 0.3s; margin-top: 12px; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; }
+        .phone-rescue-btn:hover { background: rgba(244, 63, 94, 0.3); }
 
         /* SÖZ ALANI */
         .troll-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
@@ -159,6 +163,8 @@
                     <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:0.95rem; margin-bottom:3px;">Müzikler Yükleniyor... 🎧</div>
                     <div id="playlist-index-indicator" style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Sıra: 0/0</div>
                     <div id="live-playback-status" style="font-size:0.8rem; font-weight:bold; color:var(--accent); text-transform:uppercase;">🔊 OTOMATİK CANLI AKIŞ AKTİF</div>
+                    
+                    <button class="phone-rescue-btn" onclick="rescuePhoneAudio()">⚠️ SES ÇALMADIYSA TIKLAYIN</button>
                 </div>
             </div>
 
@@ -265,7 +271,6 @@
                         document.getElementById('auth-screen').style.display = 'none';
                         window.scrollTo(0,0);
                         
-                        // 🔥 MOBİL İÇİN KRİTİK DOKUNMA TETİKLEMESİ (SES KİLİDİNİ AÇAR)
                         startInitialMusicStream();
                     } else { alert("Hatalı Giriş Bilgileri!"); }
                 }, { onlyOnce: true });
@@ -284,6 +289,17 @@
             }
             setTimeout(() => { audio.play().catch((e) => console.log("İlk ses tetikleme yapıldı.")); }, 100);
         }
+
+        // 🔥 SORUN YAŞAYAN TELEFONLAR İÇİN ZORLA SES MOTORUNU UYANDIRMA FONKSİYONU
+        window.rescuePhoneAudio = () => {
+            if (audio.paused) {
+                audio.play()
+                    .then(() => alert("Ses motoru başarıyla uyandırıldı! Canlı akış başladı. 🔊"))
+                    .catch(() => alert("Dosya yükleniyor veya tarayıcı hala engelliyor, lütfen listeden yeni şarkı seçilmesini bekleyin veya tekrar deneyin."));
+            } else {
+                alert("Müzik zaten şu an telefonunda aktif durumda! 🚀");
+            }
+        };
 
         window.verifyAdminKey = () => {
             if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
@@ -314,7 +330,6 @@
         window.delSong = (key) => { remove(ref(db, 'fun_mp3_songs/' + key)); };
         window.clearAllSongs = () => { if(confirm("Tüm listeyi temizlemek istiyor musun?")) remove(ref(db, 'fun_mp3_songs')); };
 
-        // 🔄 BİTEN ŞARKI YERİNE ANINDA SIRADAKİNE GEÇEN TAM OTOMATİK MOTOR
         audio.onended = () => {
             if (localPlaylistArray.length === 0) return;
             let currentIndex = localPlaylistArray.findIndex(track => track.key === currentTrackGlobalKey);
@@ -344,18 +359,16 @@
 
         window.triggerNukeStrike = () => { set(ref(db, 'fun_settings/nukeTrigger'), Date.now()); };
 
-        // FIREBASE ANA GERÇEK ZAMANLI SENKRONİZASYON
+        // FIREBASE SENKRONİZASYONU
         onValue(ref(db, '/'), (snap) => {
             const data = snap.val() || {};
             const settings = data.fun_settings || {};
 
-            // 1. Yazı ve Işıklar
             document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power!";
             const strobe = document.getElementById('disco-strobe-lights');
             if(settings.lightsStatus === 'off') { if(strobe) strobe.style.display = 'none'; } 
             else { if(strobe) strobe.style.display = 'block'; }
 
-            // 2. Şarkı Listesi Güncelleme
             localPlaylistArray = [];
             if(data.fun_mp3_songs) {
                 Object.entries(data.fun_mp3_songs).forEach(([key, value]) => {
@@ -363,7 +376,6 @@
                 });
             }
 
-            // 3. DJ KONTROL MOTORU (ADMİN ŞARKI SEÇİNCE HERKESTE TETİKLENİR)
             if(data.fun_current_mp3) {
                 const targetUrl = data.fun_current_mp3.mp3Url;
                 const incomingKey = data.fun_current_mp3.songKey;
@@ -396,7 +408,6 @@
                 }
             }
 
-            // 4. Admin Panel Listesi
             const adminContainer = document.getElementById('admin-live-tracks-container');
             if(adminContainer) {
                 adminContainer.innerHTML = "";
@@ -410,7 +421,6 @@
                 });
             }
 
-            // 5. Canlı Chat
             const chatContainer = document.getElementById('chat-messages-box');
             if(chatContainer && data.toxic_chat) {
                 chatContainer.innerHTML = "";
@@ -420,7 +430,6 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // 6. 💣 WASTED BOMBA EFEKTİ
             if(settings.nukeTrigger) {
                 const now = Date.now();
                 const diff = now - settings.nukeTrigger;
