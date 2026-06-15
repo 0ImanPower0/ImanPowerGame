@@ -30,7 +30,7 @@
         .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; border: 2px solid var(--accent); text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(12px); }
         .auth-card img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 20px; object-fit: cover; }
 
-        /* ANA DIŞ ÇERÇEVE */
+        /* ANA AYRAÇ */
         .main-layout { position: relative; z-index: 5; max-width: 1300px; margin: 0 auto; padding: 25px 20px; display: grid; grid-template-columns: 1fr; gap: 25px; }
         @media (min-width: 768px) { .main-layout { grid-template-columns: 1fr 1fr; } }
 
@@ -38,7 +38,7 @@
         .logo-section { display: flex; align-items: center; gap: 12px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); }
         .logo-section img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* SOL TARAF: ŞARKI BİLGİSİ VE SES KURTARMA BUTONU */
+        /* SOL TARAF: MP3 SESTİ PANELİ */
         .music-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 15px; justify-content: center; }
         .panel-title { font-family: 'Orbitron'; font-size: 1rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .now-playing-box { background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border); padding: 30px 15px; border-radius: 16px; text-align: center; }
@@ -49,13 +49,21 @@
         .troll-text { font-family: 'Orbitron'; font-size: 2rem; font-weight: 900; color: #f43f5e; animation: pulseText 0.8s infinite alternate; text-transform: uppercase; word-break: break-word; }
         @keyframes pulseText { from { transform: scale(0.95); } to { transform: scale(1.05); } }
 
-        /* ALT TARAF: UPLOAD EDİLEN GITHUB MP4 VİDEOSU */
+        /* ALT TARAF: UPLOAD ETTİĞİNİZ GITHUB MP4 VİDEOSU */
         .video-box-container { grid-column: 1 / -1; background: var(--glass); border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.3); padding: 20px; }
         .video-wrapper { position: relative; width: 100%; border-radius: 14px; overflow: hidden; background: #000; max-height: 400px; display: flex; justify-content: center; }
         .video-wrapper video { width: 100%; height: auto; max-height: 400px; object-fit: cover; }
 
+        /* ADMİN */
+        .admin-section { grid-column: 1 / -1; background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 25px; }
+        .admin-playlist-scroller { max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; margin-bottom: 10px; }
+        .admin-track-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 5px; }
+        .admin-track-info { cursor: pointer; color: #fff; flex-grow: 1; }
+        .admin-track-item.active .admin-track-info { color: var(--accent); font-weight: bold; }
+
         input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #1e293b; background: #070a12; color: white; }
         .btn { padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; }
+        .btn-danger { background: #ef4444; }
     </style>
 </head>
 <body>
@@ -64,9 +72,7 @@
         <div class="spot spot-1"></div><div class="spot spot-2"></div>
     </div>
 
-    <div style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; overflow: hidden;">
-        <div id="hidden-music-engine"></div>
-    </div>
+    <audio id="imanpower-audio-engine" loop></audio>
 
     <div id="auth-screen">
         <div class="auth-card">
@@ -82,20 +88,20 @@
     <div class="main-layout">
         <div class="fun-header">
             <div class="logo-section"><img src="image_2aa6c5.png" onerror="this.src='logo.png'"><span>İMAN POWER DISCO</span></div>
-            <div style="font-size: 0.8rem; color: #64748b; font-family: 'Orbitron';">NON-STOP STREAM</div>
+            <button class="btn btn-danger" style="width:auto; padding:8px 16px;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ</button>
         </div>
 
         <div class="music-panel">
-            <div class="panel-title">🎵 7/24 KESİNTİSİZ SES SİSTEMİ</div>
+            <div class="panel-title">🎵 CANLI MP3 YAYIN AKIŞI</div>
             <div class="now-playing-box">
-                <div style="font-weight:800; color:#fff; font-size:1.2rem; margin-bottom:15px;">Kabede Hacılar - Non Stop Remix 🎧</div>
-                <button id="force-play-btn" class="force-play-btn" onclick="forcePlayMusic()">🔊 SESİ AÇ / CANLANDIR</button>
+                <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:1.2rem; margin-bottom:15px;">Müzik Yükleniyor... 🎧</div>
+                <button id="force-play-btn" class="force-play-btn" onclick="forcePlayMusic()">🔊 SES SİSTEMİNİ ÇALIŞTIR</button>
             </div>
         </div>
 
         <div class="center-stage">
             <div class="panel-title" style="width: 100%; margin-bottom: 20px;">💬 KUDURTUCU SÖZÜMÜZ</div>
-            <div class="troll-text">KABEDE HACILAR BAŞINI SALLAR! 😎🔥</div>
+            <div id="live-troll-text" class="troll-text">YÜKLENİYOR...</div>
         </div>
 
         <div class="video-box-container">
@@ -106,12 +112,27 @@
                 </video>
             </div>
         </div>
+
+        <div id="admin-lock-box" style="display:none; grid-column:1/-1; max-width:400px; margin:0 auto; width:100%; border:2px solid #ef4444; background:var(--glass); padding:20px; border-radius:16px;">
+            <input type="password" id="admin-password-field" placeholder="Admin Şifresi">
+            <button class="btn" style="background:#ef4444;" onclick="verifyAdminKey()">GİRİŞ</button>
+        </div>
+
+        <div id="super-admin-panel" class="admin-section" style="display:none;">
+            <h3 style="font-family:'Orbitron'; color:#ef4444; margin-bottom:15px;">🛠️ YÖNETİM</h3>
+            <input type="text" id="adm-troll-input" placeholder="Yeni Kudurtucu Sözü Yaz">
+            <button class="btn" style="background:#ef4444; margin-bottom:15px;" onclick="updateTrollText()">SÖZÜ GÜNCELLE</button>
+            
+            <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
+            <input type="text" id="adm-song-title" placeholder="Şarkı Adı (Örn: Kabede Hacılar)">
+            <input type="text" id="adm-song-id" placeholder="GitHub MP3 Dosya Linki (https://.../ses.mp3)">
+            <button class="btn" onclick="addNewSong()">ŞARKIYI LİSTEYE EKLE VE ÇAL</button>
+        </div>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
@@ -121,12 +142,8 @@
         };
 
         const db = getDatabase(initializeApp(firebaseConfig));
-        let isRegisterMode = false, musicPlayer = null, isYTApiReady = false;
-
-        // Kabede Hacılar Video ID'si direkt koda gömüldü!
-        const embeddedVideoId = "EY07kVGs_Jk";
-
-        window.onYouTubeIframeAPIReady = () => { isYTApiReady = true; };
+        let isRegisterMode = false, currentActiveMp3Url = "";
+        const audio = document.getElementById('imanpower-audio-engine');
 
         window.toggleFunAuthMode = () => {
             isRegisterMode = !isRegisterMode;
@@ -145,45 +162,81 @@
                 onValue(ref(db, 'fun_users/' + username), (snap) => {
                     if(snap.exists() && snap.val().password === password) {
                         document.getElementById('auth-screen').style.display = 'none';
-                        buildGomuluPlayer();
+                        // Giriş tıklandığı an sesi canlandırıyoruz!
+                        forcePlayMusic();
                     } else { alert("Hatalı Giriş!"); }
                 }, { onlyOnce: true });
             }
         };
 
-        window.forcePlayMusic = () => {
-            if(musicPlayer && typeof musicPlayer.playVideo === 'function') {
-                musicPlayer.unMute();
-                musicPlayer.setVolume(100);
-                musicPlayer.playVideo();
-                document.getElementById('force-play-btn').innerText = "🔊 DISCO AKTİF (ÇALIYOR)";
-                document.getElementById('force-play-btn').style.background = "#3b82f6";
+        window.verifyAdminKey = () => {
+            if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
+                document.getElementById('admin-lock-box').style.display = 'none';
+                document.getElementById('super-admin-panel').style.display = 'block';
             }
         };
 
-        function buildGomuluPlayer() {
-            if(!isYTApiReady) return setTimeout(buildGomuluPlayer, 200);
-            musicPlayer = new YT.Player('hidden-music-engine', {
-                height: '0', width: '0', videoId: embeddedVideoId,
-                playerVars: { 
-                    'autoplay': 1, 
-                    'controls': 0, 
-                    'loop': 1, 
-                    'playlist': embeddedVideoId // Tek video döngüsü için playlist şartı
-                },
-                events: {
-                    'onReady': (e) => { 
-                        e.target.playVideo();
-                        // Giriş butonuna tıklandığı an tarayıcı kilidini kırıp sesi tetikliyoruz
-                        setTimeout(() => { window.forcePlayMusic(); }, 400);
-                    },
-                    'onStateChange': (e) => { 
-                        // Video biterse durmadan baştan başlasın (Sonsuz loop)
-                        if (e.data === YT.PlayerState.ENDED) { e.target.playVideo(); }
-                    }
+        window.updateTrollText = () => {
+            set(ref(db, 'fun_settings/trollText'), document.getElementById('adm-troll-input').value.trim());
+        };
+
+        window.addNewSong = () => {
+            const title = document.getElementById('adm-song-title').value.trim();
+            const url = document.getElementById('adm-song-id').value.trim();
+            if(title && url) {
+                push(ref(db, 'fun_mp3_songs'), { title, mp3Url: url });
+                document.getElementById('adm-song-title').value = ""; 
+                document.getElementById('adm-song-id').value = "";
+            }
+        };
+
+        window.setLiveTrack = (key, url, title) => { 
+            set(ref(db, 'fun_current_mp3'), { songKey: key, mp3Url: url, title }); 
+        };
+
+        window.forcePlayMusic = () => {
+            if(audio && audio.src) {
+                audio.play().then(() => {
+                    document.getElementById('force-play-btn').innerText = "🔊 SİSTEM AKTİF (ÇALIYOR)";
+                    document.getElementById('force-play-btn').style.background = "#3b82f6";
+                }).catch(err => {
+                    console.log("Tarayıcı engeli: Bir defa tıklanması gerekiyor.");
+                });
+            }
+        };
+
+        // FIREBASE SENKRONİZASYONU
+        onValue(ref(db, '/'), (snap) => {
+            const data = snap.val() || {};
+            document.getElementById('live-troll-text').innerText = data.fun_settings?.trollText || "İman Power!";
+
+            // Canlı MP3 Akışı Kontrolü
+            if(data.fun_current_mp3) {
+                const targetUrl = data.fun_current_mp3.mp3Url;
+                document.getElementById('now-playing-title').innerText = "🎵 " + data.fun_current_mp3.title;
+                
+                if(targetUrl !== currentActiveMp3Url) {
+                    currentActiveMp3Url = targetUrl;
+                    audio.src = targetUrl;
+                    audio.load();
+                    // Şarkı değişince otomatik çalmayı tetikle
+                    setTimeout(() => { window.forcePlayMusic(); }, 300);
                 }
-            });
-        }
+            }
+
+            // Admin Listesi Güncelleme
+            const adminContainer = document.getElementById('admin-live-tracks-container');
+            if(adminContainer && data.fun_mp3_songs) {
+                adminContainer.innerHTML = "";
+                Object.entries(data.fun_mp3_songs).forEach(([k, v]) => {
+                    const isPlaying = data.fun_current_mp3?.songKey === k;
+                    adminContainer.innerHTML += `
+                        <div class="admin-track-item ${isPlaying ? 'active' : ''}" onclick="setLiveTrack('${k}', '${v.mp3Url}', '${v.title}')">
+                            <div class="admin-track-info">🎵 ${v.title} ${isPlaying ? '🔥' : ''}</div>
+                        </div>`;
+                });
+            }
+        });
     </script>
 </body>
 </html>
