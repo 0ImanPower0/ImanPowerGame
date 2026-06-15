@@ -48,23 +48,23 @@
         .logo-section { display: flex; align-items: center; gap: 12px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); }
         .logo-section img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* SOL TARAF: MÜZİK VE KÜÇÜK GÖRÜNÜR YOUTUBE */
-        .music-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        /* SOL TARAF: SADECE ÇALAN ŞARKI BİLGİSİ VE SESTİ ETKİLEŞİM BUTONU */
+        .music-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 15px; justify-content: center; }
         .panel-title { font-family: 'Orbitron'; font-size: 1rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .now-playing-box { background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border); padding: 15px; border-radius: 16px; text-align: center; }
-        .yt-visible-frame { width: 100%; height: 180px; border-radius: 12px; overflow: hidden; background: #000; margin-top: 10px; border: 1px solid #333; }
+        .now-playing-box { background: rgba(16, 185, 129, 0.04); border: 1px solid var(--border); padding: 30px 15px; border-radius: 16px; text-align: center; }
+        .force-play-btn { width: 100%; padding: 15px; font-weight: 900; font-family: 'Orbitron'; background: #10b981; border: none; border-radius: 10px; color: #fff; cursor: pointer; transition: 0.3s; font-size: 1.1rem; box-shadow: 0 0 15px var(--accent-glow); }
 
         /* SAĞ TARAF: KUDURTUCU SÖZÜ */
         .center-stage { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 35px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; }
-        .troll-text { font-family: 'Orbitron'; font-size: 2rem; font-weight: 900; color: #f43f5e; animation: pulseText 0.8s infinite alternate; text-transform: uppercase; }
+        .troll-text { font-family: 'Orbitron'; font-size: 2rem; font-weight: 900; color: #f43f5e; animation: pulseText 0.8s infinite alternate; text-transform: uppercase; word-break: break-word; }
         @keyframes pulseText { from { transform: scale(0.95); } to { transform: scale(1.05); } }
 
-        /* ALT TARAF: MP4 YÜKLENEN VİDEO */
+        /* ALT TARAF: MP4 VİDEONUZ */
         .video-box-container { grid-column: 1 / -1; background: var(--glass); border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.3); padding: 20px; }
         .video-wrapper { position: relative; width: 100%; border-radius: 14px; overflow: hidden; background: #000; max-height: 400px; display: flex; justify-content: center; }
         .video-wrapper video { width: 100%; height: auto; max-height: 400px; object-fit: cover; }
 
-        /* ADMİN */
+        /* ADMİN ALANLARI */
         .admin-section { grid-column: 1 / -1; background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 25px; }
         .admin-playlist-scroller { max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; margin-bottom: 10px; }
         .admin-track-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 5px; }
@@ -83,9 +83,13 @@
         <div class="spot spot-1"></div><div class="spot spot-2"></div>
     </div>
 
+    <div style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; overflow: hidden;">
+        <div id="hidden-music-engine"></div>
+    </div>
+
     <div id="auth-screen">
         <div class="auth-card">
-            <img src="image_a2cd46.png" onerror="this.src='logo.png'">
+            <img src="image_2aa6c5.png" onerror="this.src='logo.png'">
             <h2 id="auth-title" style="margin-bottom:20px; font-family:'Orbitron'; color:var(--accent);">EĞLENCE ODASI</h2>
             <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
             <input type="password" id="fun-pass-in" placeholder="Şifre">
@@ -96,17 +100,15 @@
 
     <div class="main-layout">
         <div class="fun-header">
-            <div class="logo-section"><img src="image_a2cd46.png" onerror="this.src='logo.png'"><span>İMAN POWER DISCO</span></div>
+            <div class="logo-section"><img src="image_2aa6c5.png" onerror="this.src='logo.png'"><span>İMAN POWER DISCO</span></div>
             <button class="btn btn-danger" style="width:auto; padding:8px 16px;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ</button>
         </div>
 
         <div class="music-panel">
-            <div class="panel-title">🎵 CANLI OYNATICI VE SES</div>
+            <div class="panel-title">🎵 CANLI YAYIN SES DURUMU</div>
             <div class="now-playing-box">
-                <div id="now-playing-title" style="font-weight:800; color:#fff; margin-bottom:10px;">Yükleniyor...</div>
-                <div class="yt-visible-frame">
-                    <div id="visible-music-engine"></div>
-                </div>
+                <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:1.2rem; margin-bottom:15px;">Müzik Bekleniyor... 🎧</div>
+                <button id="force-play-btn" class="force-play-btn" onclick="forcePlayMusic()">🔊 SES SİSTEMİ AKTİF</button>
             </div>
         </div>
 
@@ -130,14 +132,14 @@
         </div>
 
         <div id="super-admin-panel" class="admin-section" style="display:none;">
-            <h3 style="font-family:'Orbitron'; color:#ef4444; margin-bottom:15px;">🛠️ YÖNETİM</h3>
-            <input type="text" id="adm-troll-input" placeholder="Yeni Kudurtucu Sözü">
-            <button class="btn" style="background:#ef4444; margin-bottom:15px;" onclick="updateTrollText()">SÖZÜ GÜNCELLE</button>
+            <h3 style="font-family:'Orbitron'; color:#ef4444; margin-bottom:15px;">🛠️ YÖNETİM PANELİ</h3>
+            <input type="text" id="adm-troll-input" placeholder="Yeni Kudurtucu Sözü Yaz">
+            <button class="btn" style="background:#ef4444; margin-bottom:15px;" onclick="updateTrollText()">SÖZÜ YAYINLA</button>
             
             <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
             <input type="text" id="adm-song-title" placeholder="Şarkı Adı">
-            <input type="text" id="adm-song-id" placeholder="YouTube Video ID">
-            <button class="btn" onclick="addNewSong()">ŞARKI EKLE VE ÇAL</button>
+            <input type="text" id="adm-song-id" placeholder="YouTube Video ID veya Linki">
+            <button class="btn" onclick="addNewSong()">LİSTEYE EKLE VE HERKESTE ÇAL</button>
         </div>
     </div>
 
@@ -176,7 +178,7 @@
                     if(snap.exists() && snap.val().password === password) {
                         document.getElementById('auth-screen').style.display = 'none';
                         buildPlayer();
-                    }
+                    } else { alert("Hatalı Giriş!"); }
                 }, { onlyOnce: true });
             }
         };
@@ -192,19 +194,45 @@
             set(ref(db, 'fun_settings/trollText'), document.getElementById('adm-troll-input').value.trim());
         };
 
+        function extractYTId(url) {
+            if(url.length === 11) return url;
+            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            return (match && match[2].length === 11) ? match[2] : url;
+        }
+
         window.addNewSong = () => {
             const title = document.getElementById('adm-song-title').value.trim();
             const id = document.getElementById('adm-song-id').value.trim();
-            if(title && id) push(ref(db, 'fun_songs'), { title, youtubeId: id });
+            if(title && id) {
+                push(ref(db, 'fun_songs'), { title, youtubeId: extractYTId(id) });
+                document.getElementById('adm-song-title').value = ""; document.getElementById('adm-song-id').value = "";
+            }
         };
 
         window.setLiveTrack = (key, id, title) => { set(ref(db, 'fun_current_track'), { songKey: key, youtubeId: id, title }); };
 
+        window.forcePlayMusic = () => {
+            if(musicPlayer && typeof musicPlayer.playVideo === 'function') {
+                musicPlayer.unMute();
+                musicPlayer.playVideo();
+                document.getElementById('force-play-btn').innerText = "🔊 SES SİSTEMİ AKTİF (ÇALIYOR)";
+                document.getElementById('force-play-btn').style.background = "#3b82f6";
+            }
+        };
+
         function buildPlayer() {
             if(!isYTApiReady) return setTimeout(buildPlayer, 200);
-            musicPlayer = new YT.Player('visible-music-engine', {
-                height: '100%', width: '100%', videoId: currentActiveSongId || 'EY07kVGs_Jk',
-                playerVars: { 'autoplay': 1, 'controls': 1 }
+            musicPlayer = new YT.Player('hidden-music-engine', {
+                height: '0', width: '0', videoId: currentActiveSongId || 'EY07kVGs_Jk',
+                playerVars: { 'autoplay': 1, 'controls': 0 },
+                events: {
+                    'onReady': (e) => { 
+                        e.target.playVideo();
+                        // Giriş butonuna tıklama sayesinde tarayıcıyı kandırıp otomatik çalmayı tetikliyoruz!
+                        setTimeout(() => { window.forcePlayMusic(); }, 500);
+                    },
+                    'onStateChange': (e) => { if (e.data === YT.PlayerState.ENDED) e.target.playVideo(); }
+                }
             });
         }
 
@@ -219,6 +247,7 @@
                     currentActiveSongId = targetId;
                     if(musicPlayer && typeof musicPlayer.loadVideoById === 'function') {
                         musicPlayer.loadVideoById(targetId);
+                        setTimeout(() => { window.forcePlayMusic(); }, 500);
                     }
                 }
             }
@@ -230,7 +259,7 @@
                     const isPlaying = data.fun_current_track?.songKey === k;
                     adminContainer.innerHTML += `
                         <div class="admin-track-item ${isPlaying ? 'active' : ''}" onclick="setLiveTrack('${k}', '${v.youtubeId}', '${v.title}')">
-                            <div class="admin-track-info">🎵 ${v.title}</div>
+                            <div class="admin-track-info">🎵 ${v.title} ${isPlaying ? '🔥' : ''}</div>
                         </div>`;
                 });
             }
