@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>İman Power | Ultra Disco v6.0 (Kişisel Ses Kontrolü)</title>
+    <title>İman Power | Ultra Disco v6.5 (Otomatik Akış)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -57,11 +57,8 @@
         .equal-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; backdrop-filter: blur(15px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-bottom: 3px solid var(--border); }
         .panel-title { font-family: 'Orbitron'; font-size: 0.85rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; letter-spacing: 0.5px; }
         
-        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 18px 12px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 25px 12px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
         .now-playing-box::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
-        
-        @keyframes pulseBtnGlow { 0% { box-shadow: 0 0 5px #10b981; transform: scale(1); } 50% { box-shadow: 0 0 15px #10b981; transform: scale(1.02); } 100% { box-shadow: 0 0 5px #10b981; transform: scale(1); } }
-        .force-play-btn { width: 100%; padding: 14px; font-weight: 900; font-family: 'Orbitron'; background: #10b981; border: none; border-radius: 12px; color: #fff; cursor: pointer; animation: pulseBtnGlow 2s infinite; transition: 0.3s; margin-top: 10px; font-size: 0.8rem; letter-spacing: 0.5px; }
 
         /* SÖZ ALANI */
         .troll-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
@@ -161,8 +158,7 @@
                 <div class="now-playing-box">
                     <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:0.95rem; margin-bottom:3px;">Müzikler Yükleniyor... 🎧</div>
                     <div id="playlist-index-indicator" style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Sıra: 0/0</div>
-                    <div id="live-playback-status" style="font-size:0.75rem; font-weight:bold; color:#ef4444; margin-bottom:8px;">DURUM: HOPARLÖR KAPALI ⏸️</div>
-                    <button id="force-play-btn" class="force-play-btn" onclick="toggleLocalPlayback()">▶️ MÜZİĞİ BAŞLAT / DURDUR</button>
+                    <div id="live-playback-status" style="font-size:0.8rem; font-weight:bold; color:var(--accent); text-transform:uppercase;">🔊 OTOMATİK CANLI AKIŞ AKTİF</div>
                 </div>
             </div>
 
@@ -217,7 +213,7 @@
                 </div>
 
                 <div class="admin-card">
-                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">🗂️ Şarkı Listesi Yönetimi (Tıkla ve Herkeste Başlat)</h4>
+                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">🗂️ Şarkı Listesi Yönetimi (Tıkla ve Herkeste Değiştir)</h4>
                     <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
                     <button class="btn btn-danger" style="height:32px; font-size:0.7rem; margin-bottom:10px;" onclick="clearAllSongs()">TÜM LİSTEYİ SIFIRLA</button>
 
@@ -245,7 +241,6 @@
         let localPlaylistArray = [];
         let currentTrackGlobalKey = "";
         let lastKnownTriggerStamp = 0;
-        let isUserPlayingLocal = false; // Kullanıcının tarayıcısındaki özel ses durumu
         
         const audio = document.getElementById('imanpower-audio-engine');
 
@@ -269,10 +264,26 @@
                         activeActiveUser = snap.val().displayName || username;
                         document.getElementById('auth-screen').style.display = 'none';
                         window.scrollTo(0,0);
+                        
+                        // 🔥 MOBİL İÇİN KRİTİK DOKUNMA TETİKLEMESİ (SES KİLİDİNİ AÇAR)
+                        startInitialMusicStream();
                     } else { alert("Hatalı Giriş Bilgileri!"); }
                 }, { onlyOnce: true });
             }
         };
+
+        function startInitialMusicStream() {
+            if(!audio.src || audio.src === window.location.href) {
+                if(localPlaylistArray.length > 0) {
+                    const first = localPlaylistArray[0];
+                    currentTrackGlobalKey = first.key;
+                    currentActiveMp3Url = first.mp3Url;
+                    audio.src = first.mp3Url;
+                    audio.load();
+                }
+            }
+            setTimeout(() => { audio.play().catch((e) => console.log("İlk ses tetikleme yapıldı.")); }, 100);
+        }
 
         window.verifyAdminKey = () => {
             if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
@@ -296,7 +307,6 @@
             }
         };
 
-        // ADMIN BURAYA TIKLADIĞINDA HERKESTE AYNI ANDA ZORLA YENİ ŞARKI BAŞLAR
         window.setLiveTrack = (key, url, title) => { 
             set(ref(db, 'fun_current_mp3'), { songKey: key, mp3Url: url, title, forceTrigger: Date.now() }); 
         };
@@ -304,57 +314,12 @@
         window.delSong = (key) => { remove(ref(db, 'fun_mp3_songs/' + key)); };
         window.clearAllSongs = () => { if(confirm("Tüm listeyi temizlemek istiyor musun?")) remove(ref(db, 'fun_mp3_songs')); };
 
-        // 🛠️ KULLANICININ KENDİ ÖZEL BAŞLAT/DURDUR FONKSİYONU (KİMSEYİ ETKİLEMEZ)
-        window.toggleLocalPlayback = () => {
-            if(!audio.src || audio.src === window.location.href) {
-                // Eğer henüz hiç şarkı yüklenmediyse listedeki ilk şarkıyı lokal yükle
-                if(localPlaylistArray.length > 0) {
-                    const first = localPlaylistArray[0];
-                    currentTrackGlobalKey = first.key;
-                    currentActiveMp3Url = first.mp3Url;
-                    audio.src = first.mp3Url;
-                    audio.load();
-                } else {
-                    return alert("Oynatılacak şarkı bulunamadı!");
-                }
-            }
-
-            if (audio.paused) {
-                audio.play().then(() => {
-                    isUserPlayingLocal = true;
-                    updateLocalButtonUI(true);
-                }).catch(() => { alert("Tarayıcı engelledi, lütfen tekrar basın."); });
-            } else {
-                audio.pause();
-                isUserPlayingLocal = false;
-                updateLocalButtonUI(false);
-            }
-        };
-
-        function updateLocalButtonUI(isPlaying) {
-            const btn = document.getElementById('force-play-btn');
-            const statusText = document.getElementById('live-playback-status');
-            if(isPlaying) {
-                btn.innerText = "⏸️ MÜZİĞİ DURDUR";
-                btn.style.background = "#3b82f6";
-                btn.style.animation = "none";
-                statusText.innerText = "DURUM: OYNATILIYOR 🔥";
-                statusText.style.color = "#10b981";
-            } else {
-                btn.innerText = "▶️ MÜZİĞİ BAŞLAT";
-                btn.style.background = "#10b981";
-                btn.style.animation = "pulseBtnGlow 2s infinite";
-                statusText.innerText = "DURUM: HOPARLÖR KAPALI ⏸️";
-                statusText.style.color = "#ef4444";
-            }
-        }
-
-        // 🔄 HER KULLANICININ ŞARKISI BİTTİĞİNDE SADECE KENDİ LOKALİNDE SIRADAKİNE GEÇER! (YENİLENDİ)
+        // 🔄 BİTEN ŞARKI YERİNE ANINDA SIRADAKİNE GEÇEN TAM OTOMATİK MOTOR
         audio.onended = () => {
             if (localPlaylistArray.length === 0) return;
             let currentIndex = localPlaylistArray.findIndex(track => track.key === currentTrackGlobalKey);
             let nextIndex = currentIndex + 1;
-            if (nextIndex >= localPlaylistArray.length) nextIndex = 0; // Başa dön döngüyü kur
+            if (nextIndex >= localPlaylistArray.length) nextIndex = 0; 
             
             const nextTrack = localPlaylistArray[nextIndex];
             if (nextTrack) {
@@ -365,9 +330,7 @@
                 
                 audio.src = nextTrack.mp3Url;
                 audio.load();
-                if(isUserPlayingLocal) {
-                    audio.play().catch(() => {});
-                }
+                audio.play().catch(() => {});
             }
         };
 
@@ -381,20 +344,18 @@
 
         window.triggerNukeStrike = () => { set(ref(db, 'fun_settings/nukeTrigger'), Date.now()); };
 
-        // FIREBASE ANA GERÇEK ZAMANLI BAĞLANTI
+        // FIREBASE ANA GERÇEK ZAMANLI SENKRONİZASYON
         onValue(ref(db, '/'), (snap) => {
             const data = snap.val() || {};
             const settings = data.fun_settings || {};
 
-            // 1. Kudurtucu Yazı
+            // 1. Yazı ve Işıklar
             document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power!";
-
-            // 2. Işıklar Kontrolü
             const strobe = document.getElementById('disco-strobe-lights');
             if(settings.lightsStatus === 'off') { if(strobe) strobe.style.display = 'none'; } 
             else { if(strobe) strobe.style.display = 'block'; }
 
-            // 3. Ortak Şarkı Veritabanı Güncellemesi
+            // 2. Şarkı Listesi Güncelleme
             localPlaylistArray = [];
             if(data.fun_mp3_songs) {
                 Object.entries(data.fun_mp3_songs).forEach(([key, value]) => {
@@ -402,13 +363,12 @@
                 });
             }
 
-            // 4. DJ KUMANDA MOTORU (ADMİN ŞARKILI DEĞİŞTİRİNCE ANINDA HERKESTE TETİKLENİR)
+            // 3. DJ KONTROL MOTORU (ADMİN ŞARKI SEÇİNCE HERKESTE TETİKLENİR)
             if(data.fun_current_mp3) {
                 const targetUrl = data.fun_current_mp3.mp3Url;
                 const incomingKey = data.fun_current_mp3.songKey;
                 const incomingTrigger = data.fun_current_mp3.forceTrigger || 0;
                 
-                // Eğer Admin yeni bir şarkıyı zorla başlattıysa (Timestamp değiştiyse)
                 if(incomingTrigger > lastKnownTriggerStamp) {
                     lastKnownTriggerStamp = incomingTrigger;
                     currentTrackGlobalKey = incomingKey;
@@ -421,14 +381,10 @@
                     audio.src = targetUrl;
                     audio.load();
                     
-                    // Bombasız zamandaysak otomatik çalmaya zorla ve butonu aktif yap
                     if (!settings.nukeTrigger || (Date.now() - settings.nukeTrigger >= 15000)) {
-                        isUserPlayingLocal = true;
-                        updateLocalButtonUI(true);
                         setTimeout(() => { audio.play().catch(() => {}); }, 150);
                     }
                 } 
-                // İlk defa odaya girildiğinde arayüzü doldurmak için:
                 else if(!audio.src || audio.src === window.location.href) {
                     document.getElementById('now-playing-title').innerText = "🎵 " + data.fun_current_mp3.title;
                     let currentPos = localPlaylistArray.findIndex(t => t.key === incomingKey) + 1;
@@ -440,7 +396,7 @@
                 }
             }
 
-            // 5. Admin Panel Arayüz Listesi
+            // 4. Admin Panel Listesi
             const adminContainer = document.getElementById('admin-live-tracks-container');
             if(adminContainer) {
                 adminContainer.innerHTML = "";
@@ -454,7 +410,7 @@
                 });
             }
 
-            // 6. Canlı Chat Akışı
+            // 5. Canlı Chat
             const chatContainer = document.getElementById('chat-messages-box');
             if(chatContainer && data.toxic_chat) {
                 chatContainer.innerHTML = "";
@@ -464,7 +420,7 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // 7. 💣 15 SANİYELİK WASTED BOMBA EFEKTİ
+            // 6. 💣 WASTED BOMBA EFEKTİ
             if(settings.nukeTrigger) {
                 const now = Date.now();
                 const diff = now - settings.nukeTrigger;
@@ -486,10 +442,7 @@
                         document.getElementById('ambient-container').style.opacity = '1';
                         if(settings.lightsStatus !== 'off' && strobe) strobe.style.display = 'block';
                         
-                        // Bomba bitince eğer kullanıcı kendi sesini kapatmadıysa çalmaya devam etsin
-                        if(isUserPlayingLocal) {
-                            audio.play().catch(() => {});
-                        }
+                        audio.play().catch(() => {});
                     }, remainingTime);
                 }
             }
