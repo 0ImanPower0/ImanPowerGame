@@ -214,7 +214,15 @@
                     <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">💡 Görsel Ayarlar</h4>
                     <input type="text" id="adm-troll-input" placeholder="Yeni Kudurtucu Söz">
                     <select id="adm-light-toggle"><option value="on">Disco Işıkları: AÇIK</option><option value="off">Disco Işıkları: KAPALI</option></select>
-                    <button class="btn" style="background:#ef4444; height:40px;" onclick="updateVisualSettings()">DEĞİŞİKLİKLERİ YAYINLA</button>
+                    <button class="btn" style="background:#ef4444; height:40px; margin-bottom: 20px;" onclick="updateVisualSettings()">DEĞİŞİKLİKLERİ YAYINLA</button>
+
+                    <h4 style="color:#3b82f6; margin-bottom:10px; font-size:0.8rem;">👤 Kullanıcı Yönetimi (Ekle & Aktiflik Gör)</h4>
+                    <input type="text" id="adm-user-name" placeholder="Kullanıcı Adı (Küçük Harf)">
+                    <input type="text" id="adm-user-display" placeholder="Görünecek İsim (Örn: Mustafa)">
+                    <input type="password" id="adm-user-pass" placeholder="Şifre">
+                    <button class="btn" style="background:#3b82f6; height:40px; margin-bottom:10px;" onclick="addNewUserToDatabase()">KULLANICI EKLE</button>
+                    
+                    <div class="admin-playlist-scroller" id="admin-live-users-container" style="max-height: 180px;"></div>
                 </div>
 
                 <div class="admin-card">
@@ -249,7 +257,7 @@
         
         const audio = document.getElementById('imanpower-audio-engine');
 
-        // GİRİŞ KONTROL SİSTEMİ (SADECE DOĞRULAMA YAPAR, KAYIT FONKSİYONU SİLİNDİ)
+        // GİRİŞ KONTROL SİSTEMİ (GİRİŞ YAPILDIĞINDA AKTİFLİK TARİHİNİ KAYDEDER)
         window.handleFunAuth = () => {
             const username = document.getElementById('fun-user-in').value.trim();
             const password = document.getElementById('fun-pass-in').value;
@@ -259,6 +267,13 @@
             onValue(ref(db, 'fun_users/' + lowerUser), (snap) => {
                 if(snap.exists() && snap.val().password === password) {
                     activeActiveUser = snap.val().displayName || username;
+                    
+                    // Giriş yapıldığı anki tarih ve saati formatla
+                    const simdikiZaman = new Date().toLocaleString('tr-TR');
+                    
+                    // Veritabanına son giriş tarihini güncelle
+                    set(ref(db, 'fun_users/' + lowerUser + '/lastLogin'), simdikiZaman);
+
                     document.getElementById('auth-screen').style.display = 'none';
                     window.scrollTo(0,0);
                     
@@ -300,6 +315,35 @@
         window.updateVisualSettings = () => {
             set(ref(db, 'fun_settings/trollText'), document.getElementById('adm-troll-input').value.trim() || "İman Power!");
             set(ref(db, 'fun_settings/lightsStatus'), document.getElementById('adm-light-toggle').value);
+        };
+
+        // YENİ KULLANICI EKLEME FONKSİYONU
+        window.addNewUserToDatabase = () => {
+            const username = document.getElementById('adm-user-name').value.trim().toLowerCase();
+            const displayName = document.getElementById('adm-user-display').value.trim();
+            const password = document.getElementById('adm-user-pass').value;
+
+            if(username && displayName && password) {
+                set(ref(db, 'fun_users/' + username), {
+                    password: password,
+                    displayName: displayName,
+                    lastLogin: "Henüz girmedi 💤"
+                }).then(() => {
+                    alert(`${displayName} kullanıcısı başarıyla eklendi!`);
+                    document.getElementById('adm-user-name').value = "";
+                    document.getElementById('adm-user-display').value = "";
+                    document.getElementById('adm-user-pass').value = "";
+                });
+            } else {
+                alert("Lütfen kullanıcı bilgilerini boş bırakmayın!");
+            }
+        };
+
+        // KULLANICI SİLME FONKSİYONU
+        window.delUser = (username) => {
+            if(confirm(`${username} kullanıcısını silmek istediğine emin misin?`)) {
+                remove(ref(db, 'fun_users/' + username));
+            }
         };
 
         window.addNewSongToDatabase = () => {
@@ -408,6 +452,27 @@
                             <button class="admin-del-btn" onclick="delSong('${v.key}')">X</button>
                         </div>`;
                 });
+            }
+
+            // KULLANICI LİSTESİ VE AKTİFLİK DURUMUNU ADMİN PANELİNDE GÖSTERME
+            const adminUsersContainer = document.getElementById('admin-live-users-container');
+            if(adminUsersContainer) {
+                adminUsersContainer.innerHTML = "";
+                if(data.fun_users) {
+                    Object.entries(data.fun_users).forEach(([username, uData]) => {
+                        const lastSeen = uData.lastLogin || "Henüz girmedi 💤";
+                        adminUsersContainer.innerHTML += `
+                            <div class="admin-track-item">
+                                <div class="admin-track-info" style="font-size:0.75rem;">
+                                    <strong style="color:var(--accent);">${uData.displayName || username}</strong> (${username})<br>
+                                    <span style="color:#94a3b8; font-size:0.7rem;">Son Giriş: ${lastSeen}</span>
+                                </div>
+                                <button class="admin-del-btn" onclick="delUser('${username}')">X</button>
+                            </div>`;
+                    });
+                } else {
+                    adminUsersContainer.innerHTML = `<div style="color:#64748b; font-size:0.8rem; text-align:center; padding:10px;">Hiç kullanıcı bulunamadı.</div>`;
+                }
             }
 
             const chatContainer = document.getElementById('chat-messages-box');
