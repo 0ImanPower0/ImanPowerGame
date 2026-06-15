@@ -142,11 +142,10 @@
     <div id="auth-screen">
         <div class="auth-card">
             <img src="image_a2cd46.png" onerror="this.src='logo.png'">
-            <h2 id="auth-title" style="margin-bottom:15px; font-family:'Orbitron'; color:var(--accent); font-size:1.2rem;">EĞLENCE ODASI</h2>
+            <h2 id="auth-title" style="margin-bottom:15px; font-family:'Orbitron'; color:var(--accent); font-size:1.2rem;">EĞLENCE ODASI GİRİŞİ</h2>
             <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
             <input type="password" id="fun-pass-in" placeholder="Şifre">
             <button class="btn" id="auth-btn" onclick="handleFunAuth()">GİRİŞ YAP</button>
-            <p style="margin-top:12px; font-size:0.8rem; cursor:pointer; color:var(--accent);" onclick="toggleFunAuthMode()">Hesabın yok mu? Kayıt Ol</p>
         </div>
     </div>
 
@@ -243,38 +242,29 @@
         };
 
         const db = getDatabase(initializeApp(firebaseConfig));
-        let isRegisterMode = false, currentActiveMp3Url = "", activeActiveUser = "Misafir";
+        let currentActiveMp3Url = "", activeActiveUser = "Misafir";
         let localPlaylistArray = [];
         let currentTrackGlobalKey = "";
         let lastKnownTriggerStamp = 0;
         
         const audio = document.getElementById('imanpower-audio-engine');
 
-        window.toggleFunAuthMode = () => {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('auth-title').innerText = isRegisterMode ? "KAYIT OL" : "GİRİŞ YAP";
-            document.getElementById('auth-btn').innerText = isRegisterMode ? "KAYIT" : "GİRİŞ";
-        };
-
+        // GİRİŞ KONTROL SİSTEMİ (SADECE DOĞRULAMA YAPAR, KAYIT FONKSİYONU SİLİNDİ)
         window.handleFunAuth = () => {
             const username = document.getElementById('fun-user-in').value.trim();
             const password = document.getElementById('fun-pass-in').value;
             if(!username || !password) return alert("Boş alan bırakmayınız!");
             const lowerUser = username.toLowerCase();
 
-            if(isRegisterMode) {
-                set(ref(db, 'fun_users/' + lowerUser), { password, displayName: username }).then(() => { alert("Kayıt Başarılı!"); toggleFunAuthMode(); });
-            } else {
-                onValue(ref(db, 'fun_users/' + lowerUser), (snap) => {
-                    if(snap.exists() && snap.val().password === password) {
-                        activeActiveUser = snap.val().displayName || username;
-                        document.getElementById('auth-screen').style.display = 'none';
-                        window.scrollTo(0,0);
-                        
-                        startInitialMusicStream();
-                    } else { alert("Hatalı Giriş Bilgileri!"); }
-                }, { onlyOnce: true });
-            }
+            onValue(ref(db, 'fun_users/' + lowerUser), (snap) => {
+                if(snap.exists() && snap.val().password === password) {
+                    activeActiveUser = snap.val().displayName || username;
+                    document.getElementById('auth-screen').style.display = 'none';
+                    window.scrollTo(0,0);
+                    
+                    startInitialMusicStream();
+                } else { alert("Hatalı Giriş Bilgileri!"); }
+            }, { onlyOnce: true });
         };
 
         function startInitialMusicStream() {
@@ -290,7 +280,6 @@
             setTimeout(() => { audio.play().catch((e) => console.log("İlk ses tetikleme yapıldı.")); }, 100);
         }
 
-        // 🔥 SORUN YAŞAYAN TELEFONLAR İÇİN ZORLA SES MOTORUNU UYANDIRMA FONKSİYONU
         window.rescuePhoneAudio = () => {
             if (audio.paused) {
                 audio.play()
