@@ -2,8 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İman Power | Ultra Disco v4.0 (Mobil Uyumlu)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>İman Power | Ultra Disco v5.0 (Full Mobile)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,12 +19,12 @@
         body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; position: relative; }
 
         /* GİRİŞ PANELİ */
-        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 15px; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 15px; }
         .auth-card { background: var(--glass); padding: 30px 20px; border-radius: 24px; border: 2px solid var(--accent); text-align: center; width: 100%; max-width: 400px; box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(20px); }
         .auth-card img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; object-fit: cover; }
 
         /* DISCO STROBE IŞIKLARI */
-        .strobe-bg-effect { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0; animation: strobeFlash 0.5s steps(1, end) infinite; }
+        .strobe-bg-effect { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0; animation: strobeFlash 0.5s steps(1, end) infinite; }
         @keyframes strobeFlash {
             0%, 100% { opacity: 0; background: transparent; }
             12% { opacity: 0.12; background: #ff0055; filter: blur(50px); }
@@ -36,89 +36,90 @@
             87% { opacity: 0.2; background: #10b981; filter: blur(70px); }
         }
 
-        .ambient-party-lights { position: fixed; inset: 0; pointer-events: none; z-index: 1; transition: opacity 1s ease; }
-        .spot { position: absolute; width: 300px; height: 300px; border-radius: 50%; filter: blur(100px); opacity: 0.3; animation: pulseSpot 2.5s ease-in-out infinite alternate; }
+        .ambient-party-lights { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; transition: opacity 1s ease; }
+        .spot { position: absolute; width: 250px; height: 250px; border-radius: 50%; filter: blur(90px); opacity: 0.3; animation: pulseSpot 2.5s ease-in-out infinite alternate; }
         .spot-1 { top: -50px; left: 5%; background: #ef4444; }
         .spot-2 { bottom: 5%; right: 5%; background: #3b82f6; animation-delay: 0.6s; }
         .spot-3 { top: 40%; left: 30%; background: #a855f7; animation-delay: 1.2s; }
         @keyframes pulseSpot { 0% { transform: scale(0.7); opacity: 0.2; filter: hue-rotate(0deg); } 100% { transform: scale(1.3); opacity: 0.5; filter: hue-rotate(360deg); } }
 
-        /* KAPSAYICI ANA YAPI (MOBİL UYUMLU) */
-        .main-layout { position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 15px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        /* KAPSAYICI ANA YAPI (BÜTÜN MOBİLLERLE YÜZDE YÜZ UYUMLU) */
+        .main-layout { position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 12px; display: grid; grid-template-columns: 1fr; gap: 15px; }
         
-        .fun-header { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px 20px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(15px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .logo-section { display: flex; align-items: center; gap: 10px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); font-size: 1.1rem; letter-spacing: 0.5px; }
-        .logo-section img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+        .fun-header { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 12px 18px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(15px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .logo-section { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); font-size: 1rem; letter-spacing: 0.5px; }
+        .logo-section img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* İKİZ PANELLER (YAN YANA / MOBİLDE ALT ALTA) */
-        .twin-panels-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        /* İKİZ PANELLER */
+        .twin-panels-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 768px) { .twin-panels-container { grid-template-columns: 1fr 1fr; } }
 
-        .equal-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 220px; backdrop-filter: blur(15px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-bottom: 3px solid var(--border); }
-        .panel-title { font-family: 'Orbitron'; font-size: 0.9rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; display: flex; align-items: center; gap: 6px; margin-bottom: 15px; letter-spacing: 0.5px; }
+        .equal-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; backdrop-filter: blur(15px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-bottom: 3px solid var(--border); }
+        .panel-title { font-family: 'Orbitron'; font-size: 0.85rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; letter-spacing: 0.5px; }
         
-        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px 15px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
+        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 18px 12px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
         .now-playing-box::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
         
-        @keyframes pulseBtnGlow { 0% { box-shadow: 0 0 5px #10b981; transform: scale(1); } 50% { box-shadow: 0 0 20px #10b981; transform: scale(1.02); } 100% { box-shadow: 0 0 5px #10b981; transform: scale(1); } }
-        .force-play-btn { width: 100%; padding: 14px; font-weight: 900; font-family: 'Orbitron'; background: #10b981; border: none; border-radius: 12px; color: #fff; cursor: pointer; animation: pulseBtnGlow 2s infinite; transition: 0.3s; margin-top: 10px; letter-spacing: 0.5px; font-size: 0.85rem; }
+        @keyframes pulseBtnGlow { 0% { box-shadow: 0 0 5px #10b981; transform: scale(1); } 50% { box-shadow: 0 0 15px #10b981; transform: scale(1.02); } 100% { box-shadow: 0 0 5px #10b981; transform: scale(1); } }
+        .force-play-btn { width: 100%; padding: 14px; font-weight: 900; font-family: 'Orbitron'; background: #10b981; border: none; border-radius: 12px; color: #fff; cursor: pointer; animation: pulseBtnGlow 2s infinite; transition: 0.3s; margin-top: 10px; font-size: 0.8rem; }
 
         /* SÖZ ALANI */
-        .troll-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
-        .troll-text { font-family: 'Orbitron'; font-size: 1.6rem; font-weight: 900; color: #f43f5e; animation: pulseText 0.5s infinite alternate; text-transform: uppercase; text-align: center; text-shadow: 0 0 15px rgba(244,63,94,0.3); word-break: break-word; }
+        .troll-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+        .troll-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 900; color: #f43f5e; animation: pulseText 0.5s infinite alternate; text-transform: uppercase; text-align: center; text-shadow: 0 0 15px rgba(244,63,94,0.3); word-break: break-word; }
         @keyframes pulseText { from { transform: scale(0.98); } to { transform: scale(1.02); } }
 
         /* VİDEO AKIŞI */
-        .video-box-container { background: var(--glass); border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.2); padding: 15px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .video-box-container { background: var(--glass); border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
         .video-wrapper { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.05); aspect-ratio: 16/9; }
         .video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
 
         /* TOXİK CHAT PANELİ */
-        .chat-container-card { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
-        .chat-box-area { height: 240px; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 16px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.03); }
-        .chat-msg-row { margin-bottom: 8px; font-size: 0.9rem; border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.4; color: #e2e8f0; word-break: break-word; }
-        .chat-username { font-family: 'Orbitron'; font-weight: 700; color: var(--accent); margin-right: 5px; text-shadow: 0 0 10px rgba(16,185,129,0.2); }
+        .chat-container-card { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .chat-box-area { height: 220px; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 16px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.03); }
+        .chat-msg-row { margin-bottom: 8px; font-size: 0.85rem; border-left: 3px solid var(--accent); padding-left: 8px; color: #e2e8f0; word-break: break-word; }
+        .chat-username { font-family: 'Orbitron'; font-weight: 700; color: var(--accent); margin-right: 5px; }
         .chat-input-row { display: flex; gap: 8px; }
-        .chat-input-row input { margin: 0; flex-grow: 1; }
+        .chat-input-row input { margin: 0; flex-grow: 1; height: 48px; }
+        .chat-input-row .btn { width: 80px; height: 48px; }
 
         /* ADMİN ALANI */
-        .admin-section { background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 20px; box-shadow: 0 0 35px rgba(239,68,68,0.15); }
-        .admin-title-row { display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(239,68,68,0.2); padding-bottom: 12px; }
+        .admin-section { background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 18px; box-shadow: 0 0 35px rgba(239,68,68,0.15); }
+        .admin-title-row { display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(239,68,68,0.2); padding-bottom: 10px; }
         @media (min-width: 576px) { .admin-title-row { flex-direction: row; justify-content: space-between; align-items: center; } }
         
         .admin-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
         @media (min-width: 768px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
         
-        .admin-card { background: rgba(0,0,0,0.5); padding: 18px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04); }
-        .admin-playlist-scroller { max-height: 160px; overflow-y: auto; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 12px; margin-bottom: 10px; }
+        .admin-card { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04); }
+        .admin-playlist-scroller { max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 12px; margin-bottom: 10px; }
         .admin-track-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.01); border-radius: 8px; margin-bottom: 6px; font-size: 0.8rem; gap: 10px; }
         .admin-track-info { cursor: pointer; color: #fff; flex-grow: 1; word-break: break-all; }
         .admin-track-item.active .admin-track-info { color: var(--accent); font-weight: bold; text-shadow: 0 0 8px var(--accent-glow); }
         .admin-del-btn { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
 
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #1e293b; background: #040712; color: white; transition: 0.3s; font-size: 0.9rem; }
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 8px rgba(16,185,129,0.2); }
+        /* MOBİL DOKUNMATİK DETAYLAR */
+        input, select { width: 100%; height: 46px; padding: 0 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #1e293b; background: #040712; color: white; font-size: 0.9rem; -webkit-appearance: none; }
+        input:focus { border-color: var(--accent); outline: none; }
         
-        .btn { padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s; font-size: 0.85rem; }
+        .btn { height: 46px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
         .btn:hover { filter: brightness(1.1); }
         .btn-danger { background: #ef4444; }
 
-        /* 💥 15 SANİYELİK SİNEMATİK WASTED BOMBA EFEKTLERİ 💥 */
+        /* 💥 MOBİL FULLSCREEN UKULELE DEPREM WASTED PANALİ (GARANTİLİ KAPLAMA) 💥 */
         .wasted-hidden-state { opacity: 0 !important; transform: scale(0.8) !important; pointer-events: none !important; }
-        #wasted-main-blackout { position: fixed; inset: 0; z-index: 999999; background: #000000; display: none; align-items: center; justify-content: center; overflow: hidden; }
+        #wasted-main-blackout { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; width: 100%; height: 100%; z-index: 9999999 !important; background: #000000 !important; display: none; align-items: center; justify-content: center; overflow: hidden; }
         .wasted-shake-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; animation: ultraNuclearShake 0.08s infinite alternate; }
 
-        .wasted-red-light { position: absolute; border-radius: 50%; background: #ff0000; filter: blur(100px); opacity: 0.5; animation: glitchLight 0.2s infinite alternate; }
-        .rl-1 { top: 15%; left: 10%; width: 200px; height: 200px; }
-        .rl-2 { bottom: 15%; right: 10%; width: 250px; height: 250px; animation-delay: 0.05s; }
-        .rl-3 { top: 45%; left: 35%; width: 180px; height: 180px; animation-delay: 0.1s; }
+        .wasted-red-light { position: absolute; border-radius: 50%; background: #ff0000; filter: blur(80px); opacity: 0.6; animation: glitchLight 0.2s infinite alternate; }
+        .rl-1 { top: 20%; left: 10%; width: 180px; height: 180px; }
+        .rl-2 { bottom: 20%; right: 10%; width: 220px; height: 220px; animation-delay: 0.05s; }
 
-        .wasted-text-mega { font-family: 'Orbitron'; font-size: 3rem; font-weight: 900; color: #ef4444; text-shadow: 0 0 30px #ef4444, 0 0 60px #ff0000; letter-spacing: 6px; animation: growWastedText 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 10; text-align: center; }
-        @media (min-width: 768px) { .wasted-text-mega { font-size: 5.5rem; letter-spacing: 12px; } }
+        .wasted-text-mega { font-family: 'Orbitron'; font-size: 3.5rem; font-weight: 900; color: #ef4444; text-shadow: 0 0 30px #ef4444, 0 0 60px #ff0000; letter-spacing: 6px; animation: growWastedText 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 10; text-align: center; }
+        @media (min-width: 768px) { .wasted-text-mega { font-size: 6rem; letter-spacing: 12px; } }
 
-        @keyframes ultraNuclearShake { 0% { transform: translate(8px, 6px) rotate(1deg); } 100% { transform: translate(-7px, -8px) rotate(-1deg); } }
-        @keyframes glitchLight { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 0.7; transform: scale(1.2); } }
-        @keyframes growWastedText { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes ultraNuclearShake { 0% { transform: translate(6px, 5px) rotate(0.5deg); } 100% { transform: translate(-5px, -6px) rotate(-0.5deg); } }
+        @keyframes glitchLight { 0% { opacity: 0.2; transform: scale(0.9); } 100% { opacity: 0.8; transform: scale(1.1); } }
+        @keyframes growWastedText { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -130,7 +131,7 @@
 
     <div id="wasted-main-blackout">
         <div class="wasted-shake-wrapper">
-            <div class="wasted-red-light rl-1"></div><div class="wasted-red-light rl-2"></div><div class="wasted-red-light rl-3"></div>
+            <div class="wasted-red-light rl-1"></div><div class="wasted-red-light rl-2"></div>
             <div class="wasted-text-mega">WASTED!</div>
         </div>
     </div>
@@ -140,7 +141,7 @@
     <div id="auth-screen">
         <div class="auth-card">
             <img src="image_a2cd46.png" onerror="this.src='logo.png'">
-            <h2 id="auth-title" style="margin-bottom:15px; font-family:'Orbitron'; color:var(--accent); font-size:1.3rem;">EĞLENCE ODASI</h2>
+            <h2 id="auth-title" style="margin-bottom:15px; font-family:'Orbitron'; color:var(--accent); font-size:1.2rem;">EĞLENCE ODASI</h2>
             <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
             <input type="password" id="fun-pass-in" placeholder="Şifre">
             <button class="btn" id="auth-btn" onclick="handleFunAuth()">GİRİŞ YAP</button>
@@ -150,16 +151,17 @@
 
     <div class="main-layout" id="grand-disco-layout">
         <div class="fun-header">
-            <div class="logo-section"><img src="image_a2cd46.png" onerror="this.src='logo.png'"><span>İMAN POWER DISCO</span></div>
-            <button class="btn btn-danger" style="width:auto; padding:6px 14px; font-size:0.7rem;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ</button>
+            <div class="logo-section"><img src="image_a2cd46.png" onerror="this.src='logo.png'"><span>İMAN POWER</span></div>
+            <button class="btn btn-danger" style="width:auto; padding:0 12px; height:36px; font-size:0.7rem;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ</button>
         </div>
 
         <div class="twin-panels-container">
             <div class="equal-panel">
-                <div class="panel-title">🎵 CANLI MP3 AKIŞI & OTOMATİK SIRA</div>
+                <div class="panel-title">🎵 CANLI MP3 AKIŞI & PLAYLIST</div>
                 <div class="now-playing-box">
-                    <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:1rem; margin-bottom:5px;">Şarkılar Hazırlanıyor... 🎧</div>
-                    <div id="playlist-index-indicator" style="font-size:0.75rem; color:#64748b; margin-bottom:10px;">Sıra: 0/0</div>
+                    <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:0.95rem; margin-bottom:3px;">Müzikler Yükleniyor... 🎧</div>
+                    <div id="playlist-index-indicator" style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Sıra: 0/0</div>
+                    <div id="live-playback-status" style="font-size:0.75rem; font-weight:bold; color:var(--accent); margin-bottom:8px;">DURUM: HAZIR</div>
                     <button id="force-play-btn" class="force-play-btn" onclick="forcePlayMusic()">🔊 SES SİSTEMİNİ AKTİF ET</button>
                 </div>
             </div>
@@ -168,13 +170,13 @@
                 <div class="panel-title">💬 KUDURTUCU SÖZÜMÜZ</div>
                 <div class="troll-content-wrapper">
                     <div id="live-troll-text" class="troll-text">YÜKLENİYOR... 😎</div>
-                    <div style="width: 55px; height: 55px;"><img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif" style="width:100%; height:100%; object-fit:contain;"></div>
+                    <div style="width: 50px; height: 50px;"><img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif" style="width:100%; height:100%; object-fit:contain;"></div>
                 </div>
             </div>
         </div>
 
         <div class="video-box-container">
-            <div class="panel-title" style="color:#3b82f6; margin-bottom:10px;">📺 AURA FC CANLI AKIŞ VİDEO</div>
+            <div class="panel-title" style="color:#3b82f6; margin-bottom:8px;">📺 AURA FC CANLI AKIŞ VİDEO</div>
             <div class="video-wrapper">
                 <video autoplay loop muted playsinline>
                     <source src="istockphoto-1629110917-640_adpp_is (1).mp4" type="video/mp4">
@@ -186,42 +188,48 @@
             <div class="panel-title" style="color:var(--accent);">💬 TOXİK CANLI CHAT</div>
             <div class="chat-box-area" id="chat-messages-box"></div>
             <div class="chat-input-row">
-                <input type="text" id="toxic-chat-input" placeholder="Mesajını fırlat...">
-                <button class="btn" style="width:90px;" onclick="sendToxicMessage()">OK</button>
+                <input type="text" id="toxic-chat-input" placeholder="Toxik mesajını fırlat...">
+                <button class="btn" onclick="sendToxicMessage()">OK</button>
             </div>
         </div>
 
-        <div id="admin-lock-box" style="display:none; max-width:400px; margin:0 auto; width:100%; border:2px solid #ef4444; background:var(--glass); padding:20px; border-radius:16px;">
-            <h4 style="font-family:'Orbitron'; margin-bottom:12px; color:#ef4444; font-size:0.9rem;">ADMİN ŞİFRESİ</h4>
+        <div id="admin-lock-box" style="display:none; max-width:400px; margin:0 auto; width:100%; border:2px solid #ef4444; background:var(--glass); padding:15px; border-radius:16px;">
+            <h4 style="font-family:'Orbitron'; margin-bottom:10px; color:#ef4444; font-size:0.85rem;">YÖNETİCİ GİRİŞİ</h4>
             <input type="password" id="admin-password-field" placeholder="Admin Şifresi">
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="background:#ef4444;" onclick="verifyAdminKey()">GİRİŞ</button>
-                <button class="btn" style="background:#64748b;" onclick="document.getElementById('admin-lock-box').style.display='none'">KAPAT</button>
+                <button class="btn" style="background:#64748b;" onclick="document.getElementById('admin-lock-box').style.display='none'">İPTAL</button>
             </div>
         </div>
 
         <div id="super-admin-panel" class="admin-section" style="display:none;">
             <div class="admin-title-row">
-                <h3 style="font-family:'Orbitron'; color:#ef4444; font-size:1.1rem;">🛠️ KUMANDA MASASI</h3>
-                <button class="btn" style="background:#ef4444; color:#fff; font-family:'Orbitron'; box-shadow:0 0 15px #ff0000; width:auto; padding:8px 15px; font-size:0.75rem;" onclick="triggerNukeStrike()">💣 BOMBA PATLAT (15 SN)</button>
+                <h3 style="font-family:'Orbitron'; color:#ef4444; font-size:1rem;">🛠️ KUMANDA MASASI</h3>
+                <button class="btn" style="background:#ef4444; box-shadow:0 0 12px #ff0000; width:auto; padding:0 12px; height:36px; font-size:0.7rem;" onclick="triggerNukeStrike()">💣 BOMBA PATLAT (15 SN)</button>
             </div>
             
             <div class="admin-grid">
                 <div class="admin-card">
-                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.85rem;">💡 Görsel Ayarlar</h4>
+                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">🎵 Canlı Ses & Görsel Kontrol</h4>
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                        <button class="btn" style="background:#ef4444; font-size:0.75rem; height:40px;" onclick="setPlaybackState('paused')">⏸️ ŞARKIYI DURDUR</button>
+                        <button class="btn" style="background:#10b981; font-size:0.75rem; height:40px;" onclick="setPlaybackState('playing')">▶️ DEVAM ETTİR</button>
+                    </div>
+
                     <input type="text" id="adm-troll-input" placeholder="Yeni Kudurtucu Söz">
                     <select id="adm-light-toggle"><option value="on">Disco Işıkları: AÇIK</option><option value="off">Disco Işıkları: KAPALI</option></select>
-                    <button class="btn" style="background:#ef4444;" onclick="updateVisualSettings()">YAYINLA</button>
+                    <button class="btn" style="background:#ef4444; height:40px;" onclick="updateVisualSettings()">DEĞİŞİKLİKLERİ YAYINLA</button>
                 </div>
 
                 <div class="admin-card">
-                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.85rem;">🗂️ Playlist & Şarkı Seçimi</h4>
+                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">🗂️ Şarkı Listesi Yönetimi</h4>
                     <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
-                    <button class="btn btn-danger" style="padding:5px; font-size:0.7rem; margin-bottom:12px;" onclick="clearAllSongs()">LİSTEYİ SIFIRLA</button>
+                    <button class="btn btn-danger" style="height:32px; font-size:0.7rem; margin-bottom:10px;" onclick="clearAllSongs()">TÜM LİSTEYİ SIFIRLA</button>
 
                     <input type="text" id="adm-song-title" placeholder="Şarkı İsmi">
                     <input type="text" id="adm-song-id" placeholder="GitHub Raw MP3 Linki">
-                    <button class="btn" onclick="addNewSongToDatabase()">PLAYLIST'E EKLE</button>
+                    <button class="btn" style="height:40px;" onclick="addNewSongToDatabase()">PLAYLIST'E EKLE</button>
                 </div>
             </div>
         </div>
@@ -263,6 +271,7 @@
                     if(snap.exists() && snap.val().password === password) {
                         activeActiveUser = snap.val().displayName || username;
                         document.getElementById('auth-screen').style.display = 'none';
+                        window.scrollTo(0,0);
                         forcePlayMusic();
                     } else { alert("Hatalı Giriş Bilgileri!"); }
                 }, { onlyOnce: true });
@@ -292,8 +301,14 @@
         };
 
         window.setLiveTrack = (key, url, title) => { 
-            set(ref(db, 'fun_current_mp3'), { songKey: key, mp3Url: url, title, forceTrigger: Date.now() }); 
+            set(ref(db, 'fun_current_mp3'), { songKey: key, mp3Url: url, title, forceState: "playing", lastUpdate: Date.now() }); 
         };
+        
+        // Adminin Durdur / Başlat komutunu Firebase'e yazar
+        window.setPlaybackState = (state) => {
+            set(ref(db, 'fun_current_mp3/forceState'), state);
+        };
+
         window.delSong = (key) => { remove(ref(db, 'fun_mp3_songs/' + key)); };
         window.clearAllSongs = () => { if(confirm("Tüm listeyi temizlemek istiyor musun?")) remove(ref(db, 'fun_mp3_songs')); };
 
@@ -301,22 +316,19 @@
             if(audio && audio.src) {
                 audio.play().then(() => {
                     const btn = document.getElementById('force-play-btn');
-                    btn.innerText = "🔊 SİSTEM AKTİF (PLAYLIST AKIYOR)";
+                    btn.innerText = "🔊 SES AKTİF (PLAYLIST AKIYOR)";
                     btn.style.animation = "none";
                     btn.style.background = "#3b82f6";
-                }).catch(() => { console.log("Etkileşim kilidi."); });
+                }).catch((err) => { console.log("Kilit açma beklentisi."); });
             }
         };
 
-        // OTOMATİK PLAYLIST GEÇİŞİ (BİTİNCE BAŞA SARAR)
+        // OTOMATİK SONSUZ PLAYLIST MOTORU
         audio.onended = () => {
             if (localPlaylistArray.length === 0) return;
             let currentIndex = localPlaylistArray.findIndex(track => track.key === currentTrackGlobalKey);
             let nextIndex = currentIndex + 1;
-            
-            if (nextIndex >= localPlaylistArray.length) {
-                nextIndex = 0; // Başa dön döngü kur
-            }
+            if (nextIndex >= localPlaylistArray.length) nextIndex = 0; // Başa dön döngüyü kur
             
             const nextTrack = localPlaylistArray[nextIndex];
             if (nextTrack) {
@@ -334,20 +346,20 @@
 
         window.triggerNukeStrike = () => { set(ref(db, 'fun_settings/nukeTrigger'), Date.now()); };
 
-        // FIREBASE MASTER REALTIME DINLEYICI
+        // FIREBASE MASTER REALTIME SENKRONU
         onValue(ref(db, '/'), (snap) => {
             const data = snap.val() || {};
             const settings = data.fun_settings || {};
 
-            // 1. Troll Yazı Senkronu
+            // 1. Troll Mesaj
             document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power!";
 
-            // 2. Strobe Işıkları
+            // 2. Disco Flaş Işıkları Kontrolü
             const strobe = document.getElementById('disco-strobe-lights');
             if(settings.lightsStatus === 'off') { if(strobe) strobe.style.display = 'none'; } 
             else { if(strobe) strobe.style.display = 'block'; }
 
-            // 3. Şarkı Dizisini Belleğe Kaydetme
+            // 3. Şarkıları Belleğe Sırala
             localPlaylistArray = [];
             if(data.fun_mp3_songs) {
                 Object.entries(data.fun_mp3_songs).forEach(([key, value]) => {
@@ -355,33 +367,45 @@
                 });
             }
 
-            // 4. ŞARKI DEĞİŞİM MOTORU (ADMİN BASINCA ANINDA GEÇME DESTEKLİ)
+            // 4. CANLI OYNATMA VE DURDURMA MOTORU (YENİLENDİ)
             if(data.fun_current_mp3) {
                 const targetUrl = data.fun_current_mp3.mp3Url;
                 const incomingKey = data.fun_current_mp3.songKey;
+                const forceState = data.fun_current_mp3.forceState || "playing";
                 
                 document.getElementById('now-playing-title').innerText = "🎵 " + data.fun_current_mp3.title;
                 
                 let currentPos = localPlaylistArray.findIndex(t => t.key === incomingKey) + 1;
                 document.getElementById('playlist-index-indicator').innerText = `Sıra: ${currentPos > 0 ? currentPos : '?'}/${localPlaylistArray.length}`;
 
-                // Eğer çalan url değiştiyse ya da admin zorla geç dediyse anında yükle ve çal!
+                // URL veya Şarkı Değiştiyse Sıfırdan Yükle
                 if(incomingKey !== currentTrackGlobalKey || targetUrl !== currentActiveMp3Url) {
                     currentTrackGlobalKey = incomingKey;
                     currentActiveMp3Url = targetUrl;
                     audio.src = targetUrl;
                     audio.load();
+                }
+
+                // ⏸️ ⏹️ ADMİNİN ANLIK DURDURMA VE BAŞLATMA EMİRLERİ KONTROLÜ
+                if(forceState === "paused") {
+                    audio.pause();
+                    document.getElementById('live-playback-status').innerText = "DURUM: YÖNETİCİ TARAFINDAN DURDURULDU ⏸️";
+                    document.getElementById('live-playback-status').style.color = "#ef4444";
+                } else {
+                    document.getElementById('live-playback-status').innerText = "DURUM: OYNATILIYOR 🔥";
+                    document.getElementById('live-playback-status').style.color = "#10b981";
                     
-                    // Nuke/Bomba patlaması aktif değilse hemen çalmaya zorla
+                    // Bomba patlaması yoksa çalmaya zorla
                     if (!settings.nukeTrigger || (Date.now() - settings.nukeTrigger >= 15000)) {
-                        setTimeout(() => { window.forcePlayMusic(); }, 200);
+                        audio.play().catch(() => { console.log("Dokunma Etkileşimi Bekleniyor"); });
                     }
                 }
+
             } else if (localPlaylistArray.length > 0) {
                 setLiveTrack(localPlaylistArray[0].key, localPlaylistArray[0].mp3Url, localPlaylistArray[0].title);
             }
 
-            // 5. Admin Panel Arayüz Listesi Güncellemesi
+            // 5. Admin Panel Playlist Listesi
             const adminContainer = document.getElementById('admin-live-tracks-container');
             if(adminContainer) {
                 adminContainer.innerHTML = "";
@@ -395,7 +419,7 @@
                 });
             }
 
-            // 6. Sohbet Akışı
+            // 6. Canlı Toxik Chat Akışı
             const chatContainer = document.getElementById('chat-messages-box');
             if(chatContainer && data.toxic_chat) {
                 chatContainer.innerHTML = "";
@@ -405,7 +429,7 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // 7. 💣 15 SANİYELİK WASTED BOMBA EFEKT KONTROLÜ
+            // 7. 💣 MOBİL COCOON TAM EKRAN WASTED BAĞLANTISI
             if(settings.nukeTrigger) {
                 const now = Date.now();
                 const diff = now - settings.nukeTrigger;
@@ -417,15 +441,21 @@
                     document.getElementById('ambient-container').style.opacity = '0';
                     if(strobe) strobe.style.display = 'none';
 
-                    document.getElementById('wasted-main-blackout').style.display = 'flex';
+                    // Ekranı mutlak zifiri karanlık yap
+                    const blackoutPanel = document.getElementById('wasted-main-blackout');
+                    blackoutPanel.style.display = 'flex';
+                    window.scrollTo(0,0); // Mobilde ekran kaymasını önle
 
                     setTimeout(() => {
-                        document.getElementById('wasted-main-blackout').style.display = 'none';
+                        blackoutPanel.style.display = 'none';
                         document.getElementById('grand-disco-layout').classList.remove('wasted-hidden-state');
                         document.getElementById('ambient-container').style.opacity = '1';
                         if(settings.lightsStatus !== 'off' && strobe) strobe.style.display = 'block';
                         
-                        if(audio) audio.play().catch(() => {});
+                        // Şarkı eğer admin tarafından durdurulmadıysa devam etsin
+                        if(audio && (!data.fun_current_mp3 || data.fun_current_mp3.forceState !== "paused")) {
+                            audio.play().catch(() => {});
+                        }
                     }, remainingTime);
                 }
             }
