@@ -19,471 +19,444 @@
         body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; position: relative; }
 
         /* GİRİŞ PANELİ */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 15px; }
-        .auth-card { background: var(--glass); padding: 30px 20px; border-radius: 24px; border: 2px solid var(--accent); text-align: center; width: 100%; max-width: 400px; box-shadow: 0 0 40px var(--accent-glow); backdrop-filter: blur(20px); }
-        .auth-card img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; object-fit: cover; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-container { background: var(--glass); border: 2px solid var(--accent); padding: 40px 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 0 50px var(--accent-glow); position: relative; overflow: hidden; }
+        .auth-container::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, var(--accent)); animation: rotateBorder 6s linear infinite; z-index: -1; }
+        @keyframes rotateBorder { 100% { transform: rotate(360deg); } }
+        .auth-inner { background: #040814; padding: 30px 20px; border-radius: 18px; }
+        .auth-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; box-shadow: 0 0 20px var(--accent-glow); }
+        .auth-container h2 { font-family: 'Orbitron', sans-serif; font-weight: 900; letter-spacing: 2px; color: var(--accent); margin-bottom: 25px; font-size: 1.6rem; text-shadow: 0 0 10px var(--accent-glow); }
+        .auth-input { width: 100%; padding: 14px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 1rem; margin-bottom: 15px; text-align: center; transition: 0.3s; }
+        .auth-input:focus { border-color: var(--accent); background: rgba(16, 185, 129, 0.05); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); outline: none; }
+        .auth-btn { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 800; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; cursor: pointer; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); }
+        .auth-btn:hover { background: #14d393; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
 
-        /* DISCO STROBE IŞIKLARI */
-        .strobe-bg-effect { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2; opacity: 0; animation: strobeFlash 0.5s steps(1, end) infinite; }
-        @keyframes strobeFlash {
-            0%, 100% { opacity: 0; background: transparent; }
-            12% { opacity: 0.12; background: #ff0055; filter: blur(50px); }
-            25% { opacity: 0; }
-            37% { opacity: 0.15; background: #00ffcc; filter: blur(60px); }
-            50% { opacity: 0; }
-            62% { opacity: 0.12; background: #9900ff; filter: blur(50px); }
-            75% { opacity: 0; }
-            87% { opacity: 0.2; background: #10b981; filter: blur(70px); }
-        }
+        /* REKLAM KARTI */
+        .ad-banner-overlay { background: rgba(16, 185, 129, 0.04); border: 1px dashed var(--border); padding: 15px; border-radius: 14px; margin-top: 20px; font-size: 0.85rem; color: #9ca3af; line-height: 1.5; }
 
-        .ambient-party-lights { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; transition: opacity 1s ease; }
-        .spot { position: absolute; width: 250px; height: 250px; border-radius: 50%; filter: blur(90px); opacity: 0.3; animation: pulseSpot 2.5s ease-in-out infinite alternate; }
-        .spot-1 { top: -50px; left: 5%; background: #ef4444; }
-        .spot-2 { bottom: 5%; right: 5%; background: #3b82f6; animation-delay: 0.6s; }
-        .spot-3 { top: 40%; left: 30%; background: #a855f7; animation-delay: 1.2s; }
-        @keyframes pulseSpot { 0% { transform: scale(0.7); opacity: 0.2; filter: hue-rotate(0deg); } 100% { transform: scale(1.3); opacity: 0.5; filter: hue-rotate(360deg); } }
+        /* STRÜKTÜR VE LAYOUT */
+        #grand-disco-layout { display: none; opacity: 0; transition: opacity 0.8s ease; padding: 90px 20px 40px; max-width: 1400px; margin: 0 auto; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: rgba(1, 2, 6, 0.85); backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); z-index: 9999; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .brand-zone { display: flex; align-items: center; gap: 12px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: var(--accent); letter-spacing: 1px; font-size: 1.1rem; }
+        .brand-zone img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent); }
+        .logout-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { background: #ef4444; color: #fff; }
 
-        /* KAPSAYICI ANA YAPI */
-        .main-layout { position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; padding: 12px; display: grid; grid-template-columns: 1fr; gap: 15px; }
+        /* STROBE LIGHT EFFECT */
+        #disco-strobe-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 0.3s; }
+
+        /* GRID SYSTEM */
+        .disco-grid { display: grid; grid-template-columns: 1fr; gap: 25px; position: relative; z-index: 5; }
+        @media (min-width: 1024px) { .disco-grid { grid-template-columns: 1.1fr 0.9fr; } }
+
+        /* KARTLAR */
+        .disco-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 30px; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .panel-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.25rem; color: var(--accent); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 10px var(--accent-glow); border-bottom: 1px solid rgba(16, 185, 129, 0.15); padding-bottom: 12px; }
+
+        /* SOHBET KUTUSU */
+        .chat-view-portal { height: 420px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+        .chat-view-portal::-webkit-scrollbar { width: 6px; }
+        .chat-view-portal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        .chat-bubble { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 16px; border-left: 4px solid var(--accent); word-break: break-all; line-height: 1.5; font-size: 0.95rem; }
+        .chat-username { font-weight: 800; color: var(--accent); margin-right: 8px; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; }
+        .chat-input-row { display: flex; gap: 12px; }
+        .chat-input-row input { flex: 1; padding: 14px 20px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 14px; color: #fff; font-size: 0.95rem; }
+        .chat-input-row input:focus { outline: none; border-color: var(--accent); }
+        .chat-send-btn { background: var(--accent); color: #000; border: none; padding: 0 25px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: 'Orbitron', sans-serif; }
+        .chat-send-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* DJ DECK / KONTROLLER */
+        .deck-status-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 18px; text-align: center; margin-bottom: 25px; position: relative; overflow: hidden; }
+        .vinyl-disk { width: 100px; height: 100px; background: #111; border-radius: 50%; margin: 0 auto 15px; border: 4px solid #222; box-shadow: 0 0 20px rgba(0,0,0,0.8); position: relative; display: flex; align-items: center; justify-content: center; }
+        .vinyl-disk::before { content: ''; width: 30px; height: 30px; background: var(--accent); border-radius: 50%; border: 3px solid #111; }
+        .vinyl-disk.spinning { animation: spin 2.5s linear infinite; box-shadow: 0 0 25px var(--accent-glow); border-color: var(--accent); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .now-playing-label { font-size: 0.8rem; text-transform: uppercase; tracking: 2px; color: #6b7280; font-weight: 600; }
+        .now-playing-title { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.1rem; margin-top: 5px; color: #fff; }
+
+        /* ADMİN ALANI & GÜVENLİK */
+        .admin-auth-lock { background: rgba(0,0,0,0.5); padding: 25px; border-radius: 18px; text-align: center; border: 1px solid rgba(239,68,68,0.2); }
+        .admin-panel-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 640px) { .admin-panel-grid { grid-template-columns: 1fr 1fr; } }
+        .admin-subcard { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.04); padding: 20px; border-radius: 16px; }
+        .admin-subcard h4 { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; margin-bottom: 15px; color: #fff; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .console-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-family: 'Orbitron', sans-serif; margin-bottom: 10px; }
+        .btn-green { background: #10b981; color: #000; }
+        .btn-red { background: #ef4444; color: #fff; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-purple { background: #8b5cf6; color: #fff; }
         
-        .fun-header { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 12px 18px; border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(15px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .logo-section { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron'; font-weight: 900; color: var(--accent); font-size: 1rem; letter-spacing: 0.5px; }
-        .logo-section img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent); }
+        /* ADMİN SİSTEM LOGLARI VE KULLANICI LİSTELERİ */
+        .user-log-scroller { max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 12px; font-size: 0.78rem; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px; }
+        .log-item-row { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; word-break: break-all; line-height: 1.4; border-left: 3px solid #10b981; background: rgba(255,255,255,0.01); border-radius: 4px; }
+        .log-item-row.alert-log { border-left-color: #ef4444; }
 
-        /* İKİZ PANELLER */
-        .twin-panels-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 768px) { .twin-panels-container { grid-template-columns: 1fr 1fr; } }
+        /* DISCO AMBİYANS ÖĞELERİ */
+        .ambient-glow-sphere { position: fixed; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); filter: blur(50px); pointer-events: none; z-index: 0; opacity: 0.3; transition: all 1s ease; }
+        #sphere-1 { top: -10%; left: -10%; }
+        #sphere-2 { bottom: -10%; right: -10%; }
 
-        .equal-panel { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; backdrop-filter: blur(15px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-bottom: 3px solid var(--border); }
-        .panel-title { font-family: 'Orbitron'; font-size: 0.85rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; letter-spacing: 0.5px; }
-        
-        .now-playing-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 20px 12px; border-radius: 16px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-        .now-playing-box::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
-
-        /* TELEFONLAR İÇİN ACİL DURUM KURTARMA BUTONU */
-        .phone-rescue-btn { width: 100%; padding: 10px; font-weight: 800; font-family: 'Orbitron'; background: rgba(244, 63, 94, 0.15); border: 1px dashed #f43f5e; border-radius: 10px; color: #f43f5e; cursor: pointer; transition: 0.3s; margin-top: 12px; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; }
-        .phone-rescue-btn:hover { background: rgba(244, 63, 94, 0.3); }
-
-        /* SÖZ ALANI */
-        .troll-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-        .troll-text { font-family: 'Orbitron'; font-size: 1.4rem; font-weight: 900; color: #f43f5e; animation: pulseText 0.5s infinite alternate; text-transform: uppercase; text-align: center; text-shadow: 0 0 15px rgba(244,63,94,0.3); word-break: break-word; }
-        @keyframes pulseText { from { transform: scale(0.98); } to { transform: scale(1.02); } }
-
-        /* VİDEO AKIŞI */
-        .video-box-container { background: var(--glass); border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
-        .video-wrapper { position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.05); aspect-ratio: 16/9; }
-        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* TOXİK CHAT PANELİ */
-        .chat-container-card { background: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
-        .chat-box-area { height: 220px; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 16px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.03); }
-        .chat-msg-row { margin-bottom: 8px; font-size: 0.85rem; border-left: 3px solid var(--accent); padding-left: 8px; color: #e2e8f0; word-break: break-word; }
-        .chat-username { font-family: 'Orbitron'; font-weight: 700; color: var(--accent); margin-right: 5px; }
-        .chat-input-row { display: flex; gap: 8px; }
-        .chat-input-row input { margin: 0; flex-grow: 1; height: 48px; }
-        .chat-input-row .btn { width: 80px; height: 48px; }
-
-        /* ADMİN ALANI */
-        .admin-section { background: var(--glass); border: 2px solid #ef4444; border-radius: 24px; padding: 18px; box-shadow: 0 0 35px rgba(239,68,68,0.15); }
-        .admin-title-row { display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(239,68,68,0.2); padding-bottom: 10px; }
-        @media (min-width: 576px) { .admin-title-row { flex-direction: row; justify-content: space-between; align-items: center; } }
-        
-        .admin-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
-        @media (min-width: 768px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .admin-card { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04); }
-        .admin-playlist-scroller { max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 12px; margin-bottom: 10px; }
-        .admin-track-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.01); border-radius: 8px; margin-bottom: 6px; font-size: 0.8rem; gap: 10px; }
-        .admin-track-info { cursor: pointer; color: #fff; flex-grow: 1; word-break: break-all; }
-        .admin-track-item.active .admin-track-info { color: var(--accent); font-weight: bold; text-shadow: 0 0 8px var(--accent-glow); }
-        .admin-del-btn { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
-
-        /* MOBİL GİRDİLER */
-        input, select { width: 100%; height: 46px; padding: 0 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #1e293b; background: #040712; color: white; font-size: 0.9rem; -webkit-appearance: none; }
-        input:focus { border-color: var(--accent); outline: none; }
-        
-        .btn { height: 46px; border: none; border-radius: 10px; color: white; font-weight: 800; cursor: pointer; background: var(--accent); width: 100%; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
-        .btn:hover { filter: brightness(1.1); }
-        .btn-danger { background: #ef4444; }
-
-        /* WASTED PANALİ */
-        .wasted-hidden-state { opacity: 0 !important; transform: scale(0.8) !important; pointer-events: none !important; }
-        #wasted-main-blackout { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999999 !important; background: #000000 !important; display: none; align-items: center; justify-content: center; overflow: hidden; }
-        .wasted-shake-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; animation: ultraNuclearShake 0.08s infinite alternate; }
-
-        .wasted-red-light { position: absolute; border-radius: 50%; background: #ff0000; filter: blur(80px); opacity: 0.6; animation: glitchLight 0.2s infinite alternate; }
-        .rl-1 { top: 20%; left: 10%; width: 180px; height: 180px; }
-        .rl-2 { bottom: 20%; right: 10%; width: 220px; height: 220px; animation-delay: 0.05s; }
-
-        .wasted-text-mega { font-family: 'Orbitron'; font-size: 3.5rem; font-weight: 900; color: #ef4444; text-shadow: 0 0 30px #ef4444, 0 0 60px #ff0000; letter-spacing: 6px; animation: growWastedText 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 10; text-align: center; }
-        @media (min-width: 768px) { .wasted-text-mega { font-size: 6rem; letter-spacing: 12px; } }
-
-        @keyframes ultraNuclearShake { 0% { transform: translate(6px, 5px) rotate(0.5deg); } 100% { transform: translate(-5px, -6px) rotate(-0.5deg); } }
-        @keyframes glitchLight { 0% { opacity: 0.2; transform: scale(0.9); } 100% { opacity: 0.8; transform: scale(1.1); } }
-        @keyframes growWastedText { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* WASTED BLACKOUT PANEL */
+        #wasted-main-blackout { position: fixed; inset: 0; width: 100%; height: 100%; background: #000; z-index: 999999; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        .wasted-neon-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 3.5rem; color: #ef4444; letter-spacing: 6px; text-shadow: 0 0 30px rgba(239,68,68,0.8); animation: pulseWasted 1.5s infinite alternate; }
+        .wasted-sub-text { font-size: 1rem; color: #6b7280; margin-top: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+        @keyframes pulseWasted { from { transform: scale(0.95); opacity: 0.8; } to { transform: scale(1.05); opacity: 1; } }
+        .wasted-hidden-state { opacity: 0 !important; pointer-events: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="strobe-bg-effect" id="disco-strobe-lights"></div>
-    <div id="ambient-container" class="ambient-party-lights">
-        <div class="spot spot-1"></div><div class="spot spot-2"></div><div class="spot spot-3"></div>
+    <div id="ambient-container">
+        <div class="ambient-glow-sphere" id="sphere-1"></div>
+        <div class="ambient-glow-sphere" id="sphere-2"></div>
     </div>
 
     <div id="wasted-main-blackout">
-        <div class="wasted-shake-wrapper">
-            <div class="wasted-red-light rl-1"></div><div class="wasted-red-light rl-2"></div>
-            <div class="wasted-text-mega">WASTED!</div>
-        </div>
+        <div class="wasted-neon-title">NUKE WASTED</div>
+        <div class="wasted-sub-text">⚡ DISCO ENERJİ SİSTEMLERİ YENİDEN BAŞLATILIYOR... ⚡</div>
     </div>
 
-    <audio id="imanpower-audio-engine"></audio>
+    <canvas id="disco-strobe-canvas"></canvas>
 
     <div id="auth-screen">
-        <div class="auth-card">
-            <img src="image_a2cd46.png" onerror="this.src='logo.png'">
-            <h2 id="auth-title" style="margin-bottom:15px; font-family:'Orbitron'; color:var(--accent); font-size:1.2rem;">EĞLENCE ODASI GİRİŞİ</h2>
-            <input type="text" id="fun-user-in" placeholder="Kullanıcı Adı">
-            <input type="password" id="fun-pass-in" placeholder="Şifre">
-            <button class="btn" id="auth-btn" onclick="handleFunAuth()">GİRİŞ YAP</button>
+        <div class="auth-container">
+            <div class="auth-inner">
+                <img src="logo.png" class="auth-logo" onerror="this.src='https://via.placeholder.com/90'">
+                <h2>DISCO ENTRY</h2>
+                <input type="text" id="disco-u-name" class="auth-input" placeholder="Kullanıcı Adı">
+                <input type="password" id="disco-p-pass" class="auth-input" placeholder="Giriş Şifresi">
+                <button class="auth-btn" onclick="processDiscoAuth()">SİSTEME GİRİŞ YAP</button>
+                <div class="ad-banner-overlay">
+                    🔒 <b>Güvenli Tünel Aktif</b><br>
+                    Giriş yaptığınız an dış IP adresiniz, erişim kaydınız ve anlık konum verileriniz güvenlik loglarına işlenecektir.
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="main-layout" id="grand-disco-layout">
-        <div class="fun-header">
-            <div class="logo-section"><img src="image_a2cd46.png" onerror="this.src='logo.png'"><span>İMAN POWER</span></div>
-            <button class="btn btn-danger" style="width:auto; padding:0 12px; height:36px; font-size:0.7rem;" onclick="document.getElementById('admin-lock-box').style.display='block'">YÖNETİCİ</button>
+    <header>
+        <div class="brand-zone">
+            <img src="logo.png" onerror="this.src='https://via.placeholder.com/42'">
+            <span>İMAN POWER DISCO v6.6</span>
         </div>
+        <button class="logout-btn" onclick="exitDiscoSession()">SİSTEMDEN ÇIK</button>
+    </header>
 
-        <div class="twin-panels-container">
-            <div class="equal-panel">
-                <div class="panel-title">🎵 CANLI MP3 AKIŞI & PLAYLIST</div>
-                <div class="now-playing-box">
-                    <div id="now-playing-title" style="font-weight:800; color:#fff; font-size:0.95rem; margin-bottom:3px;">Müzikler Yükleniyor... 🎧</div>
-                    <div id="playlist-index-indicator" style="font-size:0.75rem; color:#64748b; margin-bottom:8px;">Sıra: 0/0</div>
-                    <div id="live-playback-status" style="font-size:0.8rem; font-weight:bold; color:var(--accent); text-transform:uppercase;">🔊 OTOMATİK CANLI AKIŞ AKTİF</div>
-                    
-                    <button class="phone-rescue-btn" onclick="rescuePhoneAudio()">⚠️ SES ÇALMADIYSA TIKLAYIN</button>
-                </div>
-            </div>
-
-            <div class="equal-panel">
-                <div class="panel-title">💬 KUDURTUCU SÖZÜMÜZ</div>
-                <div class="troll-content-wrapper">
-                    <div id="live-troll-text" class="troll-text">YÜKLENİYOR... 😎</div>
-                    <div style="width: 50px; height: 50px;"><img src="https://media.tenor.com/Zuo6pA_wE78AAAAi/cat-dance.gif" style="width:100%; height:100%; object-fit:contain;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="video-box-container">
-            <div class="panel-title" style="color:#3b82f6; margin-bottom:8px;">📺 AURA FC CANLI AKIŞ VİDEO</div>
-            <div class="video-wrapper">
-                <video autoplay loop muted playsinline>
-                    <source src="istockphoto-1629110917-640_adpp_is (1).mp4" type="video/mp4">
-                </video>
-            </div>
-        </div>
-
-        <div class="chat-container-card">
-            <div class="panel-title" style="color:var(--accent);">💬 TOXİK CANLI CHAT</div>
-            <div class="chat-box-area" id="chat-messages-box"></div>
-            <div class="chat-input-row">
-                <input type="text" id="toxic-chat-input" placeholder="Toxik mesajını fırlat...">
-                <button class="btn" onclick="sendToxicMessage()">OK</button>
-            </div>
-        </div>
-
-        <div id="admin-lock-box" style="display:none; max-width:400px; margin:0 auto; width:100%; border:2px solid #ef4444; background:var(--glass); padding:15px; border-radius:16px;">
-            <h4 style="font-family:'Orbitron'; margin-bottom:10px; color:#ef4444; font-size:0.85rem;">YÖNETİCİ GİRİŞİ</h4>
-            <input type="password" id="admin-password-field" placeholder="Admin Şifresi">
-            <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#ef4444;" onclick="verifyAdminKey()">GİRİŞ</button>
-                <button class="btn" style="background:#64748b;" onclick="document.getElementById('admin-lock-box').style.display='none'">İPTAL</button>
-            </div>
-        </div>
-
-        <div id="super-admin-panel" class="admin-section" style="display:none;">
-            <div class="admin-title-row">
-                <h3 style="font-family:'Orbitron'; color:#ef4444; font-size:1rem;">🛠️ KUMANDA MASASI</h3>
-                <button class="btn" style="background:#ef4444; box-shadow:0 0 12px #ff0000; width:auto; padding:0 12px; height:36px; font-size:0.7rem;" onclick="triggerNukeStrike()">💣 BOMBA PATLAT (15 SN)</button>
-            </div>
+    <main id="grand-disco-layout">
+        <div class="disco-grid">
             
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">💡 Görsel Ayarlar</h4>
-                    <input type="text" id="adm-troll-input" placeholder="Yeni Kudurtucu Söz">
-                    <select id="adm-light-toggle"><option value="on">Disco Işıkları: AÇIK</option><option value="off">Disco Işıkları: KAPALI</option></select>
-                    <button class="btn" style="background:#ef4444; height:40px; margin-bottom: 20px;" onclick="updateVisualSettings()">DEĞİŞİKLİKLERİ YAYINLA</button>
-
-                    <h4 style="color:#3b82f6; margin-bottom:10px; font-size:0.8rem;">👤 Kullanıcı Yönetimi (Ekle & Aktiflik Gör)</h4>
-                    <input type="text" id="adm-user-name" placeholder="Kullanıcı Adı (Küçük Harf)">
-                    <input type="text" id="adm-user-display" placeholder="Görünecek İsim (Örn: Mustafa)">
-                    <input type="password" id="adm-user-pass" placeholder="Şifre">
-                    <button class="btn" style="background:#3b82f6; height:40px; margin-bottom:10px;" onclick="addNewUserToDatabase()">KULLANICI EKLE</button>
-                    
-                    <div class="admin-playlist-scroller" id="admin-live-users-container" style="max-height: 180px;"></div>
-                </div>
-
-                <div class="admin-card">
-                    <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.8rem;">🗂️ Şarkı Listesi Yönetimi (Tıkla ve Herkeste Değiştir)</h4>
-                    <div class="admin-playlist-scroller" id="admin-live-tracks-container"></div>
-                    <button class="btn btn-danger" style="height:32px; font-size:0.7rem; margin-bottom:10px;" onclick="clearAllSongs()">TÜM LİSTEYİ SIFIRLA</button>
-
-                    <input type="text" id="adm-song-title" placeholder="Şarkı İsmi">
-                    <input type="text" id="adm-song-id" placeholder="GitHub Raw MP3 Linki">
-                    <button class="btn" style="height:40px;" onclick="addNewSongToDatabase()">PLAYLIST'E EKLE</button>
+            <div class="disco-panel">
+                <div class="panel-title">💬 CANLI DİSCO TRİBÜNÜ</div>
+                <div class="chat-view-portal" id="disco-chat-portal"></div>
+                <div class="chat-input-row">
+                    <input type="text" id="disco-msg-field" placeholder="Müziğin ritmine katıl, mesaj yaz..." onkeypress="handleChatKey(event)">
+                    <button class="chat-send-btn" onclick="postDiscoMessage()">GÖNDER</button>
                 </div>
             </div>
+
+            <div class="disco-panel" style="display: flex; flex-direction: column; gap: 25px;">
+                
+                <div class="deck-status-card">
+                    <div class="vinyl-disk" id="vinyl-element"></div>
+                    <div class="now-playing-label">Şu An Çalan Parça</div>
+                    <div class="now-playing-title" id="track-title-element">Müzik Bekleniyor...</div>
+                </div>
+
+                <div>
+                    <div class="panel-title">🛡️ DJ DECK & GÜVENLİK KONSOLU</div>
+                    
+                    <div id="admin-lock-zone" class="admin-auth-lock">
+                        <input type="password" id="admin-pass-field" class="auth-input" placeholder="Admin Yetki Key" style="margin-bottom: 15px;">
+                        <button class="auth-btn" style="padding: 10px;" onclick="unlockAdminConsole()">YÖNETİM PANELİNİ AÇ</button>
+                    </div>
+
+                    <div id="admin-active-zone" class="admin-panel-grid" style="display: none;">
+                        
+                        <div class="admin-subcard">
+                            <h4>💡 AMBİYANS MOTORU</h4>
+                            <button class="console-btn btn-green" onclick="setDiscoLights('on')">Işıkları Yak (Aç)</button>
+                            <button class="console-btn btn-red" onclick="setDiscoLights('off')">Işıkları Söndür (Kapat)</button>
+                            <button class="console-btn btn-purple" onclick="setDiscoLights('strobe')">Strobe Flaşör Modu</button>
+                            <input type="text" id="custom-track-field" class="auth-input" placeholder="MP3 URL veya Ses Dosyası" style="font-size:0.8rem; padding:10px; margin-top:10px; margin-bottom:10px;">
+                            <button class="console-btn btn-blue" onclick="changeDiscoTrack()">Şarkıyı Değiştir</button>
+                        </div>
+
+                        <div class="admin-subcard">
+                            <h4>⚡ ACİL DURUM SİSTEMLERİ</h4>
+                            <button class="console-btn btn-red" style="box-shadow: 0 0 15px rgba(239,68,68,0.4);" onclick="triggerNukeExplosion()">NUCLEAR NUKE PATLAT (15s)</button>
+                            <button class="console-btn btn-blue" style="margin-top:10px;" onclick="clearDiscoChatHistory()">SOHBETİ TEMİZLE</button>
+                        </div>
+
+                        <div class="admin-subcard" style="grid-column: 1 / -1; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <h4>📋 SİSTEM ERİŞİM LOGLARI</h4>
+                            <div class="user-log-scroller" id="adm-system-logs-box">
+                                <div class="log-item-row">Sistem logları yükleniyor...</div>
+                            </div>
+                            <button class="console-btn btn-red" style="height: 30px; font-size: 0.75rem; padding: 0; margin-top: 10px;" onclick="clearAllSystemLogs()">LOGLARI TEMİZLE</button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
-            authDomain: "kartalhaber-49ae6.firebaseapp.com",
-            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
-            projectId: "kartalhaber-49ae6"
+            apiKey: "AIzaSyDy4ZUv_wZsntWSIDbcOlvpqDTBvWuSdrk",
+            authDomain: "imanpowerveri.firebaseapp.com",
+            databaseURL: "https://imanpowerveri-default-rtdb.firebaseio.com",
+            projectId: "imanpowerveri",
+            storageBucket: "imanpowerveri.firebasestorage.app",
+            messagingSenderId: "891464029314",
+            appId: "1:891464029314:web:581bd3b2ed3d7c6af2d09b"
         };
 
-        const db = getDatabase(initializeApp(firebaseConfig));
-        let currentActiveMp3Url = "", activeActiveUser = "Misafir";
-        let localPlaylistArray = [];
-        let currentTrackGlobalKey = "";
-        let lastKnownTriggerStamp = 0;
-        
-        const audio = document.getElementById('imanpower-audio-engine');
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // GİRİŞ KONTROL SİSTEMİ (GİRİŞ YAPILDIĞINDA AKTİFLİK TARİHİNİ KAYDEDER)
-        window.handleFunAuth = () => {
-            const username = document.getElementById('fun-user-in').value.trim();
-            const password = document.getElementById('fun-pass-in').value;
-            if(!username || !password) return alert("Boş alan bırakmayınız!");
-            const lowerUser = username.toLowerCase();
+        let activeUser = "";
+        let audio = new Audio();
+        audio.loop = true;
 
-            onValue(ref(db, 'fun_users/' + lowerUser), (snap) => {
-                if(snap.exists() && snap.val().password === password) {
-                    activeActiveUser = snap.val().displayName || username;
+        let strobeInterval = null;
+        const canvas = document.getElementById('disco-strobe-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let userLocationDataStr = "Bulunuyor...";
+        let globalIpAddress = "IP Çözülüyor...";
+
+        // GENİŞLETİLMİŞ IP VE GPS KONUM BULUCU MOTORU
+        function fetchExactLocationAndIp() {
+            fetch('https://api.ipify.org?format=json')
+                .then(res => res.json())
+                .then(ipData => {
+                    globalIpAddress = ipData.ip;
+                    userLocationDataStr = `IP: ${globalIpAddress} (GPS İzni Bekleniyor)`;
                     
-                    // Giriş yapıldığı anki tarih ve saati formatla
-                    const simdikiZaman = new Date().toLocaleString('tr-TR');
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const lat = position.coords.latitude.toFixed(5);
+                                const lon = position.coords.longitude.toFixed(5);
+                                userLocationDataStr = `IP: ${globalIpAddress} | Konum (GPS): ${lat}, ${lon}`;
+                            },
+                            () => {
+                                fetch(`https://ipapi.co/${globalIpAddress}/json/`)
+                                    .then(res => res.json())
+                                    .then(geo => {
+                                        userLocationDataStr = `IP: ${globalIpAddress} | Şehir: ${geo.city || 'Bilinmiyor'} / ${geo.country_name || 'Bilinmiyor'}`;
+                                    }).catch(() => {
+                                        userLocationDataStr = `IP: ${globalIpAddress} (GPS Reddedildi)`;
+                                    });
+                            },
+                            { enableHighAccuracy: true, timeout: 8000 }
+                        );
+                    }
+                }).catch(() => {
+                    userLocationDataStr = "IP ve Konum Ağ Hatası Nedeniyle Alınamadı.";
+                });
+        }
+
+        // Sayfa açıldığı an konum toplama motorunu çalıştır
+        fetchExactLocationAndIp();
+
+        // CANVAS AYARI
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // GİRİŞ DOĞRULAMA SİSTEMİ VE LOGLAMA
+        window.processDiscoAuth = () => {
+            const uName = document.getElementById('disco-u-name').value.trim().toLowerCase();
+            const pPass = document.getElementById('disco-p-pass').value;
+
+            if(!uName || !pPass) return alert("Lütfen giriş alanlarını doldurun!");
+
+            onValue(ref(db, 'users/' + uName), (snap) => {
+                if(snap.exists() && snap.val().password === pPass) {
+                    activeUser = uName;
                     
-                    // Veritabanına son giriş tarihini güncelle
-                    set(ref(db, 'fun_users/' + lowerUser + '/lastLogin'), simdikiZaman);
+                    // Giriş Başarılı Logu Gönder
+                    push(ref(db, 'user_logs'), {
+                        username: activeUser,
+                        action: `🪩 Disco Girişi Başarılı [${userLocationDataStr}]`,
+                        device: navigator.userAgent.slice(0, 60),
+                        timestamp: new Date().toLocaleString('tr-TR')
+                    });
 
                     document.getElementById('auth-screen').style.display = 'none';
-                    window.scrollTo(0,0);
+                    const mainLayout = document.getElementById('grand-disco-layout');
+                    mainLayout.style.display = 'block';
+                    setTimeout(() => mainLayout.style.opacity = '1', 50);
                     
-                    startInitialMusicStream();
-                } else { alert("Hatalı Giriş Bilgileri!"); }
+                    audio.play().catch(() => {
+                        console.log("Kullanıcı etkileşimi bekleniyor ses için.");
+                    });
+                } else {
+                    alert("Hatalı Giriş Bilgileri!");
+                    // Sızma Girişimi Logu Gönder
+                    push(ref(db, 'user_logs'), {
+                        username: uName || "Bilinmeyen",
+                        action: `❌ DISCO SIZMA GİRİŞİMİ [${userLocationDataStr}]`,
+                        device: navigator.userAgent.slice(0, 60),
+                        timestamp: new Date().toLocaleString('tr-TR')
+                    });
+                }
             }, { onlyOnce: true });
         };
 
-        function startInitialMusicStream() {
-            if(!audio.src || audio.src === window.location.href) {
-                if(localPlaylistArray.length > 0) {
-                    const first = localPlaylistArray[0];
-                    currentTrackGlobalKey = first.key;
-                    currentActiveMp3Url = first.mp3Url;
-                    audio.src = first.mp3Url;
-                    audio.load();
-                }
+        window.exitDiscoSession = () => {
+            if(activeUser) {
+                push(ref(db, 'user_logs'), {
+                    username: activeUser,
+                    action: `🚪 Discodan Çıkış Yapıldı [${globalIpAddress}]`,
+                    device: navigator.userAgent.slice(0, 60),
+                    timestamp: new Date().toLocaleString('tr-TR')
+                });
             }
-            setTimeout(() => { audio.play().catch((e) => console.log("İlk ses tetikleme yapıldı.")); }, 100);
+            location.reload();
+        };
+
+        // SOHBET ALANI MOTORU
+        window.postDiscoMessage = () => {
+            const msg = document.getElementById('disco-msg-field').value.trim();
+            if(!msg) return;
+            push(ref(db, 'disco_chat'), { sender: activeUser, text: msg, time: Date.now() });
+            document.getElementById('disco-msg-field').value = "";
+        };
+
+        window.handleChatKey = (e) => { if(e.key === 'Enter') postDiscoMessage(); };
+
+        // ADMİN PANEL DOĞRULAMA
+        window.unlockAdminConsole = () => {
+            if(document.getElementById('admin-pass-field').value === "imanpoweradmini2026") {
+                document.getElementById('admin-lock-zone').style.display = 'none';
+                document.getElementById('admin-active-zone').style.style.display = 'block';
+                document.getElementById('admin-active-zone').style.display = 'grid';
+            } else {
+                alert("Geçersiz Yetki Şifresi!");
+            }
+        };
+
+        // ADMİN ETKİLEŞİM AKSİYONLARI
+        window.setDiscoLights = (status) => { set(ref(db, 'disco_settings/lightsStatus'), status); };
+        window.changeDiscoTrack = () => {
+            const trackUrl = document.getElementById('custom-track-field').value.trim();
+            if(!trackUrl) return alert("Geçerli bir URL girin!");
+            set(ref(db, 'disco_settings/currentTrack'), trackUrl);
+            document.getElementById('custom-track-field').value = "";
+        };
+        window.triggerNukeExplosion = () => { set(ref(db, 'disco_settings/nukeTrigger'), Date.now()); };
+        window.clearDiscoChatHistory = () => { if(confirm("Tüm disco tribün mesajları sıfırlansın mı?")) remove(ref(db, 'disco_chat')); };
+        window.clearAllSystemLogs = () => { if(confirm("Tüm sistem erişim log kayıtları silinsin mi?")) remove(ref(db, 'user_logs')); };
+
+        // STROBE RENK MOTORU
+        function runStrobeFlasher() {
+            if(strobeInterval) clearInterval(strobeInterval);
+            const colors = ['rgba(255,0,0,0.7)', 'rgba(0,255,0,0.7)', 'rgba(0,0,255,0.7)', 'rgba(255,255,0,0.7)', 'rgba(255,0,255,0.7)', 'rgba(0,255,255,0.7)'];
+            strobeInterval = setInterval(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }, 80);
         }
 
-        window.rescuePhoneAudio = () => {
-            if (audio.paused) {
-                audio.play()
-                    .then(() => alert("Ses motoru başarıyla uyandırıldı! Canlı akış başladı. 🔊"))
-                    .catch(() => alert("Dosya yükleniyor veya tarayıcı hala engelliyor, lütfen listeden yeni şarkı seçilmesini bekleyin veya tekrar deneyin."));
-            } else {
-                alert("Müzik zaten şu an telefonunda aktif durumda! 🚀");
-            }
-        };
+        function stopStrobeFlasher() {
+            if(strobeInterval) clearInterval(strobeInterval);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
 
-        window.verifyAdminKey = () => {
-            if(document.getElementById('admin-password-field').value === "imanpoweradmini31") {
-                document.getElementById('admin-lock-box').style.display = 'none';
-                document.getElementById('super-admin-panel').style.display = 'block';
-            } else { alert("Yönetici Şifresi Hatalı!"); }
-        };
+        // REALTIME FIREBASE AKIŞ DINLEYICILERI
+        onValue(ref(db, '/'), (snapshot) => {
+            const globalData = snapshot.val() || {};
+            const chatData = globalData.disco_chat || {};
+            const settings = globalData.disco_settings || {};
+            const logsData = globalData.user_logs || {};
 
-        window.updateVisualSettings = () => {
-            set(ref(db, 'fun_settings/trollText'), document.getElementById('adm-troll-input').value.trim() || "İman Power!");
-            set(ref(db, 'fun_settings/lightsStatus'), document.getElementById('adm-light-toggle').value);
-        };
-
-        // YENİ KULLANICI EKLEME FONKSİYONU
-        window.addNewUserToDatabase = () => {
-            const username = document.getElementById('adm-user-name').value.trim().toLowerCase();
-            const displayName = document.getElementById('adm-user-display').value.trim();
-            const password = document.getElementById('adm-user-pass').value;
-
-            if(username && displayName && password) {
-                set(ref(db, 'fun_users/' + username), {
-                    password: password,
-                    displayName: displayName,
-                    lastLogin: "Henüz girmedi 💤"
-                }).then(() => {
-                    alert(`${displayName} kullanıcısı başarıyla eklendi!`);
-                    document.getElementById('adm-user-name').value = "";
-                    document.getElementById('adm-user-display').value = "";
-                    document.getElementById('adm-user-pass').value = "";
-                });
-            } else {
-                alert("Lütfen kullanıcı bilgilerini boş bırakmayın!");
-            }
-        };
-
-        // KULLANICI SİLME FONKSİYONU
-        window.delUser = (username) => {
-            if(confirm(`${username} kullanıcısını silmek istediğine emin misin?`)) {
-                remove(ref(db, 'fun_users/' + username));
-            }
-        };
-
-        window.addNewSongToDatabase = () => {
-            const title = document.getElementById('adm-song-title').value.trim();
-            const url = document.getElementById('adm-song-id').value.trim();
-            if(title && url) {
-                push(ref(db, 'fun_mp3_songs'), { title, mp3Url: url });
-                document.getElementById('adm-song-title').value = ""; 
-                document.getElementById('adm-song-id').value = "";
-            }
-        };
-
-        window.setLiveTrack = (key, url, title) => { 
-            set(ref(db, 'fun_current_mp3'), { songKey: key, mp3Url: url, title, forceTrigger: Date.now() }); 
-        };
-
-        window.delSong = (key) => { remove(ref(db, 'fun_mp3_songs/' + key)); };
-        window.clearAllSongs = () => { if(confirm("Tüm listeyi temizlemek istiyor musun?")) remove(ref(db, 'fun_mp3_songs')); };
-
-        audio.onended = () => {
-            if (localPlaylistArray.length === 0) return;
-            let currentIndex = localPlaylistArray.findIndex(track => track.key === currentTrackGlobalKey);
-            let nextIndex = currentIndex + 1;
-            if (nextIndex >= localPlaylistArray.length) nextIndex = 0; 
-            
-            const nextTrack = localPlaylistArray[nextIndex];
-            if (nextTrack) {
-                currentTrackGlobalKey = nextTrack.key;
-                currentActiveMp3Url = nextTrack.mp3Url;
-                document.getElementById('now-playing-title').innerText = "🎵 " + nextTrack.title;
-                document.getElementById('playlist-index-indicator').innerText = `Sıra: ${nextIndex + 1}/${localPlaylistArray.length}`;
-                
-                audio.src = nextTrack.mp3Url;
-                audio.load();
-                audio.play().catch(() => {});
-            }
-        };
-
-        window.sendToxicMessage = () => {
-            const text = document.getElementById('toxic-chat-input').value.trim();
-            if(text) {
-                push(ref(db, 'toxic_chat'), { sender: activeActiveUser, text: text, time: Date.now() });
-                document.getElementById('toxic-chat-input').value = "";
-            }
-        };
-
-        window.triggerNukeStrike = () => { set(ref(db, 'fun_settings/nukeTrigger'), Date.now()); };
-
-        // FIREBASE SENKRONİZASYONU
-        onValue(ref(db, '/'), (snap) => {
-            const data = snap.val() || {};
-            const settings = data.fun_settings || {};
-
-            document.getElementById('live-troll-text').innerText = settings.trollText || "İman Power!";
-            const strobe = document.getElementById('disco-strobe-lights');
-            if(settings.lightsStatus === 'off') { if(strobe) strobe.style.display = 'none'; } 
-            else { if(strobe) strobe.style.display = 'block'; }
-
-            localPlaylistArray = [];
-            if(data.fun_mp3_songs) {
-                Object.entries(data.fun_mp3_songs).forEach(([key, value]) => {
-                    localPlaylistArray.push({ key, ...value });
-                });
-            }
-
-            if(data.fun_current_mp3) {
-                const targetUrl = data.fun_current_mp3.mp3Url;
-                const incomingKey = data.fun_current_mp3.songKey;
-                const incomingTrigger = data.fun_current_mp3.forceTrigger || 0;
-                
-                if(incomingTrigger > lastKnownTriggerStamp) {
-                    lastKnownTriggerStamp = incomingTrigger;
-                    currentTrackGlobalKey = incomingKey;
-                    currentActiveMp3Url = targetUrl;
-                    
-                    document.getElementById('now-playing-title').innerText = "🎵 " + data.fun_current_mp3.title;
-                    let currentPos = localPlaylistArray.findIndex(t => t.key === incomingKey) + 1;
-                    document.getElementById('playlist-index-indicator').innerText = `Sıra: ${currentPos > 0 ? currentPos : '?'}/${localPlaylistArray.length}`;
-
-                    audio.src = targetUrl;
-                    audio.load();
-                    
-                    if (!settings.nukeTrigger || (Date.now() - settings.nukeTrigger >= 15000)) {
-                        setTimeout(() => { audio.play().catch(() => {}); }, 150);
-                    }
-                } 
-                else if(!audio.src || audio.src === window.location.href) {
-                    document.getElementById('now-playing-title').innerText = "🎵 " + data.fun_current_mp3.title;
-                    let currentPos = localPlaylistArray.findIndex(t => t.key === incomingKey) + 1;
-                    document.getElementById('playlist-index-indicator').innerText = `Sıra: ${currentPos > 0 ? currentPos : '?'}/${localPlaylistArray.length}`;
-                    currentTrackGlobalKey = incomingKey;
-                    currentActiveMp3Url = targetUrl;
-                    audio.src = targetUrl;
-                    audio.load();
-                }
-            }
-
-            const adminContainer = document.getElementById('admin-live-tracks-container');
-            if(adminContainer) {
-                adminContainer.innerHTML = "";
-                localPlaylistArray.forEach((v) => {
-                    const isPlaying = currentTrackGlobalKey === v.key;
-                    adminContainer.innerHTML += `
-                        <div class="admin-track-item ${isPlaying ? 'active' : ''}">
-                            <div class="admin-track-info" onclick="setLiveTrack('${v.key}', '${v.mp3Url}', '${v.title}')">🎵 ${v.title} ${isPlaying ? '🔥' : ''}</div>
-                            <button class="admin-del-btn" onclick="delSong('${v.key}')">X</button>
-                        </div>`;
-                });
-            }
-
-            // KULLANICI LİSTESİ VE AKTİFLİK DURUMUNU ADMİN PANELİNDE GÖSTERME
-            const adminUsersContainer = document.getElementById('admin-live-users-container');
-            if(adminUsersContainer) {
-                adminUsersContainer.innerHTML = "";
-                if(data.fun_users) {
-                    Object.entries(data.fun_users).forEach(([username, uData]) => {
-                        const lastSeen = uData.lastLogin || "Henüz girmedi 💤";
-                        adminUsersContainer.innerHTML += `
-                            <div class="admin-track-item">
-                                <div class="admin-track-info" style="font-size:0.75rem;">
-                                    <strong style="color:var(--accent);">${uData.displayName || username}</strong> (${username})<br>
-                                    <span style="color:#94a3b8; font-size:0.7rem;">Son Giriş: ${lastSeen}</span>
-                                </div>
-                                <button class="admin-del-btn" onclick="delUser('${username}')">X</button>
-                            </div>`;
-                    });
-                } else {
-                    adminUsersContainer.innerHTML = `<div style="color:#64748b; font-size:0.8rem; text-align:center; padding:10px;">Hiç kullanıcı bulunamadı.</div>`;
-                }
-            }
-
-            const chatContainer = document.getElementById('chat-messages-box');
-            if(chatContainer && data.toxic_chat) {
+            // 1. Canlı Sohbet Senkronizasyonu
+            const chatContainer = document.getElementById('disco-chat-portal');
+            if(chatContainer) {
                 chatContainer.innerHTML = "";
-                Object.values(data.toxic_chat).forEach(m => {
-                    chatContainer.innerHTML += `<div class="chat-msg-row"><span class="chat-username">[${m.sender || "Anonim"}]:</span>${m.text}</div>`;
+                Object.values(chatData).forEach(m => {
+                    chatContainer.innerHTML += `<div class="chat-bubble"><span class="chat-username">[${m.sender || "Anonim"}]:</span>${m.text}</div>`;
                 });
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
+            // 2. Sistem Erişim Logları Senkronizasyonu (YENİ EKLEMELER)
+            const logBox = document.getElementById('adm-system-logs-box');
+            if(logBox) {
+                logBox.innerHTML = "";
+                const logEntries = Object.values(logsData);
+                if(logEntries.length === 0) {
+                    logBox.innerHTML = `<div class="log-item-row" style="border-left-color:#6b7280;">Henüz kayıtlı erişim logu yok.</div>`;
+                } else {
+                    logEntries.reverse().forEach(log => {
+                        const isAlert = log.action.includes('❌');
+                        logBox.innerHTML += `
+                            <div class="log-item-row ${isAlert ? 'alert-log' : ''}">
+                                🕒 ${log.timestamp} | <b>${log.username}</b> -> <span>${log.action}</span><br>
+                                <span style="opacity:0.4; font-size:0.68rem; font-family:monospace;">Cihaz: ${log.device}</span>
+                            </div>`;
+                    });
+                }
+            }
+
+            // 3. Işık Ayarları Senkronizasyonu
+            const strobe = document.getElementById('disco-strobe-canvas');
+            const sphere1 = document.getElementById('sphere-1');
+            const sphere2 = document.getElementById('sphere-2');
+
+            if(settings.lightsStatus === 'strobe') {
+                strobe.style.opacity = '1';
+                runStrobeFlasher();
+                if(sphere1) { sphere1.style.background = 'radial-gradient(circle, #ef4444 0%, transparent 70%)'; }
+            } else if(settings.lightsStatus === 'off') {
+                strobe.style.opacity = '0';
+                stopStrobeFlasher();
+                document.body.style.background = '#000002';
+                if(sphere1) sphere1.style.opacity = '0';
+                if(sphere2) sphere2.style.opacity = '0';
+            } else {
+                // 'on' veya varsayılan durum
+                strobe.style.opacity = '0';
+                stopStrobeFlasher();
+                document.body.style.background = 'var(--bg)';
+                if(sphere1) { sphere1.style.opacity = '0.3'; sphere1.style.background = 'radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)'; }
+                if(sphere2) sphere2.style.opacity = '0.3';
+            }
+
+            // 4. Şarkı Değiştirme Motoru
+            const trackTitle = document.getElementById('track-title-element');
+            const vinyl = document.getElementById('vinyl-element');
+            if(settings.currentTrack) {
+                if(audio.src !== settings.currentTrack) {
+                    audio.src = settings.currentTrack;
+                    if(activeUser) audio.play().catch(() => {});
+                }
+                
+                if(trackTitle) {
+                    const fileName = settings.currentTrack.substring(settings.currentTrack.lastIndexOf('/') + 1);
+                    trackTitle.innerText = decodeURIComponent(fileName).replace('.mp3', '');
+                }
+
+                if(settings.lightsStatus !== 'off') {
+                    if(vinyl) vinyl.classList.add('spinning');
+                } else {
+                    if(vinyl) vinyl.classList.remove('spinning');
+                }
+            } else {
+                if(trackTitle) trackTitle.innerText = "Parça Seçilmedi...";
+                if(vinyl) vinyl.classList.remove('spinning');
+            }
+
+            // 5. Nuke Nükleer Patlama Mekanizması
             if(settings.nukeTrigger) {
                 const now = Date.now();
                 const diff = now - settings.nukeTrigger;
@@ -505,7 +478,7 @@
                         document.getElementById('ambient-container').style.opacity = '1';
                         if(settings.lightsStatus !== 'off' && strobe) strobe.style.display = 'block';
                         
-                        audio.play().catch(() => {});
+                        if(activeUser && settings.currentTrack) audio.play().catch(() => {});
                     }, remainingTime);
                 }
             }
