@@ -31,9 +31,6 @@
         .auth-btn { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 800; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; cursor: pointer; transition: 0.3s; font-size: 1rem; box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); }
         .auth-btn:hover { background: #14d393; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); }
 
-        /* REKLAM KARTI */
-        .ad-banner-overlay { background: rgba(16, 185, 129, 0.04); border: 1px dashed var(--border); padding: 15px; border-radius: 14px; margin-top: 20px; font-size: 0.85rem; color: #9ca3af; line-height: 1.5; }
-
         /* STRÜKTÜR VE LAYOUT */
         #grand-disco-layout { display: none; opacity: 0; transition: opacity 0.8s ease; padding: 90px 20px 40px; max-width: 1400px; margin: 0 auto; }
         header { position: fixed; top: 0; left: 0; width: 100%; background: rgba(1, 2, 6, 0.85); backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); z-index: 9999; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
@@ -86,7 +83,7 @@
         .btn-blue { background: #3b82f6; color: #fff; }
         .btn-purple { background: #8b5cf6; color: #fff; }
         
-        /* ADMİN SİSTEM LOGLARI VE KULLANICI LİSTELERİ */
+        /* ERİŞİM LOGLARI KUTUSU */
         .user-log-scroller { max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 12px; font-size: 0.78rem; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px; }
         .log-item-row { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; word-break: break-all; line-height: 1.4; border-left: 3px solid #10b981; background: rgba(255,255,255,0.01); border-radius: 4px; }
         .log-item-row.alert-log { border-left-color: #ef4444; }
@@ -126,10 +123,6 @@
                 <input type="text" id="disco-u-name" class="auth-input" placeholder="Kullanıcı Adı">
                 <input type="password" id="disco-p-pass" class="auth-input" placeholder="Giriş Şifresi">
                 <button class="auth-btn" onclick="processDiscoAuth()">SİSTEME GİRİŞ YAP</button>
-                <div class="ad-banner-overlay">
-                    🔒 <b>Güvenli Tünel Aktif</b><br>
-                    Giriş yaptığınız an dış IP adresiniz, erişim kaydınız ve anlık konum verileriniz güvenlik loglarına işlenecektir.
-                </div>
             </div>
         </div>
     </div>
@@ -177,8 +170,10 @@
                             <button class="console-btn btn-green" onclick="setDiscoLights('on')">Işıkları Yak (Aç)</button>
                             <button class="console-btn btn-red" onclick="setDiscoLights('off')">Işıkları Söndür (Kapat)</button>
                             <button class="console-btn btn-purple" onclick="setDiscoLights('strobe')">Strobe Flaşör Modu</button>
-                            <input type="text" id="custom-track-field" class="auth-input" placeholder="MP3 URL veya Ses Dosyası" style="font-size:0.8rem; padding:10px; margin-top:10px; margin-bottom:10px;">
-                            <button class="console-btn btn-blue" onclick="changeDiscoTrack()">Şarkıyı Değiştir</button>
+                            
+                            <h4 style="margin-top:20px; margin-bottom:10px;">🎵 CANLI PLAYLIST SİSTEMİ</h4>
+                            <textarea id="custom-track-field" class="auth-input" placeholder="Her satıra bir MP3 linki gelecek şekilde yapıştırın..." style="font-size:0.8rem; padding:10px; height:100px; text-align:left; font-family:monospace; resize:none;"></textarea>
+                            <button class="console-btn btn-blue" onclick="changeDiscoTrack()">LİSTEYİ BAŞLAT / GÜNCELLE</button>
                         </div>
 
                         <div class="admin-subcard">
@@ -222,7 +217,9 @@
 
         let activeUser = "";
         let audio = new Audio();
-        audio.loop = true;
+        
+        let playlistUrls = [];
+        let currentIndex = 0;
 
         let strobeInterval = null;
         const canvas = document.getElementById('disco-strobe-canvas');
@@ -231,13 +228,13 @@
         let userLocationDataStr = "Bulunuyor...";
         let globalIpAddress = "IP Çözülüyor...";
 
-        // GENİŞLETİLMİŞ IP VE GPS KONUM BULUCU MOTORU
+        // IP VE GPS KONUM DETEKTÖRÜ
         function fetchExactLocationAndIp() {
             fetch('https://api.ipify.org?format=json')
                 .then(res => res.json())
                 .then(ipData => {
                     globalIpAddress = ipData.ip;
-                    userLocationDataStr = `IP: ${globalIpAddress} (GPS İzni Bekleniyor)`;
+                    userLocationDataStr = `IP: ${globalIpAddress} (GPS Bekleniyor)`;
                     
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
@@ -259,19 +256,17 @@
                         );
                     }
                 }).catch(() => {
-                    userLocationDataStr = "IP ve Konum Ağ Hatası Nedeniyle Alınamadı.";
+                    userLocationDataStr = "IP/Konum Ağ Hatası.";
                 });
         }
 
-        // Sayfa açıldığı an konum toplama motorunu çalıştır
         fetchExactLocationAndIp();
 
-        // CANVAS AYARI
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // GİRİŞ DOĞRULAMA SİSTEMİ VE LOGLAMA
+        // GİRİŞ DOĞRULAMA VE LOGLAMA SİSTEMİ
         window.processDiscoAuth = () => {
             const uName = document.getElementById('disco-u-name').value.trim().toLowerCase();
             const pPass = document.getElementById('disco-p-pass').value;
@@ -282,7 +277,7 @@
                 if(snap.exists() && snap.val().password === pPass) {
                     activeUser = uName;
                     
-                    // Giriş Başarılı Logu Gönder
+                    // Giriş Logu Gönder
                     push(ref(db, 'user_logs'), {
                         username: activeUser,
                         action: `🪩 Disco Girişi Başarılı [${userLocationDataStr}]`,
@@ -295,12 +290,10 @@
                     mainLayout.style.display = 'block';
                     setTimeout(() => mainLayout.style.opacity = '1', 50);
                     
-                    audio.play().catch(() => {
-                        console.log("Kullanıcı etkileşimi bekleniyor ses için.");
-                    });
+                    playCurrentIndexTrack();
                 } else {
                     alert("Hatalı Giriş Bilgileri!");
-                    // Sızma Girişimi Logu Gönder
+                    // Başarısız Girişim Logu Gönder
                     push(ref(db, 'user_logs'), {
                         username: uName || "Bilinmeyen",
                         action: `❌ DISCO SIZMA GİRİŞİMİ [${userLocationDataStr}]`,
@@ -337,7 +330,6 @@
         window.unlockAdminConsole = () => {
             if(document.getElementById('admin-pass-field').value === "imanpoweradmini2026") {
                 document.getElementById('admin-lock-zone').style.display = 'none';
-                document.getElementById('admin-active-zone').style.style.display = 'block';
                 document.getElementById('admin-active-zone').style.display = 'grid';
             } else {
                 alert("Geçersiz Yetki Şifresi!");
@@ -346,15 +338,46 @@
 
         // ADMİN ETKİLEŞİM AKSİYONLARI
         window.setDiscoLights = (status) => { set(ref(db, 'disco_settings/lightsStatus'), status); };
+        
         window.changeDiscoTrack = () => {
-            const trackUrl = document.getElementById('custom-track-field').value.trim();
-            if(!trackUrl) return alert("Geçerli bir URL girin!");
-            set(ref(db, 'disco_settings/currentTrack'), trackUrl);
+            const trackText = document.getElementById('custom-track-field').value.trim();
+            if(!trackText) return alert("Geçerli bir şarkı linki girin!");
+            set(ref(db, 'disco_settings/currentTrack'), trackText);
             document.getElementById('custom-track-field').value = "";
         };
+        
         window.triggerNukeExplosion = () => { set(ref(db, 'disco_settings/nukeTrigger'), Date.now()); };
         window.clearDiscoChatHistory = () => { if(confirm("Tüm disco tribün mesajları sıfırlansın mı?")) remove(ref(db, 'disco_chat')); };
         window.clearAllSystemLogs = () => { if(confirm("Tüm sistem erişim log kayıtları silinsin mi?")) remove(ref(db, 'user_logs')); };
+
+        // PLAYLIST ÇALMA VE OTOMATİK SONRAKİNE GEÇİŞ MOTORU (BOZULMAYAN ESKİ KODUN AYNISI)
+        function playCurrentIndexTrack() {
+            if(playlistUrls.length === 0) return;
+            if(currentIndex >= playlistUrls.length) currentIndex = 0;
+
+            const targetTrack = playlistUrls[currentIndex];
+            if(audio.src !== targetTrack) {
+                audio.src = targetTrack;
+            }
+
+            if(activeUser) {
+                audio.play().catch(e => console.log("Oynatma engellendi: ", e));
+            }
+
+            const trackTitle = document.getElementById('track-title-element');
+            if(trackTitle) {
+                const fileName = targetTrack.substring(targetTrack.lastIndexOf('/') + 1);
+                trackTitle.innerText = decodeURIComponent(fileName).replace('.mp3', '');
+            }
+        }
+
+        audio.addEventListener('ended', () => {
+            currentIndex++;
+            if(currentIndex >= playlistUrls.length) {
+                currentIndex = 0;
+            }
+            playCurrentIndexTrack();
+        });
 
         // STROBE RENK MOTORU
         function runStrobeFlasher() {
@@ -389,7 +412,7 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // 2. Sistem Erişim Logları Senkronizasyonu (YENİ EKLEMELER)
+            // 2. Canlı Erişim Logları Senkronizasyonu
             const logBox = document.getElementById('adm-system-logs-box');
             if(logBox) {
                 logBox.innerHTML = "";
@@ -412,48 +435,44 @@
             const strobe = document.getElementById('disco-strobe-canvas');
             const sphere1 = document.getElementById('sphere-1');
             const sphere2 = document.getElementById('sphere-2');
+            const vinyl = document.getElementById('vinyl-element');
 
             if(settings.lightsStatus === 'strobe') {
-                strobe.style.opacity = '1';
+                if(strobe) strobe.style.opacity = '1';
                 runStrobeFlasher();
-                if(sphere1) { sphere1.style.background = 'radial-gradient(circle, #ef4444 0%, transparent 70%)'; }
+                if(sphere1) sphere1.style.background = 'radial-gradient(circle, #ef4444 0%, transparent 70%)';
+                if(vinyl) vinyl.classList.add('spinning');
             } else if(settings.lightsStatus === 'off') {
-                strobe.style.opacity = '0';
+                if(strobe) strobe.style.opacity = '0';
                 stopStrobeFlasher();
                 document.body.style.background = '#000002';
                 if(sphere1) sphere1.style.opacity = '0';
                 if(sphere2) sphere2.style.opacity = '0';
+                if(vinyl) vinyl.classList.remove('spinning');
             } else {
-                // 'on' veya varsayılan durum
-                strobe.style.opacity = '0';
+                if(strobe) strobe.style.opacity = '0';
                 stopStrobeFlasher();
                 document.body.style.background = 'var(--bg)';
                 if(sphere1) { sphere1.style.opacity = '0.3'; sphere1.style.background = 'radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)'; }
                 if(sphere2) sphere2.style.opacity = '0.3';
+                if(vinyl) vinyl.classList.add('spinning');
             }
 
-            // 4. Şarkı Değiştirme Motoru
-            const trackTitle = document.getElementById('track-title-element');
-            const vinyl = document.getElementById('vinyl-element');
+            // 4. Şarkı ve Playlist Senkronizasyonu
             if(settings.currentTrack) {
-                if(audio.src !== settings.currentTrack) {
-                    audio.src = settings.currentTrack;
-                    if(activeUser) audio.play().catch(() => {});
-                }
+                const parsedUrls = settings.currentTrack.split('\n').map(url => url.trim()).filter(url => url.length > 0);
                 
-                if(trackTitle) {
-                    const fileName = settings.currentTrack.substring(settings.currentTrack.lastIndexOf('/') + 1);
-                    trackTitle.innerText = decodeURIComponent(fileName).replace('.mp3', '');
-                }
-
-                if(settings.lightsStatus !== 'off') {
-                    if(vinyl) vinyl.classList.add('spinning');
-                } else {
-                    if(vinyl) vinyl.classList.remove('spinning');
+                if(JSON.stringify(playlistUrls) !== JSON.stringify(parsedUrls)) {
+                    playlistUrls = parsedUrls;
+                    currentIndex = 0; 
+                    playCurrentIndexTrack();
                 }
             } else {
+                const trackTitle = document.getElementById('track-title-element');
                 if(trackTitle) trackTitle.innerText = "Parça Seçilmedi...";
                 if(vinyl) vinyl.classList.remove('spinning');
+                audio.pause();
+                playlistUrls = [];
             }
 
             // 5. Nuke Nükleer Patlama Mekanizması
@@ -478,7 +497,7 @@
                         document.getElementById('ambient-container').style.opacity = '1';
                         if(settings.lightsStatus !== 'off' && strobe) strobe.style.display = 'block';
                         
-                        if(activeUser && settings.currentTrack) audio.play().catch(() => {});
+                        playCurrentIndexTrack();
                     }, remainingTime);
                 }
             }
